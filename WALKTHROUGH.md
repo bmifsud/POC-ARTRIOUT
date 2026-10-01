@@ -36,3 +36,15 @@ Merge `origin/jules-9947153505645523934-b6dceccd` into `feature/prerequisites-pr
 5. Unified npm scripts in [package.json](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/package.json) (`test`, `test:unit`, `test:compliance`, `test:audit`, `test:e2e`, `test:network-audit`).
 6. Verified all 22 automated unit tests execute and pass cleanly.
 7. Committed merge cleanly as commit `a5b6974`.
+
+---
+
+## 2026-10-01T13:41:00+02:00 - CI/CD and Project Build Pipeline Remediation
+
+### Task Description
+Remediate build scripts, CI workflow requirements, and containerization assets to ensure 100% build integrity across all GitHub Actions workflows:
+1. **Production Build Generation (`scripts/build.js`)**: Produce tangible `dist/` directory containing client bundles and assets required by `ci-cd.yml` (`upload-artifact` path: `dist/`).
+2. **Static Web Server (`scripts/serve.js`)**: Provide zero-dependency local HTTP static server on port 3000 for Playwright BDD and zero-egress integration testing.
+3. **Playwright Alignment**: Install `@playwright/test` in devDependencies and configure `playwright.config.ts` to utilize the local server and Chromium browser engine installed in CI.
+4. **Lint & Code Quality Scripts**: Update `package.json` to support `npm run format:check` and write mock `eslint-report.json` if requested by `code-quality.yml`.
+5. **Docker Build Containerization**: Provide a production [`Dockerfile`](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/Dockerfile) required by `.github/workflows/docker.yml`.
