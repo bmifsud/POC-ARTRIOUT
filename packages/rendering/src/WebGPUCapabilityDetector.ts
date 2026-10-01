@@ -58,7 +58,7 @@ export class WebGPUCapabilityDetector {
         typeof SharedArrayBuffer !== "undefined";
 
       return {
-        supported: true,
+        supported: isMultiThreaded,
         adapterName: adapter.info?.device || "Generic WebGPU Adapter",
         isMultiThreaded,
         webGlDeprecatedNotice: "WebGL execution disabled. Running native WebGPU."
