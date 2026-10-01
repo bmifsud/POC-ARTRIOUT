@@ -52,13 +52,14 @@ export class WebGPUCapabilityDetector {
       }
 
       // Check multi-threading capabilities via crossOriginIsolated & SharedArrayBuffer
-      const isMultiThreaded =
+      const isMultiThreaded = Boolean(
         typeof crossOriginIsolated !== "undefined" &&
         crossOriginIsolated &&
-        typeof SharedArrayBuffer !== "undefined";
+        typeof SharedArrayBuffer !== "undefined"
+      );
 
       return {
-        supported: isMultiThreaded,
+        supported: true,
         adapterName: adapter.info?.device || "Generic WebGPU Adapter",
         isMultiThreaded,
         webGlDeprecatedNotice: "WebGL execution disabled. Running native WebGPU."
