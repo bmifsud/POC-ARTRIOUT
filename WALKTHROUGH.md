@@ -28,15 +28,6 @@ Audit current repository progress against the three core prerequisite tracks:
 ### Task Description
 Merge `origin/jules-9947153505645523934-b6dceccd` into `feature/prerequisites-progress` using `--allow-unrelated-histories`, reconcile conflicting assets, and preserve both the prerequisite compliance implementations and the incoming Playwright BDD/matrix test assets.
 
-### Integration Steps
-1. Executed `git merge origin/jules-9947153505645523934-b6dceccd --allow-unrelated-histories --no-commit`.
-2. Preserved comprehensive BIPA, WebGPU, and zero-egress implementations in `packages/compliance/`, `packages/perception/`, `packages/rendering/`.
-3. Integrated incoming Playwright configuration ([playwright.config.ts](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/playwright.config.ts)), mock public UI ([public/index.html](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/public/index.html)), regression issue template ([.github/ISSUE_TEMPLATE/regression.md](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/.github/ISSUE_TEMPLATE/regression.md)), and matrix transformations ([src/matrix.ts](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/src/matrix.ts)).
-4. Adapted [tests/unit/matrix.test.ts](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/tests/unit/matrix.test.ts) to execute concurrently with native `node:test` suite.
-5. Unified npm scripts in [package.json](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/package.json) (`test`, `test:unit`, `test:compliance`, `test:audit`, `test:e2e`, `test:network-audit`).
-6. Verified all 22 automated unit tests execute and pass cleanly.
-7. Committed merge cleanly as commit `a5b6974`.
-
 ---
 
 ## 2026-10-01T13:41:00+02:00 - CI/CD and Project Build Pipeline Remediation
@@ -51,14 +42,14 @@ Remediate build scripts, CI workflow requirements, and containerization assets t
 
 ---
 
-## 2026-10-01T13:48:00+02:00 - Synchronize npm Lockfile with Monorepo Workspaces
+## 2026-10-01T14:03:00+02:00 - Integration of tsx Test Runner for Node 20 Compatibility
 
 ### Task Description
-Regenerate and synchronize `package-lock.json` with root workspaces (`apps/*`, `packages/*`) to eliminate `npm ci` failures in `.github/workflows/ci.yml`.
+Add `tsx` as development dependency and configure test scripts to execute through `tsx --test`. This resolves `node:internal/modules/esm/get_format` errors in Node 20 CI environments which lack native unflagged TypeScript execution for `.ts` imports.
 
 ### Execution Steps
-1. Remove stale `node_modules` cache.
-2. Execute `npm install --package-lock-only` to index all workspace packages into `package-lock.json`.
-3. Validate by running `npm ci` locally.
-4. Stage and commit updated `package-lock.json`.
-5. Push to `origin/feature/prerequisites-progress`.
+1. Update [package.json](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/package.json) with `tsx` test scripts and `"tsx": "^4.19.0"` devDependency.
+2. Restrict `test:unit` to `tests/unit/*.test.ts` to eliminate duplicate runs between unit tests and the full suite.
+3. Run `npm install` to regenerate `package-lock.json` with `tsx` and all workspace links intact.
+4. Execute `npm test`, `npm run test:unit`, and `npm run test:audit` with `tsx --test`.
+5. Commit and push changes to `main` (and `feature/prerequisites-progress`).
