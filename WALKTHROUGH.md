@@ -53,3 +53,23 @@ Add `tsx` as development dependency and configure test scripts to execute throug
 3. Run `npm install` to regenerate `package-lock.json` with `tsx` and all workspace links intact.
 4. Execute `npm test`, `npm run test:unit`, and `npm run test:audit` with `tsx --test`.
 5. Commit and push changes to `main` (and `feature/prerequisites-progress`).
+
+---
+
+## 2026-10-01T14:36:00+02:00 - Pull Request Review Comments to Issues Reconciliation
+
+### Task Description
+Audit all review comments on Pull Request #1 and ensure that every single review comment is tracked by a dedicated GitHub issue in the repository.
+
+### Execution Summary
+- Total review comments audited: 12
+- Existing issues previously created: #3, #4, #5, #7, #8, #9
+- Missing issues created:
+  - [Issue #10](https://github.com/bmifsud/POC-ARTRIOUT/issues/10): `package-lock.json` requirement for `npm ci` in CI workflows (Comment `4154868018`)
+  - [Issue #11](https://github.com/bmifsud/POC-ARTRIOUT/issues/11): `ClickwrapConsentModal` and `createProtectedCameraStream` store requirement (Comment `4154868053`)
+  - [Issue #12](https://github.com/bmifsud/POC-ARTRIOUT/issues/12): `@playwright/test` devDependency declaration (Comment `4154868062`)
+  - [Issue #13](https://github.com/bmifsud/POC-ARTRIOUT/issues/13): `checkSupport` multi-threading WebGPU validation (Comment `4154868066`)
+  - [Issue #14](https://github.com/bmifsud/POC-ARTRIOUT/issues/14): MediaPipe zero-egress offline asset validation for palm detector (Comment `4154868078`)
+  - [Issue #15](https://github.com/bmifsud/POC-ARTRIOUT/issues/15): Consent revocation UI and handler in `ClickwrapConsentModal` (Comment `4154868092`)
+  - [Issue #16](https://github.com/bmifsud/POC-ARTRIOUT/issues/16): Sanitization of `container.innerHTML` against XSS (Comment `4154868119`)
+- 100% review comment coverage verified: all 12 review comments have corresponding GitHub issues.
