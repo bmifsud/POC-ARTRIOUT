@@ -1,0 +1,32 @@
+# Label configuration for PR labeler
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**', '*.md', 'README*']
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['package*.json', 'yarn.lock', 'pnpm-lock.yaml']
+
+backend:
+  - changed-files:
+    - any-glob-to-any-file: ['src/backend/**', 'api/**', 'server/**']
+
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: ['src/frontend/**', 'src/components/**', 'src/pages/**']
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*.test.*', '**/*.spec.*', 'tests/**']
+
+ci/cd:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/**', 'Dockerfile', '.dockerignore']
+
+database:
+  - changed-files:
+    - any-glob-to-any-file: ['migrations/**', 'prisma/**', 'database/**']
+
+config:
+  - changed-files:
+    - any-glob-to-any-file: ['*.config.js', '.env*', 'config/**']

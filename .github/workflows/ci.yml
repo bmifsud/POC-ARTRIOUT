@@ -37,12 +37,3 @@ jobs:
         run: npm run test:audit
         env:
           CI: true
-
-      - name: Report Regression to Issue Tracker
-        if: failure()
-        uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          filename: .github/ISSUE_TEMPLATE/regression.md
-          update_existing: true
