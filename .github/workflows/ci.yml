@@ -1,0 +1,39 @@
+name: AR Trion CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  quality-assurance:
+    name: Validate BIPA Compliance & Performance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Monorepo Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers & System Dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Execute Unit Tests (Matrix Transformations)
+        run: npm run test:unit --if-present
+
+      - name: Execute Playwright BDD User Flows
+        run: npm test
+
+      - name: Run Automated Zero-Egress Network Audit
+        run: npm run test:audit
+        env:
+          CI: true

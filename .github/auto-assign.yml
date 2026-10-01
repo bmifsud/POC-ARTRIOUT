@@ -1,0 +1,27 @@
+# Auto-assign reviewers configuration
+reviewers:
+  - username: reviewer1
+  - username: reviewer2
+  - username: reviewer3
+
+numberOfReviewers: 2
+
+reviewGroups:
+  backend:
+    - backend-dev-1
+    - backend-dev-2
+  frontend:
+    - frontend-dev-1
+    - frontend-dev-2
+
+filePathReviewers:
+  - pattern: 'src/backend/**'
+    reviewers:
+      - backend-dev-1
+  - pattern: 'src/frontend/**'
+    reviewers:
+      - frontend-dev-1
+
+skipKeywords:
+  - wip
+  - draft

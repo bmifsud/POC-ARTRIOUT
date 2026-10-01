@@ -1,0 +1,94 @@
+name: PR Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Label based on files changed
+      uses: actions/labeler@v5
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/labeler.yml
+        
+  auto-assign-reviewers:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      
+    steps:
+    - name: Auto assign reviewers
+      uses: kentaro-m/auto-assign-action@v2.0.0
+      with:
+        configuration-path: '.github/auto-assign.yml'
+
+  size-label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      
+    steps:
+    - name: Label PR size
+      uses: codelytv/pr-size-labeler@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        xs_label: 'size/xs'
+        xs_max_size: 10
+        s_label: 'size/s'
+        s_max_size: 100
+        m_label: 'size/m'
+        m_max_size: 500
+        l_label: 'size/l'
+        l_max_size: 1000
+        xl_label: 'size/xl'
+
+  conventional-commits:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check PR title
+      uses: amannn/action-semantic-pull-request@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        types: |
+          feat
+          fix
+          docs
+          style
+          refactor
+          perf
+          test
+          build
+          ci
+          chore
+          revert
+        requireScope: false
+        
+  conflict-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check for merge conflicts
+      uses: eps1lon/actions-label-merge-conflict@v3
+      with:
+        dirtyLabel: 'merge-conflict'
+        repoToken: ${{ secrets.GITHUB_TOKEN }}
+        
+  link-issue:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Verify linked issue
+      uses: hattan/verify-linked-issue-action@v1.2.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        message: 'Please link an issue to this PR using keywords like "closes #123" or "fixes #123"'
