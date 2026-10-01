@@ -26,8 +26,11 @@ AR Trion is an enterprise web-based Augmented Reality hand-tracking and percepti
   - Apache-2.0 licensed MediaPipe Hand Landmarker and Palm Detector binary pipeline (`MediaPipeHandLandmarker.ts`).
   - Offline-first model asset resolution.
 
-## 3. Testing & Verification Infrastructure
-- **Unit Testing**: Native Node.js test runner covering compliance, consent storage, stream protection, and buffer scrubbing (`tests/compliance.test.js`).
+## 3. Testing & CI/CD Build Infrastructure
+- **Production Build Pipeline**: `scripts/build.js` producing optimized `dist/` distribution artifacts required by GitHub Actions workflows (`upload-artifact` path: `dist/`).
+- **Containerization**: Multi-stage production `Dockerfile` providing an isolated runtime container running on port 3000.
+- **Static Test Server**: `scripts/serve.js` zero-dependency local static server for Playwright integration and zero-egress network verification.
+- **Unit Testing**: Native Node.js test runner covering compliance, consent storage, stream protection, matrix math, and buffer scrubbing (`tests/compliance.test.js`, `tests/unit/matrix.test.ts`).
 - **Zero-Egress Network Audit**: Automated audit harness (`tests/zero-egress.test.js`) intercepting browser network calls and validating zero remote transmission.
 - **WebGPU Capability Testing**: Rendering tests (`tests/rendering.test.js`) verifying adapter validation and WebGL deprecation rejection.
-- **All 19 Automated Tests Passing**: Continuous testing concurrency verified across all packages.
+- **All 22 Automated Tests Passing**: Continuous testing concurrency verified across all packages.

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Production Build Pipeline**: Implemented [scripts/build.js](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/scripts/build.js) to generate tangible `dist/` artifacts required by GitHub Actions (`upload-artifact` target `dist/`).
+- **Production Containerization**: Created root [Dockerfile](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/Dockerfile) providing multi-stage build and minimal runtime for `.github/workflows/docker.yml`.
+- **Zero-Dependency Static Server**: Implemented [scripts/serve.js](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/scripts/serve.js) serving `public/` on port 3000 for Playwright BDD test suites.
+- **Linter & Code Quality Helpers**: Implemented [scripts/lint.js](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/scripts/lint.js) supporting `--output-file=eslint-report.json` and added `format:check` script.
 - **Monorepo Workspaces**: Configured `workspaces` in root [package.json](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/package.json), created package manifests for `@ar-trion/compliance`, `@ar-trion/perception`, `@ar-trion/rendering`, and client application `@ar-trion/web-app`.
 - **BIPA Consent Gate**: Implemented accessible [ClickwrapConsentModal.ts](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/packages/compliance/src/ClickwrapConsentModal.ts), stream guard `createProtectedCameraStream`, revocation handler `revokeClickwrapConsent`, and memory/localStorage stores in [ClickwrapConsent.ts](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/packages/compliance/src/ClickwrapConsent.ts).
 - **Ephemeral Memory Sanitizer**: Extended [MemorySanitizer.ts](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/packages/compliance/src/MemorySanitizer.ts) with `EphemeralScratchPool`, `isBufferZeroed`, `isFrameSanitized`, and safe frame execution loop.
