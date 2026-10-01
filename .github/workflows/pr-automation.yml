@@ -10,22 +10,22 @@ jobs:
     permissions:
       pull-requests: write
       contents: read
-      
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Label based on files changed
       uses: actions/labeler@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         configuration-path: .github/labeler.yml
-        
+
   auto-assign-reviewers:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      
+
     steps:
     - name: Auto assign reviewers
       uses: kentaro-m/auto-assign-action@v2.0.0
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      
+
     steps:
     - name: Label PR size
       uses: codelytv/pr-size-labeler@v1
@@ -73,7 +73,7 @@ jobs:
           chore
           revert
         requireScope: false
-        
+
   conflict-check:
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +82,7 @@ jobs:
       with:
         dirtyLabel: 'merge-conflict'
         repoToken: ${{ secrets.GITHUB_TOKEN }}
-        
+
   link-issue:
     runs-on: ubuntu-latest
     steps:

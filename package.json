@@ -7,10 +7,12 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "node --test tests/*.test.js",
-    "test:unit": "node --test tests/*.test.js",
+    "test": "node --test tests/*.test.js tests/unit/*.test.ts",
+    "test:unit": "node --test tests/*.test.js tests/unit/*.test.ts",
     "test:compliance": "node --test tests/compliance.test.js",
     "test:audit": "node --test tests/zero-egress.test.js",
+    "test:e2e": "playwright test tests/bdd-playwright/",
+    "test:network-audit": "playwright test tests/network-audits/",
     "lint": "echo \"linting passed\" && exit 0",
     "build": "echo \"build passed\" && exit 0"
   },
