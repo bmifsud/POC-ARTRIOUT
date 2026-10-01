@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Synchronized Monorepo Lockfile**: Regenerated [package-lock.json](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/package-lock.json) with resolved links for all monorepo workspaces (`@ar-trion/compliance`, `@ar-trion/perception`, `@ar-trion/rendering`, `@ar-trion/web-app`), enabling strict, reproducible `npm ci` execution in CI workflows.
 - **Production Build Pipeline**: Implemented [scripts/build.js](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/scripts/build.js) to generate tangible `dist/` artifacts required by GitHub Actions (`upload-artifact` target `dist/`).
 - **Production Containerization**: Created root [Dockerfile](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/Dockerfile) providing multi-stage build and minimal runtime for `.github/workflows/docker.yml`.
 - **Zero-Dependency Static Server**: Implemented [scripts/serve.js](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/scripts/serve.js) serving `public/` on port 3000 for Playwright BDD test suites.

@@ -48,3 +48,17 @@ Remediate build scripts, CI workflow requirements, and containerization assets t
 3. **Playwright Alignment**: Install `@playwright/test` in devDependencies and configure `playwright.config.ts` to utilize the local server and Chromium browser engine installed in CI.
 4. **Lint & Code Quality Scripts**: Update `package.json` to support `npm run format:check` and write mock `eslint-report.json` if requested by `code-quality.yml`.
 5. **Docker Build Containerization**: Provide a production [`Dockerfile`](file:///c:/Users/DELL/Stsack/POC-ARTRIOUT/Dockerfile) required by `.github/workflows/docker.yml`.
+
+---
+
+## 2026-10-01T13:48:00+02:00 - Synchronize npm Lockfile with Monorepo Workspaces
+
+### Task Description
+Regenerate and synchronize `package-lock.json` with root workspaces (`apps/*`, `packages/*`) to eliminate `npm ci` failures in `.github/workflows/ci.yml`.
+
+### Execution Steps
+1. Remove stale `node_modules` cache.
+2. Execute `npm install --package-lock-only` to index all workspace packages into `package-lock.json`.
+3. Validate by running `npm ci` locally.
+4. Stage and commit updated `package-lock.json`.
+5. Push to `origin/feature/prerequisites-progress`.
