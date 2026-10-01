@@ -1,4 +1,4 @@
-name: AR Trion CI/CD Pipeline
+﻿name: AR Trion CI/CD Pipeline
 
 on:
   push:
