@@ -1,2 +1,3 @@
-export * from "./ClickwrapConsent.js";
-export * from "./MemorySanitizer.js";
+export * from "./ClickwrapConsent.ts";
+export * from "./ClickwrapConsentModal.ts";
+export * from "./MemorySanitizer.ts";

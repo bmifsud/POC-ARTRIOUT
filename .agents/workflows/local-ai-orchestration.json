@@ -1,0 +1,48 @@
+{
+  "system": "Google Antigravity & OmniRoute Local AI Orchestration",
+  "version": "1.0.0",
+  "endpoint": {
+    "provider": "Local LLM Studio via OmniRoute",
+    "baseUrl": "http://127.0.0.1:1234/v1",
+    "tokenCost": 0,
+    "privacy": "local-only-zero-telemetry"
+  },
+  "personas": {
+    "planner": {
+      "role": "Planner Persona",
+      "model": "local-studio-deepseek-r1",
+      "responsibilities": [
+        "Decompose features into verifiable subtasks",
+        "Formulate mandatory pre-execution walkthroughs in WALKTHROUGH.md",
+        "Define compliance bounds and architectural invariants"
+      ]
+    },
+    "coder": {
+      "role": "Coder Persona",
+      "model": "local-studio-qwen2.5-coder-32b",
+      "responsibilities": [
+        "Write modular, strictly typed TypeScript code in monorepo packages",
+        "Enforce WebGPU execution and zero-egress perception constraints",
+        "Implement volatile RAM memory sanitizers"
+      ]
+    },
+    "qa": {
+      "role": "QA Persona",
+      "model": "local-studio-qwen2.5-coder-32b",
+      "responsibilities": [
+        "Develop tests concurrently with feature code",
+        "Execute unit, Playwright BDD/E2E, and zero-egress audit suites",
+        "Verify buffer zeroing and memory sanitization post-processing"
+      ]
+    },
+    "reviewer": {
+      "role": "Reviewer Persona",
+      "model": "local-studio-deepseek-r1",
+      "responsibilities": [
+        "Review Pull Requests against BIPA, GDPR, and WebGPU specs",
+        "Verify PR architecture gitDiagram color codes",
+        "Enforce automatic merge rules upon all checks passing"
+      ]
+    }
+  }
+}

@@ -2,10 +2,15 @@
   "name": "ar-trion",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"BDD tests passed\" && exit 0",
+    "test": "node --test tests/*.test.js",
     "test:unit": "node --test tests/*.test.js",
-    "test:audit": "echo \"zero egress audit passed\" && exit 0",
+    "test:compliance": "node --test tests/compliance.test.js",
+    "test:audit": "node --test tests/zero-egress.test.js",
     "lint": "echo \"linting passed\" && exit 0",
     "build": "echo \"build passed\" && exit 0"
   },
