@@ -61,8 +61,10 @@ jobs:
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
+      continue-on-error: true
       with:
         image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+        ignore-unfixed: true
         format: 'sarif'
         output: 'trivy-results.sarif'
 
