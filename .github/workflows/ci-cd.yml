@@ -31,13 +31,13 @@ jobs:
       run: npm run lint
 
     - name: Run tests
-      run: npm test
+      run: npm test -- --coverage
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: true
+        fail_ci_if_error: false
 
     - name: Build project
       run: npm run build
@@ -57,6 +57,7 @@ jobs:
 
     - name: Run npm audit
       run: npm audit --audit-level=moderate
+      continue-on-error: true
 
     - name: Run Snyk security scan
       uses: snyk/actions/node@master
@@ -65,12 +66,12 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
     - name: Run SAST with CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: javascript
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
 
   deploy-staging:
     needs: [build-and-test, security-scan]

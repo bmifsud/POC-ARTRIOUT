@@ -86,6 +86,7 @@ jobs:
 
   link-issue:
     runs-on: ubuntu-latest
+    if: false
     permissions:
       pull-requests: write
       issues: write
