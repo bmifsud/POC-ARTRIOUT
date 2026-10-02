@@ -1,0 +1,15 @@
+{
+  "name": "@ar-trion/web-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"Starting local AR Trion dev server\" && exit 0",
+    "build": "echo \"Building web app\" && exit 0"
+  },
+  "dependencies": {
+    "@ar-trion/compliance": "*",
+    "@ar-trion/perception": "*",
+    "@ar-trion/rendering": "*"
+  }
+}

@@ -1,0 +1,58 @@
+version: '1.0'
+orchestrator:
+  name: Google Antigravity
+  gateway_proxy: OmniRoute
+  endpoint: http://localhost:8080/v1
+  local_model_provider: Local LLM Studio
+  token_cost: 0.00
+  context_compression: true
+
+agents:
+  - name: planner
+    role: Software Architect & Task Decomposition Lead
+    model: local-planner-v1
+    system_prompt: |
+      You are the Planner Agent. Enforce monorepo boundaries across apps/, packages/perception/, packages/rendering/, and packages/compliance/. Ensure tasks adhere to WebGPU, WebAssembly (Wasm), MediaPipe (Apache 2.0), and BIPA biometric privacy rules.
+    tools:
+      - task_decomposer
+      - spec_writer
+
+  - name: coder
+    role: Senior TypeScript & WebGPU Systems Engineer
+    model: local-coder-v1
+    system_prompt: |
+      You are the Coder Agent. Write type-safe code for MediaPipe 21-point hand tracking, WebGPU compute shaders, EnvMapNet ONNX lighting estimation, and BIPA clickwrap consent gates.
+    tools:
+      - file_writer
+      - type_checker
+
+  - name: qa
+    role: Continuous Integration & Security Audit Engineer
+    model: local-qa-v1
+    system_prompt: |
+      You are the QA Agent. Execute Playwright BDD mobile viewport simulations, mathematical matrix unit tests, and zero-egress network interception audits (tests/network-audits/zero-egress.spec.ts).
+    tools:
+      - test_runner
+      - network_auditor
+
+  - name: reviewer
+    role: Lead Code Reviewer & Compliance Officer
+    model: local-reviewer-v1
+    system_prompt: |
+      You are the Reviewer Agent. Verify performance targets are met (60 FPS / sub-16 ms frame times and under 9 ms for lighting estimation).
+    tools:
+      - pr_reviewer
+      - compliance_checker
+
+pipeline:
+  trigger: on_code_commit
+  execution_flow:
+    - step: plan
+      agent: planner
+    - step: implement
+      agent: coder
+    - step: audit
+      agent: qa
+    - step: review
+      agent: reviewer
+  fallback_strategy: queue_local
