@@ -1,0 +1,6 @@
+{
+  "name": "Deep Analyzer Reference Set",
+  "version": "1.0",
+  "description": "Corpus and fixtures to catch analyzer regressions in deep repository scanning.",
+  "items": []
+}
