@@ -9,6 +9,11 @@ export default defineConfig({
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
+    // Require SharedArrayBuffer support for MediaPipe & WebGPU test runtimes
+    extraHTTPHeaders: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
   },
   projects: [
     {

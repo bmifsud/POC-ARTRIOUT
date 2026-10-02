@@ -1,0 +1,6 @@
+{
+  "name": "PR Salvage Reference Set",
+  "version": "1.0",
+  "description": "Stale-PR, review-thread, reopen-flow, and salvage reference cases for queue cleanup automation.",
+  "items": []
+}
