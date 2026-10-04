@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "test": "tsx --test tests/*.test.js tests/unit/*.test.ts",
-    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:unit": "tsx --test tests/unit/*.test.ts tests/unit/*.spec.ts",
     "test:compliance": "tsx --test tests/compliance.test.js",
-    "test:audit": "tsx --test tests/zero-egress.test.js",
+    "test:audit": "playwright test tests/network-audits/",
     "test:e2e": "playwright test tests/bdd-playwright/",
     "test:network-audit": "playwright test tests/network-audits/",
     "serve": "node scripts/serve.js",

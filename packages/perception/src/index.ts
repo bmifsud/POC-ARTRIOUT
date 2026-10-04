@@ -4,6 +4,10 @@ export const perceptionContracts = {
   networkPolicy: "zero-egress"
 } as const;
 
-export * from "./NetworkEgressGuard.ts";
-export * from "./LocalInferenceRuntime.ts";
-export * from "./MediaPipeHandLandmarker.ts";
+export * from "./NetworkEgressGuard.js";
+export * from "./LocalInferenceRuntime.js";
+export * from "./MediaPipeHandLandmarker.js";
+export * from "./mediapipe/HandTracker.js";
+export * from "./mediapipe/NailExtractor.js";
+export * from "./occlusion/OcclusionMask.js";
+export * from "./lighting/LightingEstimator.js";

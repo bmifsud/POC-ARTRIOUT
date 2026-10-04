@@ -7,7 +7,7 @@ import {
   revokeClickwrapConsent,
   cameraConsentActive,
   createProtectedCameraStream,
-  sanitizeFrame,
+  purgeFrame,
   isBufferZeroed,
   isFrameSanitized,
   createEphemeralFrameLoop,
@@ -106,7 +106,7 @@ test('ClickwrapConsent: revokeClickwrapConsent should clear store and stop all t
   assert.strictEqual(trackStopped, true);
 });
 
-test('MemorySanitizer: sanitizeFrame should overwrite raw frame and landmark buffers with zeroes', () => {
+test('MemorySanitizer: purgeFrame should overwrite raw frame and landmark buffers with zeroes', () => {
   const data = new Uint8ClampedArray([255, 128, 64, 32]);
   const landmarks = [new Float32Array([0.1, 0.2, 0.3]), new Float32Array([0.4, 0.5, 0.6])];
   const frame = {
@@ -116,7 +116,7 @@ test('MemorySanitizer: sanitizeFrame should overwrite raw frame and landmark buf
   };
 
   assert.strictEqual(isBufferZeroed(data), false);
-  sanitizeFrame(frame);
+  purgeFrame(frame);
 
   assert.strictEqual(isBufferZeroed(data), true);
   assert.strictEqual(isFrameSanitized(frame), true);

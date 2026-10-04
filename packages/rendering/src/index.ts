@@ -6,3 +6,5 @@ export const renderingContracts = {
 
 export * from "./WebGPUCapabilityDetector.ts";
 export * from "./EmscriptenConfig.ts";
+export * from "./webgpu/WebGPURenderer.js";
+export * from "./materials/NailMaterials.js";

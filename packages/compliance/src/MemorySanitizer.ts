@@ -24,7 +24,7 @@ export function isFrameSanitized(frame: RawFrame): boolean {
 }
 
 /** Zeroes all volatile frame and landmark buffers; caller must then drop references. */
-export function sanitizeFrame(frame: RawFrame | null | undefined): void {
+export function purgeFrame(frame: RawFrame | null | undefined): void {
   if (!frame) return;
   frame.data.fill(0);
   for (const landmark of frame.landmarks ?? []) {
@@ -36,7 +36,7 @@ export function sanitizeFrame(frame: RawFrame | null | undefined): void {
 /** Wraps a frame processing callback in a try-finally loop guaranteeing zeroing */
 export function createEphemeralFrameLoop(
   processFrame: (frame: RawFrame) => void,
-  sanitize: (frame: RawFrame) => void = sanitizeFrame
+  sanitize: (frame: RawFrame) => void = purgeFrame
 ): (frame: RawFrame) => void {
   return (frame: RawFrame) => {
     try {
@@ -71,7 +71,7 @@ export class EphemeralScratchPool {
   }
 
   public releaseAndSanitize(frame: RawFrame): void {
-    sanitizeFrame(frame);
+    purgeFrame(frame);
   }
 
   public getRawBuffer(): Uint8ClampedArray {
