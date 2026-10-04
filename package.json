@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "tsx --test tests/*.test.js tests/unit/*.test.ts",
+    "test": "tsx --test tests/*.test.js tests/unit/*.test.ts tests/unit/*.spec.ts",
     "test:unit": "tsx --test tests/unit/*.test.ts tests/unit/*.spec.ts",
     "test:compliance": "tsx --test tests/compliance.test.js",
     "test:audit": "playwright test tests/network-audits/",
@@ -20,7 +20,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.0",
+    "@size-limit/preset-app": "^14.1.0",
     "playwright": "^1.42.0",
+    "size-limit": "^14.1.0",
     "tsx": "^4.19.0"
   }
 }

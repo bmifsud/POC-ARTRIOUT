@@ -1,0 +1,11 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npm run serve",
+      "startServerReadyPattern": "Server running at http://localhost:3000"
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
