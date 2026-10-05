@@ -9,5 +9,9 @@
     "skipLibCheck": true,
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": [
+    "packages/*/src",
+    "apps/*/src",
+    "src"
+  ]
 }

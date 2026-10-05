@@ -1,0 +1,9 @@
+{
+  "analyzers": [
+    {
+      "name": "deep-analyzer",
+      "description": "Deep repository reference analyzer",
+      "reference_set": "../reference-sets/deep-analyzer.json"
+    }
+  ]
+}

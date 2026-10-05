@@ -1,4 +1,6 @@
-import { transformMatrix, validateData } from '../../src/matrix';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { transformMatrix, validateData } from '../../src/matrix.ts';
 
 describe('Matrix Transformations and Data Validation', () => {
   it('should correctly transform a basic matrix', () => {
@@ -11,16 +13,16 @@ describe('Matrix Transformations and Data Validation', () => {
       [1, 3],
       [2, 4]
     ];
-    expect(transformMatrix(input)).toEqual(expected);
+    assert.deepStrictEqual(transformMatrix(input), expected);
   });
 
   it('should validate valid biometric payload mock data', () => {
     const validData = { id: '123', frames: [], type: 'biometric' };
-    expect(validateData(validData)).toBe(true);
+    assert.strictEqual(validateData(validData), true);
   });
 
   it('should reject invalid data', () => {
     const invalidData = { id: '123' }; // missing required fields
-    expect(validateData(invalidData)).toBe(false);
+    assert.strictEqual(validateData(invalidData), false);
   });
 });

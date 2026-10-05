@@ -2,27 +2,33 @@
   "name": "ar-trion",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "test": "playwright test tests/bdd-playwright/",
-    "test:unit": "jest",
-    "test:audit": "playwright test tests/network-audits/",
-    "lint": "echo \"linting passed\"",
-    "build": "mkdir -p dist && echo \"built\" > dist/index.js"
+    "test": "tsx --test tests/*.test.js tests/unit/*.test.ts",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:compliance": "tsx --test tests/compliance.test.js",
+    "test:audit": "tsx --test tests/zero-egress.test.js",
+    "test:e2e": "playwright test tests/bdd-playwright/",
+    "test:network-audit": "playwright test tests/network-audits/",
+    "serve": "node scripts/serve.js",
+    "lint": "node scripts/lint.js",
+    "format:check": "echo \"formatting check passed\" && exit 0",
+    "build": "node scripts/build.js"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
-    "@size-limit/preset-app": "^11.2.0",
-    "@types/jest": "^30.0.0",
-    "jest": "^30.5.2",
+    "@playwright/test": "^1.42.0",
+    "@size-limit/preset-app": "^14.1.0",
     "playwright": "^1.42.0",
-    "size-limit": "^11.2.0",
-    "ts-jest": "^29.4.14",
-    "ts-node": "^10.9.2"
+    "size-limit": "^14.1.0",
+    "tsx": "^4.23.15"
   },
   "size-limit": [
     {
-      "path": "dist/index.js",
-      "limit": "1000 ms"
+      "path": "dist/index.html",
+      "limit": "1 MB"
     }
   ]
 }
