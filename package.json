@@ -20,7 +20,15 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.0",
+    "@size-limit/preset-app": "^14.1.0",
     "playwright": "^1.42.0",
-    "tsx": "^4.19.0"
-  }
+    "size-limit": "^14.1.0",
+    "tsx": "^4.23.15"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.html",
+      "limit": "1 MB"
+    }
+  ]
 }

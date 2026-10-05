@@ -65,10 +65,25 @@ export class ClickwrapConsentModal {
     const declineBtn = overlay.querySelector("#bipa-btn-decline") as HTMLButtonElement;
 
     acceptBtn?.addEventListener("click", async () => {
-      const actor = this.options.actor || "anonymous-browser-user";
-      const record = await grantClickwrapConsent(this.options.store, actor);
-      overlay.remove();
-      this.options.onConsentGranted?.(record);
+      try {
+        const actor = this.options.actor || "anonymous-browser-user";
+        const record = await grantClickwrapConsent(this.options.store, actor);
+        overlay.remove();
+        this.options.onConsentGranted?.(record);
+      } catch (err) {
+        // Retain modal and surface disclosure on failure
+        const errBanner = document.createElement("div");
+        errBanner.style.color = "#ff4444";
+        errBanner.style.marginTop = "10px";
+        errBanner.style.fontSize = "0.9rem";
+        errBanner.innerText = "Error authorizing camera: " + (err instanceof Error ? err.message : String(err));
+
+        const existingBanner = overlay.querySelector(".error-banner");
+        if (existingBanner) existingBanner.remove();
+
+        errBanner.className = "error-banner";
+        overlay.querySelector(".bipa-consent-card")?.appendChild(errBanner);
+      }
     });
 
     declineBtn?.addEventListener("click", () => {
