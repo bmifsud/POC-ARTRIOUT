@@ -11,7 +11,10 @@ class MemoryConsentStore implements ConsentStore {
 export async function bootstrapApp(container: HTMLElement): Promise<void> {
   const gpuSupported = await WebGPUCapabilityDetector.checkSupport();
   if (!gpuSupported.supported) {
-    container.innerHTML = `<div class="error-banner">${gpuSupported.reason}</div>`;
+    const errorBanner = document.createElement("div");
+    errorBanner.className = "error-banner";
+    errorBanner.textContent = gpuSupported.reason;
+    container.appendChild(errorBanner);
     return;
   }
 
