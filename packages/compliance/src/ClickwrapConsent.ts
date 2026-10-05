@@ -36,3 +36,8 @@ export async function grantClickwrapConsent(
 export function cameraConsentActive(record: ConsentRecord | null): boolean {
   return record?.action === "grant" && record.policyVersion === POLICY_VERSION;
 }
+
+export async function createProtectedCameraStream(): Promise<MediaStream> {
+  // Dummy implementation
+  return new MediaStream();
+}

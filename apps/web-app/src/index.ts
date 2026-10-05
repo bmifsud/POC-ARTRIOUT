@@ -1,17 +1,22 @@
-import { ClickwrapConsentModal, createProtectedCameraStream } from "@ar-trion/compliance";
+import { ClickwrapConsentModal, createProtectedCameraStream, ConsentStore, ConsentRecord } from "@ar-trion/compliance";
 import { LocalInferenceRuntime } from "@ar-trion/perception";
 import { WebGPUCapabilityDetector } from "@ar-trion/rendering";
 
+class MemoryConsentStore implements ConsentStore {
+  private record: ConsentRecord | null = null;
+  async get(): Promise<ConsentRecord | null> { return this.record; }
+  async save(record: ConsentRecord): Promise<void> { this.record = record; }
+}
+
 export async function bootstrapApp(container: HTMLElement): Promise<void> {
-  // Step 1: Detect WebGPU support and explicitly reject WebGL
   const gpuSupported = await WebGPUCapabilityDetector.checkSupport();
   if (!gpuSupported.supported) {
     container.innerHTML = `<div class="error-banner">${gpuSupported.reason}</div>`;
     return;
   }
 
-  // Step 2: Render BIPA Consent Modal
   const modal = new ClickwrapConsentModal({
+    store: new MemoryConsentStore(),
     onConsentGranted: async (record) => {
       console.log("Consent granted:", record);
       const stream = await createProtectedCameraStream();
