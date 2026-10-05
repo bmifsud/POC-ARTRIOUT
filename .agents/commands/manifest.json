@@ -1,9 +1,0 @@
-{
-  "commands": [
-    {
-      "name": "analyze",
-      "description": "Trigger deep analysis and rag evaluation.",
-      "executor": "local-studio-deepseek-r1"
-    }
-  ]
-}

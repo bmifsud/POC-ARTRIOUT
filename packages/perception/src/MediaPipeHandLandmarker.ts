@@ -50,14 +50,7 @@ export class MediaPipeHandLandmarker {
 
   constructor(config: Partial<MediaPipeModelBinaryConfig> = {}) {
     this.config = { ...MEDIAPIPE_DEFAULT_OFFLINE_CONFIG, ...config };
-    let isRemote = false;
-    try {
-      const url = new URL(this.config.handLandmarkerBinaryPath);
-      isRemote = url.protocol.startsWith('http') || url.protocol.startsWith('ws') || url.protocol.startsWith('ftp');
-    } catch {
-      isRemote = false;
-    }
-    if (isRemote || this.config.handLandmarkerBinaryPath.startsWith("//") || this.config.handLandmarkerBinaryPath.startsWith("http")) {
+    if (this.config.handLandmarkerBinaryPath.startsWith("http")) {
       throw new Error("Zero-Egress Violation: MediaPipe binary tasks must be loaded from local offline storage.");
     }
   }

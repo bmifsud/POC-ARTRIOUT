@@ -54,7 +54,6 @@ jobs:
 
   conventional-commits:
     runs-on: ubuntu-latest
-    if: false
     steps:
     - name: Check PR title
       uses: amannn/action-semantic-pull-request@v5
@@ -77,9 +76,6 @@ jobs:
 
   conflict-check:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
     steps:
     - name: Check for merge conflicts
       uses: eps1lon/actions-label-merge-conflict@v3
@@ -89,10 +85,6 @@ jobs:
 
   link-issue:
     runs-on: ubuntu-latest
-    if: false
-    permissions:
-      pull-requests: write
-      issues: write
     steps:
     - name: Verify linked issue
       uses: hattan/verify-linked-issue-action@v1.1.1

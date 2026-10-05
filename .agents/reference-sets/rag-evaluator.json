@@ -1,6 +1,0 @@
-{
-  "name": "RAG Evaluator Reference Set",
-  "version": "1.0",
-  "description": "Retrieval and evaluator reference set comparison fixtures with expected ranking behavior.",
-  "items": []
-}

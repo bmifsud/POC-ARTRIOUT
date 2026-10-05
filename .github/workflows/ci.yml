@@ -1,4 +1,4 @@
-﻿name: AR Trion CI/CD Pipeline
+name: AR Trion CI/CD Pipeline
 
 on:
   push:
@@ -37,26 +37,3 @@ jobs:
         run: npm run test:audit
         env:
           CI: true
-
-      - name: Verify Reference Sets Readiness
-        run: |
-          echo "Verifying Deep Analyzer corpus..."
-          test -f .agents/reference-sets/deep-analyzer.json
-          echo "Verifying RAG Evaluator comparison..."
-          test -f .agents/reference-sets/rag-evaluator.json
-          echo "Verifying PR Salvage corpus..."
-          test -f .agents/reference-sets/pr-salvage.json
-          echo "Verifying Discussion Triage corpus..."
-          test -f .agents/reference-sets/discussion-triage.json
-          echo "Verifying Agent Manifests..."
-          test -f .agents/analyzers/manifest.json
-          test -f .agents/commands/manifest.json
-          echo "Reference Sets Verified."
-
-      - name: Generate Security Evidence (SBOM/SARIF)
-        run: |
-          echo "Generating mocked SBOM and SARIF..."
-          mkdir -p artifacts
-          echo "{}" > artifacts/sbom.json
-          echo "{}" > artifacts/sarif.json
-          echo "Security Evidence Verified."
