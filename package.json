@@ -12,13 +12,13 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "@size-limit/preset-app": "^11.1.6",
+    "@size-limit/preset-app": "11.0.0",
     "@types/jest": "^30.0.0",
     "glob": "^13.0.6",
     "jest": "^30.5.2",
     "playwright": "^1.42.0",
     "serve": "^14.2.6",
-    "size-limit": "^11.1.6",
+    "size-limit": "11.0.0",
     "ts-jest": "^29.4.14",
     "ts-node": "^10.9.2"
   },
