@@ -23,13 +23,8 @@ jobs:
       run: npm ci
 
     - name: Run ESLint
-      run: npm run lint -- --format=json --output-file=eslint-report.json
+      run: npm run lint
       continue-on-error: true
-
-    - name: Annotate code linting results
-      uses: ataylorme/eslint-annotate-action@v3
-      with:
-        report-json: eslint-report.json
 
     - name: Check formatting
       run: npm run format:check
@@ -46,6 +41,10 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@v5.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=POC-ARTRIOUT
+          -Dsonar.organization=bmifsud
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   complexity-check:

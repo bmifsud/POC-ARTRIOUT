@@ -1,4 +1,4 @@
-﻿name: AR Trion CI/CD Pipeline
+name: AR Trion CI/CD Pipeline
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers & System Dependencies
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
 
       - name: Execute Unit Tests (Matrix Transformations)
         run: npm run test:unit --if-present
