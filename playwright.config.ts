@@ -12,8 +12,8 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'iphone',
+      use: { ...devices['iPhone 13'] },
     },
     {
       name: 'android-tablet',
@@ -21,7 +21,7 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: 'node scripts/serve.js',
+    command: 'npx serve public -p 3000',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
