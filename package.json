@@ -27,7 +27,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/index.js",
+      "path": "dist/index.html",
       "limit": "1000 ms"
     }
   ]

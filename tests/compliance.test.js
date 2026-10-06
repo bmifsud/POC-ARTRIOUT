@@ -147,3 +147,68 @@ test('MemorySanitizer: EphemeralScratchPool should acquire and sanitize pool mem
 
   assert.strictEqual(isBufferZeroed(pool.getRawBuffer()), true);
 });
+
+test('ClickwrapConsentModal: catches async errors in accept handler and displays error state', async () => {
+  const { ClickwrapConsentModal } = await import('../packages/compliance/src/ClickwrapConsentModal.ts');
+  const store = {
+    async get() { return null; },
+    async save() { throw new Error('Storage write failed'); },
+    async clear() {}
+  };
+
+  const mockElement = (tag) => {
+    const children = [];
+    const listeners = {};
+    const elem = {
+      tag,
+      id: '',
+      style: {},
+      textContent: '',
+      children,
+      setAttribute: () => {},
+      appendChild: (c) => children.push(c),
+      remove: () => {},
+      addEventListener: (evt, fn) => { listeners[evt] = fn; },
+      querySelector: (sel) => {
+        const idTarget = sel.startsWith('#') ? sel.slice(1) : sel;
+        const find = (node) => {
+          if (!node || typeof node !== 'object') return null;
+          if (node.id === idTarget) return node;
+          if (node.children) {
+            for (const child of node.children) {
+              const res = find(child);
+              if (res) return res;
+            }
+          }
+          return null;
+        };
+        return find(elem);
+      },
+      click: (evt) => { if (listeners['click']) listeners['click'](evt); }
+    };
+    return elem;
+  };
+
+  globalThis.document = {
+    createElement: (tag) => mockElement(tag),
+    createTextNode: (text) => ({ text })
+  };
+
+  try {
+    const modal = new ClickwrapConsentModal({ store });
+    const element = modal.render();
+    const acceptBtn = element.querySelector('#bipa-btn-accept');
+    const errorContainer = element.querySelector('#bipa-consent-error');
+
+    assert.ok(acceptBtn, 'Accept button should exist');
+    assert.ok(errorContainer, 'Error container should exist');
+
+    acceptBtn.click();
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    assert.strictEqual(errorContainer.style.display, 'block');
+    assert.ok(errorContainer.textContent.includes('Storage write failed'));
+  } finally {
+    delete globalThis.document;
+  }
+});

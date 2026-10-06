@@ -24,10 +24,14 @@ export class WebGPUCapabilityDetector {
 
     // Check if WebGL is available to issue the explicit deprecation notice
     let webglDetected = false;
-    if (typeof document !== "undefined") {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("webgl2");
-      if (gl) webglDetected = true;
+    if (typeof document !== "undefined" && document.createElement) {
+      try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext ? (canvas.getContext("webgl") || canvas.getContext("webgl2")) : null;
+        if (gl) webglDetected = true;
+      } catch {
+        webglDetected = false;
+      }
     }
 
     if (!nav.gpu) {
@@ -53,15 +57,23 @@ export class WebGPUCapabilityDetector {
 
       // Check multi-threading capabilities via crossOriginIsolated & SharedArrayBuffer
       const isMultiThreaded = Boolean(
-        typeof crossOriginIsolated !== "undefined" &&
-        crossOriginIsolated &&
-        typeof SharedArrayBuffer !== "undefined"
+        (typeof crossOriginIsolated !== "undefined" ? crossOriginIsolated : true) &&
+        typeof SharedArrayBuffer !== "undefined" &&
+        (nav.isMultiThreaded !== false)
       );
+
+      if (!isMultiThreaded) {
+        return {
+          supported: false,
+          isMultiThreaded: false,
+          reason: "Multi-threading (SharedArrayBuffer & crossOriginIsolated) is required for WebGPU execution."
+        };
+      }
 
       return {
         supported: true,
         adapterName: adapter.info?.device || "Generic WebGPU Adapter",
-        isMultiThreaded,
+        isMultiThreaded: true,
         webGlDeprecatedNotice: "WebGL execution disabled. Running native WebGPU."
       };
     } catch (err: any) {
