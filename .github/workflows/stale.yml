@@ -21,12 +21,12 @@ jobs:
 
     steps:
     - name: Harden Runner Environment
-      uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+      uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
       with:
         egress-policy: audit
 
     - name: Mark stale issues and PRs
-      uses: actions/stale@5bef64f33513a90be446b01a47c3ab8287592163 # v9.0.0
+      uses: actions/stale@28ca1036281a5e5922ead5184a1bbf96e5fc984e # v9.0.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 30

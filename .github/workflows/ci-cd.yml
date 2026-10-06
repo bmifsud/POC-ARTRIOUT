@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Harden Runner Environment
-      uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+      uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
       with:
         egress-policy: audit
 
@@ -33,7 +33,7 @@ jobs:
         persist-credentials: false
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -48,5 +48,5 @@ jobs:
       run: npm run build --if-present
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@eaaf4bed92b4320db9594be4120cfd4f23e2003c # v3.1.4
+      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
       if: always()
