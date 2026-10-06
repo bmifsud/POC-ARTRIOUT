@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.0 (2026-10-06)
+
+
+### Features
+
+* add local multi-agent orchestration config & CI pipeline ([9b38403](https://github.com/bmifsud/POC-ARTRIOUT/commit/9b38403d24e59037d3cdcceb4b63fd7b15cdd181))
+* Add TDD, BDD Playwright, zero-egress audit, and CI/CD pipelines ([e5b4d2b](https://github.com/bmifsud/POC-ARTRIOUT/commit/e5b4d2be6200d570e102cb0565aded3c35819cca))
+* **ci:** implement Google Jules integration and GitHub Actions governance ([597007d](https://github.com/bmifsud/POC-ARTRIOUT/commit/597007d4b992c8af475f9ec21cf0898132e99a9c))
+* implement architecture compliance toolchain and testing prerequisites ([617e76d](https://github.com/bmifsud/POC-ARTRIOUT/commit/617e76db3b6002e6792482dc5fb0450a2afdec59))
+* Merge main, handle tests and publish PR ([3fb98c0](https://github.com/bmifsud/POC-ARTRIOUT/commit/3fb98c046d938fcef583702d9b379388c1a2d765))
+* Setup testing infra and CI/CD pipelines ([2aa25c3](https://github.com/bmifsud/POC-ARTRIOUT/commit/2aa25c31bc225e8eb44a4d40f112f423b8da33ed))
+* Setup testing infra and CI/CD pipelines ([029dfdb](https://github.com/bmifsud/POC-ARTRIOUT/commit/029dfdbddcb8f7e5558f1729b2df4101592e241c))
+
+
+### Bug Fixes
+
+* **ci:** add package-lock.json for npm cache and npm ci ([65bc736](https://github.com/bmifsud/POC-ARTRIOUT/commit/65bc736e88ddd6c7ff087209272577ce07780a95))
+* **ci:** fix build pipeline, dist artifacts, and dockerfile ([10dde06](https://github.com/bmifsud/POC-ARTRIOUT/commit/10dde069829fe93fb4cba2d1c0faffc6fb9b0721))
+* **ci:** handle dependency-review action gracefully when dependency graph is disabled ([0f0ade6](https://github.com/bmifsud/POC-ARTRIOUT/commit/0f0ade63ef2cf3c68cfc07db6fcda4251cb145ac))
+* **ci:** lock tsx 4.19.0 in package-lock.json for reproducible CI installs ([3c4812f](https://github.com/bmifsud/POC-ARTRIOUT/commit/3c4812ff5ba752a46e3461fb36c7d035ded13af0))
+* **ci:** mock passing scripts to unblock Github Actions ([01c1735](https://github.com/bmifsud/POC-ARTRIOUT/commit/01c1735e8b45a72eb749369c76c6943f66525416))
+* **ci:** Resolve CI failures by fixing pr-automation and playwright installation ([93ad05b](https://github.com/bmifsud/POC-ARTRIOUT/commit/93ad05b373882de0796cc0d861b65c1d69237784))
+* **ci:** Resolve CI failures by fixing pr-automation and playwright installation ([bea03c9](https://github.com/bmifsud/POC-ARTRIOUT/commit/bea03c9ec31ec77694a8a86f1aea17823900276a))
+* **ci:** Resolve CI failures by fixing pr-automation and playwright installation ([0a5cd5e](https://github.com/bmifsud/POC-ARTRIOUT/commit/0a5cd5e91f5ecfdd3438186e001b450eb6396cbf))
+* **ci:** update action commit SHAs to valid release commit hashes ([d1011cb](https://github.com/bmifsud/POC-ARTRIOUT/commit/d1011cb54722183d7eeb032de8c697fae723b8c5))
+* **ci:** use tsx test runner for Node 20 TypeScript support ([ebfee9d](https://github.com/bmifsud/POC-ARTRIOUT/commit/ebfee9d52ddc98cc6cd7e3a421b28f1c90a62191))
+* **deps:** configure size-limit correctly for Node 20 ([629bf63](https://github.com/bmifsud/POC-ARTRIOUT/commit/629bf633bf6ccc21a51813e2789284dc7c3a1490))
+* **deps:** configure size-limit correctly for Node 20 ([cce9ce5](https://github.com/bmifsud/POC-ARTRIOUT/commit/cce9ce5531dff752ee252b4d03dcdff8e0766f32))
+* **deps:** configure size-limit correctly for Node 20 ([d017318](https://github.com/bmifsud/POC-ARTRIOUT/commit/d0173183d55587f6062102dc101eff520f0c080c))
+* **deps:** configure size-limit correctly for Node 20 ([7269111](https://github.com/bmifsud/POC-ARTRIOUT/commit/72691118be65cd9563750d4ab82c1bf84cb56320))
+* **deps:** pin size-limit packages to 11.0.0 for Node 20.x compatibility ([bb11ecc](https://github.com/bmifsud/POC-ARTRIOUT/commit/bb11eccf709e88677312e3e3d9665a25d6dfc303))
+* **deps:** update size-limit to fix engine warnings and glob parsing ([5f65261](https://github.com/bmifsud/POC-ARTRIOUT/commit/5f6526127e26c9b52d3df484208c76cf96645f0c))
+* Docker workflow lowercase image name and trivy action version ([271effb](https://github.com/bmifsud/POC-ARTRIOUT/commit/271effb831f983469dbeff5c9fbc38290d2ef3be))
+* ensure WebGPU supported evaluates correctly during adapter detection ([e61a779](https://github.com/bmifsud/POC-ARTRIOUT/commit/e61a7794063a29ed3573572fb9d340a61ece92d9))
+* Resolve CI pipeline workflow configuration issues ([23f6a8c](https://github.com/bmifsud/POC-ARTRIOUT/commit/23f6a8c39ece0be4ebedfcb62d1b10bd28feacb4))
+* Resolve remaining Sourcery XSS blocking issue ([21d5d44](https://github.com/bmifsud/POC-ARTRIOUT/commit/21d5d4406d97f407d1695e240faf027119ce366d))
+* Resolve Sourcery blocking security issues ([d2398ea](https://github.com/bmifsud/POC-ARTRIOUT/commit/d2398eadb6ae118bff373e552651e8607f774233))
+* Sync package-lock.json and downgrade trivy-action to stable ([7143f65](https://github.com/bmifsud/POC-ARTRIOUT/commit/7143f65314622b0491c1c18796344bb6138b3ba7))
+
 ## [Unreleased]
 
 ### Added
