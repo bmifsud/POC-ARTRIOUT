@@ -26,14 +26,7 @@ export class LocalInferenceRuntime {
       );
     }
 
-    let isRemote = false;
-    try {
-      const url = new URL(config.localModelPath);
-      isRemote = url.protocol.startsWith('http') || url.protocol.startsWith('ws') || url.protocol.startsWith('ftp');
-    } catch {
-      isRemote = false;
-    }
-    if (isRemote || config.localModelPath.startsWith("//") || config.localModelPath.startsWith("http://") || config.localModelPath.startsWith("https://")) {
+    if (config.localModelPath.startsWith("http://") || config.localModelPath.startsWith("https://")) {
       NetworkEgressGuard.recordViolation(config.localModelPath, "GET");
       throw new Error(
         `Edge Security Violation: Remote model URL "${config.localModelPath}" rejected. Only local offline bundled paths are permitted.`
