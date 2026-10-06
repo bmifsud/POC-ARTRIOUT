@@ -5,13 +5,6 @@ on:
     - cron: '0 0 * * *'  # Daily at midnight
   workflow_dispatch:
 
-permissions:
-  contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   stale:
     runs-on: ubuntu-latest
@@ -20,13 +13,28 @@ jobs:
       pull-requests: write
 
     steps:
-    - name: Harden Runner Environment
-      uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-      with:
-        egress-policy: audit
-
     - name: Mark stale issues and PRs
-      uses: actions/stale@28ca1036281a5e5922ead5184a1bbf96e5fc984e # v9.0.0
+      uses: actions/stale@v9
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         days-before-stale: 30
+        days-before-close: 7
+        stale-issue-message: |
+          This issue has been automatically marked as stale because it has not had
+          recent activity. It will be closed if no further activity occurs within 7 days.
+          Thank you for your contributions.
+        stale-pr-message: |
+          This PR has been automatically marked as stale because it has not had
+          recent activity. It will be closed if no further activity occurs within 7 days.
+          Please rebase and push new commits to keep it active.
+        close-issue-message: |
+          This issue was automatically closed because it has been inactive for 7 days
+          since being marked as stale. Please reopen if this is still relevant.
+        close-pr-message: |
+          This PR was automatically closed because it has been inactive for 7 days
+          since being marked as stale. Please reopen and rebase if you wish to continue.
+        stale-issue-label: 'stale'
+        stale-pr-label: 'stale'
+        exempt-issue-labels: 'pinned,security,bug'
+        exempt-pr-labels: 'pinned,work-in-progress'
+        operations-per-run: 100
