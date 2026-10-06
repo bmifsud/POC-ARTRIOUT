@@ -10,6 +10,8 @@ on:
 jobs:
   lighthouse-ci:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -37,6 +39,8 @@ jobs:
 
   load-testing:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -60,6 +64,8 @@ jobs:
 
   bundle-size:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
