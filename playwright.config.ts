@@ -1,5 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const chromiumArgs = [
+  '--use-fake-ui-for-media-stream',
+  '--use-fake-device-for-media-stream',
+  '--enable-unsafe-webgpu'
+];
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -9,15 +15,28 @@ export default defineConfig({
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
+    permissions: ['camera'],
   },
   projects: [
     {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: { args: chromiumArgs }
+      },
+    },
+    {
       name: 'iphone',
-      use: { ...devices['iPhone 13'] },
+      use: {
+        ...devices['iPhone 13']
+      },
     },
     {
       name: 'android-tablet',
-      use: { ...devices['Galaxy Tab S4'] },
+      use: {
+        ...devices['Galaxy Tab S4'],
+        launchOptions: { args: chromiumArgs }
+      },
     }
   ],
   webServer: {

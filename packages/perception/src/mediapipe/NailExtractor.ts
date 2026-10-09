@@ -52,13 +52,11 @@ export class NailExtractor {
       let normX = dirY * wristZ - dirZ * wristY;
       let normY = dirZ * wristX - dirX * wristZ;
       let normZ = dirX * wristY - dirY * wristX;
-      const normLen = Math.sqrt(normX * normX + normY * normY + normZ * normZ) || 1;
+      const normLen = Math.sqrt(normX * normX + normY * normY + normZ * normZ);
 
-      const normal: Point3D = {
-        x: normX / normLen,
-        y: normY / normLen,
-        z: normZ / normLen
-      };
+      const normal: Point3D = normLen > 1e-6
+        ? { x: normX / normLen, y: normY / normLen, z: normZ / normLen }
+        : { x: 0, y: 0, z: 1 };
 
       const scale: Point3D = {
         x: length * 0.45,
