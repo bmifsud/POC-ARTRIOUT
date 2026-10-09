@@ -1,36 +1,48 @@
 import * as ort from 'onnxruntime-web';
 
 export interface LightingEstimate {
-  directionalLightVector: [number, number, number]; // Normalized [x, y, z]
+  directionalLightVector: [number, number, number];
   lightIntensity: number;
-  environmentMapData: Float32Array; // 360 degree HDR EnvMap tensor / values
+  environmentMapData: Float32Array;
   inferenceTimeMs: number;
 }
 
 export class LightingEstimator {
   private session: ort.InferenceSession | null = null;
   private isInitialized: boolean = false;
+  private isClosed: boolean = false;
   private offscreenCanvas: OffscreenCanvas | HTMLCanvasElement | null = null;
   private ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D | null = null;
 
   public async initialize(modelPath?: string): Promise<void> {
+    this.isClosed = false;
+
+    if (modelPath && (modelPath.startsWith('http://') || modelPath.startsWith('https://'))) {
+      throw new Error(`Zero-Egress Violation: Remote lighting model URL "${modelPath}" rejected. Must use local offline bundled path.`);
+    }
+
     try {
       if (modelPath) {
-        this.session = await ort.InferenceSession.create(modelPath, {
+        const session = await ort.InferenceSession.create(modelPath, {
           executionProviders: ['webgl', 'wasm']
         });
+
+        if (this.isClosed) {
+          session.release();
+          return;
+        }
+
+        this.session = session;
       }
       this.isInitialized = true;
     } catch (e) {
       console.warn('LightingEstimator: ONNX model loading fallback to synthetic EnvMapNet heuristic.', e);
-      this.isInitialized = true;
+      if (!this.isClosed) {
+        this.isInitialized = true;
+      }
     }
   }
 
-  /**
-   * Processes downsampled video frame via EnvMapNet / luminance distribution in < 9 ms,
-   * outputting normalized light vectors, intensity, and HDR environment map representation.
-   */
   public async estimateLighting(
     frame: HTMLVideoElement | HTMLCanvasElement | ImageBitmap | ImageData
   ): Promise<LightingEstimate> {
@@ -39,7 +51,6 @@ export class LightingEstimator {
     const downsampledWidth = 64;
     const downsampledHeight = 64;
 
-    // Extract image pixel data using offscreen canvas context
     const pixelData = this.extractPixelData(frame, downsampledWidth, downsampledHeight);
 
     const envMapData = new Float32Array(downsampledWidth * downsampledHeight * 3);
@@ -50,7 +61,6 @@ export class LightingEstimator {
     let brightestX = downsampledWidth / 2;
     let brightestY = downsampledHeight / 2;
 
-    // Process pixels to populate input tensor and environment map
     for (let y = 0; y < downsampledHeight; y++) {
       for (let x = 0; x < downsampledWidth; x++) {
         const pixelIdx = (y * downsampledWidth + x) * 4;
@@ -58,14 +68,12 @@ export class LightingEstimator {
         const g = (pixelData ? pixelData[pixelIdx + 1] : 128) / 255;
         const b = (pixelData ? pixelData[pixelIdx + 2] : 128) / 255;
 
-        // CHW layout for ONNX tensor
         const planeSize = downsampledWidth * downsampledHeight;
         const hwIdx = y * downsampledWidth + x;
         inputTensorData[hwIdx] = r;
         inputTensorData[planeSize + hwIdx] = g;
         inputTensorData[2 * planeSize + hwIdx] = b;
 
-        // Store HDR / RGB values in environment map
         envMapData[hwIdx * 3] = r;
         envMapData[hwIdx * 3 + 1] = g;
         envMapData[hwIdx * 3 + 2] = b;
@@ -85,7 +93,7 @@ export class LightingEstimator {
 
     let lightVector: [number, number, number] = [0.577, 0.577, 0.577];
 
-    if (this.session) {
+    if (!this.isClosed && this.session) {
       try {
         const inputTensor = new ort.Tensor('float32', inputTensorData, [1, 3, downsampledWidth, downsampledHeight]);
         const feeds: Record<string, ort.Tensor> = {};
@@ -97,7 +105,6 @@ export class LightingEstimator {
           lightVector = [data[0] || 0.577, data[1] || 0.577, data[2] || 0.577];
         }
       } catch (err) {
-        // Fallback to scene-derived light vector
         lightVector = this.deriveVectorFromBrightestPixel(brightestX, brightestY, downsampledWidth, downsampledHeight);
       }
     } else {
@@ -127,7 +134,6 @@ export class LightingEstimator {
     width: number,
     height: number
   ): [number, number, number] {
-    // Map 2D pixel coordinate to 3D directional vector
     const nx = (brightestX / width) * 2 - 1;
     const ny = -((brightestY / height) * 2 - 1);
     const nz = 1.0;
@@ -164,13 +170,15 @@ export class LightingEstimator {
         return this.ctx.getImageData(0, 0, width, height).data;
       }
     } catch (e) {
-      // Return null fallback if DOM or Canvas APIs unavailable in environment
+      // Fallback
     }
     return null;
   }
 
   public close(): void {
+    this.isClosed = true;
     if (this.session) {
+      this.session.release();
       this.session = null;
     }
     this.offscreenCanvas = null;

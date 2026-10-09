@@ -7,9 +7,13 @@ export class WebGPURenderer {
     pipeline = null;
     uniformBuffer = null;
     bindGroup = null;
+    bindGroupLayout = null;
     vertexBuffer = null;
     indexBuffer = null;
     isInitialized = false;
+    static MAX_FINGERS = 5;
+    // Uniform block size: 240 bytes aligned to 256 bytes for WebGPU dynamic offset requirement
+    static UNIFORM_STRIDE = 256;
     constructor(canvas) {
         this.canvas = canvas;
     }
@@ -64,9 +68,10 @@ export class WebGPURenderer {
             usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
         });
         this.device.queue.writeBuffer(this.indexBuffer, 0, indices);
-        const uniformBufferSize = 240;
+        // Dynamic uniform buffer storing MAX_FINGERS slices (256 bytes stride each)
+        const totalUniformBufferSize = WebGPURenderer.UNIFORM_STRIDE * WebGPURenderer.MAX_FINGERS;
         this.uniformBuffer = this.device.createBuffer({
-            size: uniformBufferSize,
+            size: totalUniformBufferSize,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
         const wgslSource = shaderCode || `
@@ -98,32 +103,39 @@ export class WebGPURenderer {
       }
       @fragment
       fn fs_main(input : VertexOutput) -> @location(0) vec4<f32> {
-        return uniforms.baseColor;
+        return vec4<f32>(uniforms.baseColor.rgb * uniforms.baseColor.a, uniforms.baseColor.a);
       }
     `;
         const shaderModule = this.device.createShaderModule({
             code: wgslSource,
         });
-        const bindGroupLayout = this.device.createBindGroupLayout({
+        this.bindGroupLayout = this.device.createBindGroupLayout({
             entries: [
                 {
                     binding: 0,
                     visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
+                    buffer: {
+                        type: 'uniform',
+                        hasDynamicOffset: true,
+                        minBindingSize: 240
+                    },
                 },
             ],
         });
         this.bindGroup = this.device.createBindGroup({
-            layout: bindGroupLayout,
+            layout: this.bindGroupLayout,
             entries: [
                 {
                     binding: 0,
-                    resource: { buffer: this.uniformBuffer },
+                    resource: {
+                        buffer: this.uniformBuffer,
+                        size: 240
+                    },
                 },
             ],
         });
         const pipelineLayout = this.device.createPipelineLayout({
-            bindGroupLayouts: [bindGroupLayout],
+            bindGroupLayouts: [this.bindGroupLayout],
         });
         this.pipeline = this.device.createRenderPipeline({
             layout: pipelineLayout,
@@ -160,6 +172,27 @@ export class WebGPURenderer {
         if (!this.isInitialized || !this.device || !this.context || !this.pipeline || !this.bindGroup || !this.uniformBuffer || !this.vertexBuffer || !this.indexBuffer) {
             return;
         }
+        const fingerCount = Math.min(transforms.length, WebGPURenderer.MAX_FINGERS);
+        if (fingerCount === 0)
+            return;
+        // Write all finger uniform slices to distinct buffer offsets before recording command buffer
+        for (let i = 0; i < fingerCount; i++) {
+            const transform = transforms[i];
+            const uniformData = new Float32Array(60);
+            uniformData.set(transform.modelMatrix, 0);
+            uniformData.set(transform.viewProjectionMatrix, 16);
+            uniformData.set(transform.normalMatrix, 32);
+            uniformData.set(transform.lightDirection, 48);
+            uniformData.set(transform.material.baseColor, 52);
+            uniformData.set([
+                transform.material.roughness,
+                transform.material.metallic,
+                transform.material.clearcoat,
+                transform.material.clearcoatRoughness
+            ], 56);
+            const bufferByteOffset = i * WebGPURenderer.UNIFORM_STRIDE;
+            this.device.queue.writeBuffer(this.uniformBuffer, bufferByteOffset, uniformData);
+        }
         const commandEncoder = this.device.createCommandEncoder();
         const textureView = this.context.getCurrentTexture().createView();
         const renderPassDescriptor = {
@@ -176,21 +209,9 @@ export class WebGPURenderer {
         passEncoder.setPipeline(this.pipeline);
         passEncoder.setVertexBuffer(0, this.vertexBuffer);
         passEncoder.setIndexBuffer(this.indexBuffer, 'uint16');
-        for (const transform of transforms) {
-            const uniformData = new Float32Array(60);
-            uniformData.set(transform.modelMatrix, 0);
-            uniformData.set(transform.viewProjectionMatrix, 16);
-            uniformData.set(transform.normalMatrix, 32);
-            uniformData.set(transform.lightDirection, 48);
-            uniformData.set(transform.material.baseColor, 52);
-            uniformData.set([
-                transform.material.roughness,
-                transform.material.metallic,
-                transform.material.clearcoat,
-                transform.material.clearcoatRoughness
-            ], 56);
-            this.device.queue.writeBuffer(this.uniformBuffer, 0, uniformData);
-            passEncoder.setBindGroup(0, this.bindGroup);
+        for (let i = 0; i < fingerCount; i++) {
+            const dynamicOffset = i * WebGPURenderer.UNIFORM_STRIDE;
+            passEncoder.setBindGroup(0, this.bindGroup, [dynamicOffset]);
             passEncoder.drawIndexed(6);
         }
         passEncoder.end();

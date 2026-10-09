@@ -105,5 +105,6 @@ fn fs_main(input : VertexOutput) -> @location(0) vec4<f32> {
 
   let color = Lo + clearcoat * clearcoatSpecular * radiance * NdotL;
 
-  return vec4<f32>(color, uniforms.baseColor.a);
+  // Premultiply RGB by alpha channel for premultiplied canvas output
+  return vec4<f32>(color * uniforms.baseColor.a, uniforms.baseColor.a);
 }
