@@ -1,0 +1,51 @@
+name: Jules Unblocked Issue Resolver
+
+on:
+  issues:
+    types: [unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  resolve-unblocked:
+    name: Resume Unblocked Issue
+    if: github.event.label.name == 'blocked'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Harden Runner Environment
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Invoke Jules Unblocked Resolver
+        uses: google-github-actions/jules-action@v1
+        with:
+          api_key: ${{ secrets.JULES_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}" is no longer blocked!
+
+            Issue Details:
+            ${{ github.event.issue.body }}
+
+            Tasks:
+            1. Review issue description and dependencies that were recently unblocked.
+            2. Implement the required code changes, features, or fixes.
+            3. Ensure full compliance with BIPA consent hard gates and zero-egress network policies.
+            4. Verify all unit tests, linters, and audit suites pass successfully.
+            5. Submit a pull request addressing issue #${{ github.event.issue.number }}.

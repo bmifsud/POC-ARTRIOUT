@@ -1,4 +1,4 @@
-name: Jules CI Self-Healing Agent
+name: Jules CI Failure Fixer
 
 on:
   workflow_run:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   auto-remediate:
-    name: Auto Remediate Build Failure
+    name: Auto Remediate CI Failure
     if: >
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.actor.login != 'google-labs-jules[bot]' &&
@@ -45,8 +45,8 @@ jobs:
             The Continuous Integration workflow failed on branch '${{ github.event.workflow_run.head_branch }}'.
 
             Remediation Tasks:
-            1. Analyze the failing commit and identify the unit test, compilation, or lint failure.
-            2. Re-run tests inside the cloud VM to verify the failure.
-            3. Apply the minimal necessary patch to resolve the issue without altering existing public interfaces.
-            4. Verify that all linters and tests pass clean in the VM.
+            1. Analyze the failing commit and identify unit test, compilation, or lint failures.
+            2. Re-run tests in the cloud VM to verify the failure.
+            3. Apply the minimal necessary patch to resolve the issue while preserving BIPA compliance and zero-egress policies.
+            4. Verify that all linters and tests pass cleanly in the VM.
             5. Submit a pull request targeting '${{ github.event.workflow_run.head_branch }}' titled 'fix(ci): automated remediation of build failure'.
