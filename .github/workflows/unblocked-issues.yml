@@ -37,7 +37,7 @@ jobs:
           persist-credentials: false
 
       - name: Invoke Jules Unblocked Resolver
-        uses: google-github-actions/jules-action@v1
+        uses: google-labs-code/jules-action@v1
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

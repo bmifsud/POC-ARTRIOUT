@@ -1,6 +1,6 @@
 # Production CI/CD Governance and Google Jules Integration
 
-This document outlines the architecture, workflow implementations, GitHub Actions reference breakdown, and security guardrails for integrating Google Jules (`google-github-actions/jules-action`) across automated tasks in this repository.
+This document outlines the architecture, workflow implementations, GitHub Actions reference breakdown, and security guardrails for integrating Google Jules (`google-labs-code/jules-action`) across automated tasks in this repository.
 
 ---
 
@@ -25,7 +25,7 @@ To enable Jules workflows in GitHub Actions, configure the following:
    - Navigate to **Settings -> Secrets and variables -> Actions** in your GitHub repository.
    - Add a repository secret named `JULES_API_KEY` with your API key value.
 3. **GitHub Token Permission**:
-   - Workflows pass `${{ secrets.GITHUB_TOKEN }}` to `google-github-actions/jules-action` for pull request creation and issue labeling. Ensure workflow permissions include necessary privileges (`contents: write`, `issues: write`, `pull-requests: write`).
+   - Workflows pass `${{ secrets.GITHUB_TOKEN }}` to `google-labs-code/jules-action` for pull request creation and issue labeling. Ensure workflow permissions include necessary privileges (`contents: write`, `issues: write`, `pull-requests: write`).
 
 ---
 
@@ -35,27 +35,27 @@ The following workflows are configured under `.github/workflows/`:
 
 ### 1. Bug Fixer (`.github/workflows/bug-fixer.yml`)
 * **Trigger**: `issues` (`opened`, `labeled` with `bug` or `jules:fix`).
-* **Action**: `google-github-actions/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1`
 * **Purpose**: Automatically analyzes reported bugs, reproduces issues in tests, applies minimal fixes, and submits a pull request.
 
 ### 2. CI Failure Remediation (`.github/workflows/ci-failure-fix.yml` & `.github/workflows/jules-ci-healing.yml`)
 * **Trigger**: `workflow_run` completion on failure of core Continuous Integration.
-* **Action**: `google-github-actions/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1`
 * **Purpose**: Analyzes failing build/test logs, reproduces failures, applies minimal remediation, and opens a fix pull request.
 
 ### 3. Performance Improver (`.github/workflows/performance-improver.yml`)
 * **Trigger**: `issues` or `pull_request` labeled with `performance` or `jules:opt`.
-* **Action**: `google-github-actions/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1`
 * **Purpose**: Identifies and optimizes performance bottlenecks in WebGPU rendering, memory allocation, or ML inference loops without compromising BIPA zero-retention compliance.
 
 ### 4. Unblocked Issues Resolver (`.github/workflows/unblocked-issues.yml`)
 * **Trigger**: `issues` (`unlabeled` when `blocked` label is removed).
-* **Action**: `google-github-actions/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1`
 * **Purpose**: Resumes work on unblocked tasks, implements required logic, and submits a pull request once tests pass.
 
 ### 5. Weekly Codebase Cleanup (`.github/workflows/weekly-cleanup.yml`)
 * **Trigger**: `schedule` (Weekly on Sunday at midnight `0 0 * * 0`) or `workflow_dispatch`.
-* **Action**: `google-github-actions/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1`
 * **Purpose**: Conducts routine dead code removal, lint/formatting cleanup, and dependency health checks.
 
 ---
