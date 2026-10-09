@@ -1,4 +1,4 @@
-name: Jules Bug Fixer
+name: Jules Autonomous Bug Fixer
 
 on:
   issues:
@@ -15,8 +15,11 @@ jobs:
   fix-bug:
     name: Fix Reported Bug
     if: >
-      (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'bug')) ||
-      (github.event.action == 'labeled' && (github.event.label.name == 'bug' || github.event.label.name == 'jules:fix'))
+      github.actor != 'google-labs-jules[bot]' &&
+      github.actor != 'google-labs-jules' &&
+      github.actor != 'github-actions[bot]' &&
+      ((github.event.action == 'opened' && (contains(github.event.issue.labels.*.name, 'bug') || contains(github.event.issue.labels.*.name, 'auto-fix'))) ||
+       (github.event.action == 'labeled' && (github.event.label.name == 'bug' || github.event.label.name == 'auto-fix' || github.event.label.name == 'jules:fix')))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -34,20 +37,19 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Invoke Jules Bug Fixer
-        uses: google-github-actions/jules-action@v1
+      - name: Invoke Jules Autonomous Bug Fixer
+        uses: google-labs-code/jules-action@v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
-            A bug has been reported in issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}".
+            An issue labeled for autonomous remediation has been reported in Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}".
 
             Issue Description:
             ${{ github.event.issue.body }}
 
-            Tasks:
-            1. Reproduce the bug by creating or inspecting relevant tests.
-            2. Identify the root cause in the codebase.
-            3. Implement the fix while maintaining strict BIPA compliance and zero-egress network policies.
-            4. Verify that all linting, unit tests, and audit tests pass cleanly.
-            5. Submit a pull request addressing issue #${{ github.event.issue.number }}.
+            Execution Directives:
+            1. Clone the repository in the isolated cloud sandbox and reproduce the issue using or creating targeted test cases.
+            2. Identify the root cause within the codebase and implement a targeted code fix adhering strictly to BIPA consent hard gates, zero-retention memory sanitization (`MemorySanitizer.ts`), zero-egress network policies (`NetworkEgressGuard.ts`), and sub-16 ms WebGPU rendering frame budgets.
+            3. Before submitting the remediation PR, locally execute the full CI sequence (`npm ci`, `npm run lint`, `npm run test:unit`, `npm run test:audit`) to guarantee zero performance or biometric regressions.
+            4. Submit a targeted pull request referencing Issue #${{ github.event.issue.number }} and citing AR trion as the authoritative architectural baseline.

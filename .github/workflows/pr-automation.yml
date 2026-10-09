@@ -13,23 +13,61 @@ concurrency:
 
 jobs:
   auto-label:
+    name: Auto Label PR
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: read
 
     steps:
-    - name: Harden Runner Environment
-      uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-      with:
-        egress-policy: audit
+      - name: Harden Runner Environment
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
 
-    - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      with:
-        persist-credentials: false
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
-    - name: Label based on files changed
-      uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5.0.0
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Label based on files changed
+        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5.0.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  review-pr:
+    name: Jules Automated PR Review
+    if: >
+      github.actor != 'google-labs-jules[bot]' &&
+      github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Harden Runner Environment
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Invoke Jules Automated PR Reviewer
+        uses: google-labs-code/jules-action@v1.0.0
+        with:
+          api_key: ${{ secrets.JULES_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: |
+            You are acting as the automated code review agent for PR #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}".
+
+            Review Directives & Architectural Constraints:
+            1. Evaluate all changes against strict project baselines defined in AR trion:
+               - Zero-Egress Network Compliance: Ensure no camera frame data or biometric landmarks are transmitted off-device (`NetworkEgressGuard.ts`).
+               - BIPA Ephemeral Memory Sanitization: Ensure `MemorySanitizer.ts` or `sanitizeFrame` is called to purge frame buffers and biometric arrays immediately after processing.
+               - WebGPU Rendering Performance: Enforce native WebGPU pipeline execution with a sub-16 ms (60 FPS) rendering frame budget; strictly reject WebGL fallback contexts.
+            2. Verify multi-agent orchestrations and system models defined in AR trion.
+            3. If any architectural constraint, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.

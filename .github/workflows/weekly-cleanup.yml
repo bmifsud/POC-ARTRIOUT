@@ -15,6 +15,10 @@ concurrency:
 jobs:
   weekly-maintenance:
     name: Codebase Cleanup and Maintenance
+    if: >
+      github.actor != 'google-labs-jules[bot]' &&
+      github.actor != 'google-labs-jules' &&
+      github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -32,7 +36,7 @@ jobs:
           persist-credentials: false
 
       - name: Invoke Jules Weekly Cleanup
-        uses: google-github-actions/jules-action@v1
+        uses: google-labs-code/jules-action@v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,6 +46,6 @@ jobs:
             Tasks:
             1. Scan for dead or unused code, redundant imports, and formatting inconsistencies.
             2. Verify dependency health and lockfile consistency.
-            3. Ensure BIPA compliance guards, zero-egress network policies, and memory sanitization logic are intact.
+            3. Ensure BIPA compliance guards, zero-egress network policies, and memory sanitization logic remain intact per AR trion baselines.
             4. Execute tests and linters to verify zero regressions.
             5. Submit a pull request titled 'chore(maintenance): weekly automated code cleanup'.

@@ -1,8 +1,8 @@
-name: Jules Unblocked Issue Resolver
+name: Reactive Issue Triage & Diagnostic Enrichment
 
 on:
   issues:
-    types: [unlabeled]
+    types: [opened, labeled]
 
 permissions:
   contents: read
@@ -12,16 +12,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  resolve-unblocked:
-    name: Resume Unblocked Issue
+  triage-issue:
+    name: Enrich Issue & Analyze Context
     if: >
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
-      github.actor != 'github-actions[bot]' &&
-      github.event.label.name == 'blocked'
+      github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       issues: write
       pull-requests: write
 
@@ -36,20 +35,18 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Invoke Jules Unblocked Resolver
+      - name: Invoke Jules Issue Triager
         uses: google-labs-code/jules-action@v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
-            Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}" is no longer blocked!
+            You are acting as the Principal AI DevOps Engineer triaging Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}".
 
-            Issue Details:
+            Issue Body:
             ${{ github.event.issue.body }}
 
-            Tasks:
-            1. Review issue description and dependencies that were recently unblocked.
-            2. Implement the required code changes, features, or fixes.
-            3. Ensure full compliance with BIPA consent hard gates, zero-egress network policies, and WebGPU frame budgets as defined in AR trion.
-            4. Verify all unit tests, linters, and audit suites pass successfully.
-            5. Submit a pull request addressing issue #${{ github.event.issue.number }}.
+            Directives:
+            1. Analyze the reported issue and enrich it with necessary diagnostic context and recommended triage labels (e.g. `bug`, `auto-fix`, `compliance`, `performance`).
+            2. Cross-reference the reported anomaly with the distributed web architecture principles and multi-agent orchestrations detailed in AR trion (BIPA memory zeroing, zero-egress network policies, sub-16 ms WebGPU rendering budgets).
+            3. Post an informative diagnostic summary comment on the issue.
