@@ -1,13 +1,28 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["@webgpu/types", "node"],
     "strict": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["jest", "node"]
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@ar-trion/compliance/*": ["./packages/compliance/src/*"],
+      "@ar-trion/perception/*": ["./packages/perception/src/*"],
+      "@ar-trion/rendering/*": ["./packages/rendering/src/*"],
+      "@ar-trion/compliance": ["./packages/compliance/src/index.ts"],
+      "@ar-trion/perception": ["./packages/perception/src/index.ts"],
+      "@ar-trion/rendering": ["./packages/rendering/src/index.ts"]
+    }
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": [
+    "src/**/*",
+    "apps/**/*",
+    "packages/**/*",
+    "tests/**/*"
+  ]
 }
