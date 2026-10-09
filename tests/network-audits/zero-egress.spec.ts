@@ -34,9 +34,11 @@ test.describe('Automated Zero-Egress Network Audit', () => {
     await page.goto('http://localhost:3000');
 
     const sendDataBtn = page.locator('#send-data');
-    if (await sendDataBtn.isVisible()) {
-      await sendDataBtn.click();
-    }
+    await sendDataBtn.waitFor({ state: 'visible', timeout: 5000 });
+    await sendDataBtn.click();
+
+    // Allow time for async click handler network event
+    await page.waitForTimeout(500);
 
     expect(externalEgressCount, `Unblocked external requests emitted: ${externalRequests.join(', ')}`).toBe(0);
     expect(blockedEgressCount, 'Sensitive egress attempt should have been intercepted and blocked').toBeGreaterThan(0);
