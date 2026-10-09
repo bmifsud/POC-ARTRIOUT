@@ -1,4 +1,4 @@
-import { NetworkEgressGuard } from "./NetworkEgressGuard.ts";
+import { NetworkEgressGuard } from "./NetworkEgressGuard";
 
 export type AllowedRuntime = "onnxruntime-web" | "litert" | "@xenova/transformers";
 

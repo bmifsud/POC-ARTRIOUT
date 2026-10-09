@@ -13,7 +13,7 @@ export async function bootstrapApp(container: HTMLElement): Promise<void> {
   if (!gpuSupported.supported) {
     const errorBanner = document.createElement("div");
     errorBanner.className = "error-banner";
-    errorBanner.textContent = gpuSupported.reason;
+    errorBanner.textContent = gpuSupported.reason || "WebGPU is not supported";
     container.appendChild(errorBanner);
     return;
   }

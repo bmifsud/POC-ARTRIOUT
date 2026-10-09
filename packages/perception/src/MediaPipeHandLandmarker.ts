@@ -32,15 +32,15 @@ export const MEDIAPIPE_DEFAULT_OFFLINE_CONFIG: MediaPipeModelBinaryConfig = {
   minHandDetectionConfidence: 0.7
 };
 
-export interface NormalizedLandmark {
+export interface MPNormalizedLandmark {
   x: number;
   y: number;
   z: number;
 }
 
-export interface HandLandmarkerResult {
-  landmarks: NormalizedLandmark[][];
-  worldLandmarks: NormalizedLandmark[][];
+export interface MPHandLandmarkerResult {
+  landmarks: MPNormalizedLandmark[][];
+  worldLandmarks: MPNormalizedLandmark[][];
   handedness: Array<{ index: number; score: number; displayName: string; categoryName: string }>;
 }
 
@@ -60,13 +60,13 @@ export class MediaPipeHandLandmarker {
     this.initialized = true;
   }
 
-  public detectForVideo(videoFrame: Uint8ClampedArray, timestampMs: number): HandLandmarkerResult {
+  public detectForVideo(videoFrame: Uint8ClampedArray, timestampMs: number): MPHandLandmarkerResult {
     if (!this.initialized) {
       throw new Error("MediaPipeHandLandmarker is not initialized.");
     }
 
     // Returns standard 21 3D hand landmarks
-    const landmarks: NormalizedLandmark[] = [];
+    const landmarks: MPNormalizedLandmark[] = [];
     for (let i = 0; i < 21; i++) {
       landmarks.push({ x: 0.5, y: 0.5, z: 0.0 });
     }
