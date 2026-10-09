@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.0.0...v1.1.0) (2026-10-09)
+
+
+### Features
+
+* **phase-1:** Complete AR Nail Lab POC Vertical Slice & Zero-Egress Audits ([c5fbd31](https://github.com/bmifsud/POC-ARTRIOUT/commit/c5fbd315a6b8be49eaf488dd8751f0ff7daf2b10))
+* **phase-1:** Complete AR Nail Lab POC Vertical Slice & Zero-Egress Audits ([e37cc28](https://github.com/bmifsud/POC-ARTRIOUT/commit/e37cc284a20bb31a929e0c1f41fd6faf26adffd0))
+* **phase-1:** Complete AR Nail Lab POC Vertical Slice & Zero-Egress Audits ([72731d9](https://github.com/bmifsud/POC-ARTRIOUT/commit/72731d9b2d4898e93e5aa723cb8977c77053bca5))
+* **phase-1:** Complete AR Nail Lab POC Vertical Slice & Zero-Egress Audits ([359a8c1](https://github.com/bmifsud/POC-ARTRIOUT/commit/359a8c1eaa5951a9dab1c117bb1d33a679f30152))
+
+
+### Bug Fixes
+
+* **ci:** Add vite.config.ts for public entry root & enhance scene-based LightingEstimator ([dbab905](https://github.com/bmifsud/POC-ARTRIOUT/commit/dbab905bec4601e1c72d5aac999d140469066a63))
+* **lockfile:** Sync package-lock.json with workspaces and dependencies ([ce9b079](https://github.com/bmifsud/POC-ARTRIOUT/commit/ce9b079c6793edacae0bc5a8a699c948b13dccf9))
+* **review:** Resolve PR [#35](https://github.com/bmifsud/POC-ARTRIOUT/issues/35) review findings and bot feedback ([58bbf83](https://github.com/bmifsud/POC-ARTRIOUT/commit/58bbf83984684c70949ef3fe8d605e0c7f7652e1))
+
 ## 1.0.0 (2026-10-06)
 
 
