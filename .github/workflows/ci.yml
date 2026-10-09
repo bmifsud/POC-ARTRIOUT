@@ -1,4 +1,4 @@
-name: Continuous Integration
+﻿name: AR Trion CI/CD Pipeline
 
 on:
   push:
@@ -6,31 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   quality-assurance:
     name: Validate BIPA Compliance & Performance
     runs-on: ubuntu-latest
 
     steps:
-      - name: Harden Runner Environment
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-        with:
-          egress-policy: audit
-
       - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
+        uses: actions/checkout@v4
 
       - name: Set up Node.js Environment
-        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -39,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers & System Dependencies
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       - name: Execute Unit Tests (Matrix Transformations)
         run: npm run test:unit --if-present
@@ -51,7 +37,3 @@ jobs:
         run: npm run test:audit
         env:
           CI: true
-
-      - name: Upload Test Coverage
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
-        if: always()

@@ -4,13 +4,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
-permissions:
-  contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   auto-label:
     runs-on: ubuntu-latest
@@ -19,10 +12,14 @@ jobs:
       contents: read
 
     steps:
-    - name: Harden Runner Environment
-      uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Label based on files changed
+      uses: actions/labeler@v5
       with:
-        egress-policy: audit
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/labeler.yml
 
   auto-assign-reviewers:
     runs-on: ubuntu-latest
@@ -80,13 +77,19 @@ jobs:
   conflict-check:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
       issues: write
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Check for merge conflicts
       uses: eps1lon/actions-label-merge-conflict@v3
+      continue-on-error: true
       with:
-        persist-credentials: false
+        dirtyLabel: 'merge-conflict'
+        repoToken: ${{ secrets.GITHUB_TOKEN }}
 
   link-issue:
     runs-on: ubuntu-latest
@@ -100,4 +103,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        message: 'Please link an issue to this PR using keywords like "closes #123" or "fixes #123"'
