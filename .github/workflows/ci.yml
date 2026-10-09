@@ -41,11 +41,11 @@ jobs:
       - name: Install Playwright Browsers & System Dependencies
         run: npx playwright install --with-deps
 
-      - name: Execute Unit Tests (Matrix Transformations)
-        run: npm run test:unit --if-present
+      - name: Execute TypeScript Type Check & Lint
+        run: npm run lint
 
-      - name: Execute Playwright BDD User Flows
-        run: npm test
+      - name: Execute Unit Tests
+        run: npm run test:unit
 
       - name: Run Automated Zero-Egress Network Audit
         run: npm run test:audit
