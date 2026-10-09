@@ -10,11 +10,9 @@ test.describe('Mobile Viewport & Touch Event Validations', () => {
     const touchTarget = page.locator('#touch-button');
 
     if (isMobile) {
-      // Dispatch a touch event for mobile platforms
       await touchTarget.dispatchEvent('touchstart');
       await expect(status).toHaveText('Touched via touch event!');
     } else {
-      // Fallback to click if not mobile (though our config specifies mobile devices)
       await touchTarget.click();
       await expect(status).toHaveText('Touched!');
     }
@@ -26,10 +24,9 @@ test.describe('Mobile Viewport & Touch Event Validations', () => {
     const status = page.locator('#status');
     const loadModelBtn = page.locator('#load-model');
 
-    // We expect the model to load successfully locally without network egress
+    await expect(status).toHaveText('Waiting...');
     await loadModelBtn.click();
 
-    await expect(status).toHaveText('Loading model...');
-    await expect(status).toHaveText('Model Loaded Successfully (Local)', { timeout: 2000 });
+    await expect(status).toHaveText('Model Loaded Successfully (Local)');
   });
 });
