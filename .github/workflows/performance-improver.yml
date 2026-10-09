@@ -17,8 +17,10 @@ jobs:
   optimize-performance:
     name: Optimize Performance Bottleneck
     if: >
-      github.event.label.name == 'performance' ||
-      github.event.label.name == 'jules:opt'
+      github.actor != 'google-labs-jules[bot]' &&
+      github.actor != 'google-labs-jules' &&
+      github.actor != 'github-actions[bot]' &&
+      (github.event.label.name == 'performance' || github.event.label.name == 'jules:opt')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -48,7 +50,7 @@ jobs:
             ${{ github.event.issue.body || github.event.pull_request.body }}
 
             Tasks:
-            1. Analyze flagged performance bottlenecks (e.g. WebGPU pipeline efficiency, memory allocation, matrix operations, or ML inference runtime).
-            2. Implement non-breaking optimizations while strictly adhering to BIPA zero-retention compliance and zero-egress policies.
+            1. Analyze flagged performance bottlenecks (e.g. WebGPU pipeline efficiency, sub-16 ms rendering frame budgets, memory allocation, matrix operations, or ML inference runtime).
+            2. Implement non-breaking optimizations while strictly adhering to BIPA zero-retention compliance and zero-egress policies as defined in AR trion.
             3. Benchmark and verify that unit tests, Playwright tests, and zero-egress audits pass cleanly.
             4. Submit a pull request or commit updates detailing performance gains.
