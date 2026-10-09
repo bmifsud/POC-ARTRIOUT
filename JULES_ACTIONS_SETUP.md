@@ -35,27 +35,27 @@ The following workflows are configured under `.github/workflows/`:
 
 ### 1. Bug Fixer (`.github/workflows/bug-fixer.yml`)
 * **Trigger**: `issues` (`opened`, `labeled` with `bug` or `jules:fix`).
-* **Action**: `google-labs-code/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Automatically analyzes reported bugs, reproduces issues in tests, applies minimal fixes, and submits a pull request.
 
 ### 2. CI Failure Remediation (`.github/workflows/ci-failure-fix.yml` & `.github/workflows/jules-ci-healing.yml`)
 * **Trigger**: `workflow_run` completion on failure of core Continuous Integration.
-* **Action**: `google-labs-code/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Analyzes failing build/test logs, reproduces failures, applies minimal remediation, and opens a fix pull request.
 
 ### 3. Performance Improver (`.github/workflows/performance-improver.yml`)
 * **Trigger**: `issues` or `pull_request` labeled with `performance` or `jules:opt`.
-* **Action**: `google-labs-code/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Identifies and optimizes performance bottlenecks in WebGPU rendering, memory allocation, or ML inference loops without compromising BIPA zero-retention compliance.
 
 ### 4. Unblocked Issues Resolver (`.github/workflows/unblocked-issues.yml`)
 * **Trigger**: `issues` (`unlabeled` when `blocked` label is removed).
-* **Action**: `google-labs-code/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Resumes work on unblocked tasks, implements required logic, and submits a pull request once tests pass.
 
 ### 5. Weekly Codebase Cleanup (`.github/workflows/weekly-cleanup.yml`)
 * **Trigger**: `schedule` (Weekly on Sunday at midnight `0 0 * * 0`) or `workflow_dispatch`.
-* **Action**: `google-labs-code/jules-action@v1`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Conducts routine dead code removal, lint/formatting cleanup, and dependency health checks.
 
 ---

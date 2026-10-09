@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
 
       - name: Invoke Jules Weekly Cleanup
-        uses: google-labs-code/jules-action@v1
+        uses: google-labs-code/jules-action@v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
