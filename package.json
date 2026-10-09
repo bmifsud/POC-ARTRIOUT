@@ -2,10 +2,6 @@
   "name": "ar-trion",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "test": "tsx --test tests/*.test.js tests/unit/*.test.ts tests/unit/*.spec.ts",
     "test:unit": "tsx --test tests/unit/*.test.ts tests/unit/*.spec.ts",

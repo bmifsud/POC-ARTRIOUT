@@ -1,9 +1,9 @@
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { transformMatrix, validateData } from '../../src/matrix.ts';
+import test from 'node:test';
+import { transformMatrix, validateData } from '../../src/matrix';
 
-describe('Matrix Transformations and Data Validation', () => {
-  it('should correctly transform a basic matrix', () => {
+test('Matrix Transformations and Data Validation', async (suite) => {
+  await suite.test('should correctly transform a basic matrix', () => {
     const input = [
       [1, 2],
       [3, 4]
@@ -13,16 +13,16 @@ describe('Matrix Transformations and Data Validation', () => {
       [1, 3],
       [2, 4]
     ];
-    assert.deepStrictEqual(transformMatrix(input), expected);
+    assert.deepEqual(transformMatrix(input), expected);
   });
 
-  it('should validate valid biometric payload mock data', () => {
+  await suite.test('should validate valid biometric payload mock data', () => {
     const validData = { id: '123', frames: [], type: 'biometric' };
-    assert.strictEqual(validateData(validData), true);
+    assert.equal(validateData(validData), true);
   });
 
-  it('should reject invalid data', () => {
+  await suite.test('should reject invalid data', () => {
     const invalidData = { id: '123' }; // missing required fields
-    assert.strictEqual(validateData(invalidData), false);
+    assert.equal(validateData(invalidData), false);
   });
 });

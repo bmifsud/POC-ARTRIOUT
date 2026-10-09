@@ -1,9 +1,8 @@
-import { ClickwrapConsentModal, MemoryConsentStore, createProtectedCameraStream } from "@ar-trion/compliance";
-import { LocalInferenceRuntime } from "@ar-trion/perception";
-import { WebGPUCapabilityDetector } from "@ar-trion/rendering";
+import { ClickwrapConsentModal, MemoryConsentStore, createProtectedCameraStream } from "../../../packages/compliance/src/index.ts";
+import { LocalInferenceRuntime } from "../../../packages/perception/src/index.ts";
+import { WebGPUCapabilityDetector } from "../../../packages/rendering/src/index.ts";
 
 export async function bootstrapApp(container: HTMLElement): Promise<void> {
-  // Step 1: Detect WebGPU support and explicitly reject WebGL
   const gpuSupported = await WebGPUCapabilityDetector.checkSupport();
   if (!gpuSupported.supported) {
     container.replaceChildren();
@@ -14,10 +13,8 @@ export async function bootstrapApp(container: HTMLElement): Promise<void> {
     return;
   }
 
-  // Step 2: Instantiate ConsentStore for BIPA compliance auditing
   const store = new MemoryConsentStore();
 
-  // Step 3: Render BIPA Consent Modal
   const modal = new ClickwrapConsentModal({
     store,
     onConsentGranted: async (record) => {

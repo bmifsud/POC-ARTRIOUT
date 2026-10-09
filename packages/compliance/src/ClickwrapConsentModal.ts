@@ -38,72 +38,103 @@ export class ClickwrapConsentModal {
 
     const card = document.createElement("div");
     card.className = "bipa-consent-card";
-    card.style.cssText = "background:#121316; color:#f0f2f5; padding:24px; border-radius:12px; max-width:540px; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.5);";
+    card.style.background = "#121316";
+    card.style.color = "#f0f2f5";
+    card.style.padding = "24px";
+    card.style.borderRadius = "12px";
+    card.style.maxWidth = "540px";
+    card.style.fontFamily = "sans-serif";
+    card.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
 
     const title = document.createElement("h2");
     title.id = "bipa-consent-title";
-    title.style.cssText = "margin-top:0; font-size:1.4rem; color:#fff;";
+    title.style.marginTop = "0";
+    title.style.fontSize = "1.4rem";
+    title.style.color = "#fff";
     title.textContent = "Biometric Information Privacy Act (BIPA) Notice & Consent";
 
-    const description = document.createElement("div");
-    description.id = "bipa-consent-description";
-    description.style.cssText = "font-size:0.92rem; line-height:1.5; color:#c4cad4;";
+    const desc = document.createElement("div");
+    desc.id = "bipa-consent-description";
+    desc.style.fontSize = "0.92rem";
+    desc.style.lineHeight = "1.5";
+    desc.style.color = "#c4cad4";
 
-    const pIntro = document.createElement("p");
-    pIntro.textContent = "Before initializing hand-tracking and camera features, please review our biometric privacy disclosure:";
+    const p1 = document.createElement("p");
+    p1.textContent = "Before initializing hand-tracking and camera features, please review our biometric privacy disclosure:";
+    desc.appendChild(p1);
 
     const ul = document.createElement("ul");
-    ul.style.cssText = "padding-left:20px; margin-bottom:16px;";
-
-    const bulletItems = [
-      { label: "Biometric Data: ", text: "Hand landmark geometry and palm tracking are processed in real-time." },
-      { label: "Edge-Only Processing: ", text: "All inference runs strictly on-device in browser volatile memory (RAM)." },
-      { label: "Zero Network Egress: ", text: "Biometric data, camera frames, and landmarks are never transmitted to external servers or stored permanently." },
-      { label: "Instant Ephemeral Destruction: ", text: "Volatile buffers are zeroed out after every frame cycle." },
-      { label: "BIPA Rights: ", text: "You may withdraw your consent at any time, immediately releasing camera hardware." }
+    ul.style.paddingLeft = "20px";
+    ul.style.marginBottom = "16px";
+    const items = [
+      "Biometric Data: Hand landmark geometry and palm tracking are processed in real-time.",
+      "Edge-Only Processing: All inference runs strictly on-device in browser volatile memory (RAM).",
+      "Zero Network Egress: Biometric data, camera frames, and landmarks are never transmitted to external servers or stored permanently.",
+      "Instant Ephemeral Destruction: Volatile buffers are zeroed out after every frame cycle.",
+      "BIPA Rights: You may withdraw your consent at any time, immediately releasing camera hardware."
     ];
-
-    for (const item of bulletItems) {
+    for (const item of items) {
       const li = document.createElement("li");
-      const strong = document.createElement("strong");
-      strong.textContent = item.label;
-      li.appendChild(strong);
-      li.appendChild(document.createTextNode(item.text));
+      li.textContent = item;
       ul.appendChild(li);
     }
+    desc.appendChild(ul);
 
-    const pPolicy = document.createElement("p");
-    pPolicy.style.cssText = "font-size:0.8rem; color:#8c93a0;";
-    pPolicy.textContent = `Policy Version: ${POLICY_VERSION} | Contact: privacy@ar-trion.internal`;
-
-    description.appendChild(pIntro);
-    description.appendChild(ul);
-    description.appendChild(pPolicy);
+    const p2 = document.createElement("p");
+    p2.style.fontSize = "0.8rem";
+    p2.style.color = "#8c93a0";
+    p2.textContent = `Policy Version: ${POLICY_VERSION} | Contact: privacy@ar-trion.internal`;
+    desc.appendChild(p2);
 
     const errorContainer = document.createElement("div");
     errorContainer.id = "bipa-consent-error";
-    errorContainer.style.cssText = "display:none; color:#ef4444; font-size:0.85rem; margin-top:10px; font-weight:600;";
+    errorContainer.style.display = "none";
+    errorContainer.style.color = "#ef4444";
+    errorContainer.style.fontSize = "0.85rem";
+    errorContainer.style.marginTop = "10px";
+    errorContainer.style.fontWeight = "600";
 
     const actions = document.createElement("div");
     actions.className = "bipa-consent-actions";
-    actions.style.cssText = "display:flex; justify-content:flex-end; gap:12px; margin-top:20px;";
+    actions.style.display = "flex";
+    actions.style.justifyContent = "flex-end";
+    actions.style.gap = "12px";
+    actions.style.marginTop = "20px";
 
     const declineBtn = document.createElement("button");
     declineBtn.id = "bipa-btn-decline";
     declineBtn.type = "button";
-    declineBtn.style.cssText = "padding:10px 18px; border:1px solid #4a5160; background:transparent; color:#e0e4eb; border-radius:6px; cursor:pointer; font-weight:600;";
+    declineBtn.style.padding = "10px 18px";
+    declineBtn.style.border = "1px solid #4a5160";
+    declineBtn.style.background = "transparent";
+    declineBtn.style.color = "#e0e4eb";
+    declineBtn.style.borderRadius = "6px";
+    declineBtn.style.cursor = "pointer";
+    declineBtn.style.fontWeight = "600";
     declineBtn.textContent = "Do not enable";
 
     const revokeBtn = document.createElement("button");
     revokeBtn.id = "bipa-btn-revoke";
     revokeBtn.type = "button";
-    revokeBtn.style.cssText = "padding:10px 18px; border:1px solid #ef4444; background:transparent; color:#ef4444; border-radius:6px; cursor:pointer; font-weight:600;";
+    revokeBtn.style.padding = "10px 18px";
+    revokeBtn.style.border = "1px solid #ef4444";
+    revokeBtn.style.background = "transparent";
+    revokeBtn.style.color = "#ef4444";
+    revokeBtn.style.borderRadius = "6px";
+    revokeBtn.style.cursor = "pointer";
+    revokeBtn.style.fontWeight = "600";
     revokeBtn.textContent = "Revoke consent";
 
     const acceptBtn = document.createElement("button");
     acceptBtn.id = "bipa-btn-accept";
     acceptBtn.type = "button";
-    acceptBtn.style.cssText = "padding:10px 18px; border:none; background:#2563eb; color:#fff; border-radius:6px; cursor:pointer; font-weight:600;";
+    acceptBtn.style.padding = "10px 18px";
+    acceptBtn.style.border = "none";
+    acceptBtn.style.background = "#2563eb";
+    acceptBtn.style.color = "#fff";
+    acceptBtn.style.borderRadius = "6px";
+    acceptBtn.style.cursor = "pointer";
+    acceptBtn.style.fontWeight = "600";
     acceptBtn.textContent = "Enable camera";
 
     acceptBtn.addEventListener("click", async () => {
@@ -143,7 +174,7 @@ export class ClickwrapConsentModal {
     actions.appendChild(acceptBtn);
 
     card.appendChild(title);
-    card.appendChild(description);
+    card.appendChild(desc);
     card.appendChild(errorContainer);
     card.appendChild(actions);
 
