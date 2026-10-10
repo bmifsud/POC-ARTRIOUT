@@ -46,9 +46,13 @@ test.describe('Matrix Transformations and Data Validation', () => {
     const a = new Float32Array(16).fill(1.5);
     const b = new Float32Array(16).fill(2.5);
 
-    // Warm up
-    for (let i = 0; i < 1000; i++) {
+    // Warm up V8 JIT compiler to inline multiply and stabilize execution profile
+    for (let i = 0; i < 50000; i++) {
       multiply(out, a, b);
+    }
+
+    if (typeof global.gc === 'function') {
+      global.gc();
     }
 
     const memStart = process.memoryUsage().heapUsed;
@@ -57,7 +61,10 @@ test.describe('Matrix Transformations and Data Validation', () => {
     }
     const memEnd = process.memoryUsage().heapUsed;
 
-    expect(memEnd - memStart).toBeLessThanOrEqual(512 * 1024);
+    const memDelta = memEnd - memStart;
+
+    // Verify in-place zero-allocation arithmetic
+    expect(memDelta).toBeLessThanOrEqual(512 * 1024);
   });
 
   test('should validate valid biometric payload mock data', () => {
