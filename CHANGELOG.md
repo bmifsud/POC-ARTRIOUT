@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.2.0...v1.2.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **ci:** pin jules action tag to v1.0.0 ([815dddb](https://github.com/bmifsud/POC-ARTRIOUT/commit/815dddbae48c4c5cce57a82146cee5c7de2b18ff))
+* **ci:** update jules github action repository reference ([6ed8dbe](https://github.com/bmifsud/POC-ARTRIOUT/commit/6ed8dbe19e78baff38fb85e357907b13763576f4))
+
 ## [1.2.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.1.0...v1.2.0) (2026-10-09)
 
 
