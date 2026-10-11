@@ -74,6 +74,9 @@ export class CameraOverlay {
     if (this.ctx) {
       this.ctx.scale(dpr, dpr);
     }
+
+    // Re-draw guide UI after canvas resize clears context pixels
+    this.drawGuideUI();
   }
 
   public drawGuideUI(): void {

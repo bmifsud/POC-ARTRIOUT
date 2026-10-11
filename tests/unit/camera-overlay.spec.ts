@@ -1,46 +1,30 @@
 import { test, expect } from '@playwright/test';
+import { MemorySanitizer, EphemeralFrameData } from '../../packages/compliance/src/MemorySanitizer';
 
 test.describe('CameraOverlay & Memory Hygiene Integration', () => {
-  test('should create overlay canvas and purge frame memory in browser context', async ({ page }) => {
+  test('should verify MemorySanitizer.purgeFrame scrubs raw pixels and landmark coordinates', async () => {
+    // Create real raw pixel buffer and biometric landmarks
+    const rawPixels = new Uint8ClampedArray([255, 128, 64, 255]);
+    const landmarks = [new Float32Array([0.5, 0.5, 0.5])];
+    const frameData: EphemeralFrameData = {
+      source: 'camera',
+      data: rawPixels,
+      landmarks: landmarks
+    };
+
+    // Purge frame buffers in volatile RAM
+    MemorySanitizer.purgeFrame(frameData);
+
+    expect(rawPixels[0]).toBe(0);
+    expect(rawPixels[1]).toBe(0);
+    expect(landmarks.length).toBe(0);
+  });
+
+  test('should verify widget canvas rendering in browser DOM', async ({ page }) => {
     await page.goto('http://localhost:3000');
 
-    const result = await page.evaluate(async () => {
-      // Dynamically test CameraOverlay and MemorySanitizer in page context
-      const container = document.createElement('div');
-      container.id = 'test-camera-container';
-      container.style.width = '800px';
-      container.style.height = '600px';
-      document.body.appendChild(container);
-
-      const canvas = document.createElement('canvas');
-      canvas.className = 'ar-trion-camera-overlay-canvas';
-      container.appendChild(canvas);
-
-      // Verify canvas attachment
-      const hasCanvas = container.querySelector('canvas') !== null;
-
-      // Simulate raw frame data scrubbing with MemorySanitizer
-      const rawPixels = new Uint8ClampedArray([255, 255, 255, 255]);
-      const landmarks = [new Float32Array([0.5, 0.5, 0.5])];
-
-      // Manual purge check simulating MemorySanitizer.purgeFrame
-      rawPixels.fill(0);
-      landmarks[0].fill(0);
-
-      const pixelsPurged = rawPixels.every(v => v === 0);
-      const landmarksPurged = landmarks[0].every(v => v === 0);
-
-      document.body.removeChild(container);
-
-      return {
-        hasCanvas,
-        pixelsPurged,
-        landmarksPurged
-      };
-    });
-
-    expect(result.hasCanvas).toBe(true);
-    expect(result.pixelsPurged).toBe(true);
-    expect(result.landmarksPurged).toBe(true);
+    // Check widget root container existence
+    const widgetRoot = page.locator('#ar-trion-widget-root');
+    await expect(widgetRoot).toBeVisible();
   });
 });
