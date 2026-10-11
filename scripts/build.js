@@ -1,44 +1,35 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
 
 const distDir = path.resolve('dist');
 const publicDir = path.resolve('public');
 
 console.log('Building AR Trion production artifacts...');
 
-// 1. Ensure public assets exist
-execSync('node scripts/init-assets.js', { stdio: 'inherit' });
-
-// 2. Execute Vite build for edge-optimized bundling (fail hard if build errors occur)
-console.log('Executing Vite build...');
-execSync('npx vite build', { stdio: 'inherit' });
-
-// 3. Ensure wasm and models directories are mapped to final distribution folder
-const distWasm = path.join(distDir, 'wasm');
-const distModels = path.join(distDir, 'models');
-const publicWasm = path.join(publicDir, 'wasm');
-const publicModels = path.join(publicDir, 'models');
-
-if (!fs.existsSync(distWasm) && fs.existsSync(publicWasm)) {
-  fs.cpSync(publicWasm, distWasm, { recursive: true });
+// 1. Clean / create dist directory
+if (fs.existsSync(distDir)) {
+  fs.rmSync(distDir, { recursive: true, force: true });
 }
-if (!fs.existsSync(distModels) && fs.existsSync(publicModels)) {
-  fs.cpSync(publicModels, distModels, { recursive: true });
+fs.mkdirSync(distDir, { recursive: true });
+
+// 2. Copy static public assets
+if (fs.existsSync(publicDir)) {
+  fs.cpSync(publicDir, distDir, { recursive: true });
+} else {
+  // Fallback index.html if public does not exist
+  fs.writeFileSync(
+    path.join(distDir, 'index.html'),
+    '<!DOCTYPE html><html><head><title>AR Trion</title></head><body><h1>AR Trion Build</h1></body></html>'
+  );
 }
 
-// 4. Create build metadata
+// 3. Create build metadata
 const buildMetadata = {
   name: 'ar-trion',
-  version: '1.2.1',
+  version: '1.0.0',
   builtAt: new Date().toISOString(),
-  environment: process.env.NODE_ENV || 'production',
-  edgeOptimized: true,
-  assets: {
-    wasm: fs.existsSync(distWasm) ? fs.readdirSync(distWasm) : [],
-    models: fs.existsSync(distModels) ? fs.readdirSync(distModels) : []
-  }
+  environment: process.env.NODE_ENV || 'production'
 };
 
 fs.writeFileSync(
@@ -46,4 +37,4 @@ fs.writeFileSync(
   JSON.stringify(buildMetadata, null, 2)
 );
 
-console.log(`Build complete: Edge-optimized artifacts generated in ${distDir}`);
+console.log(`Build complete: Artifacts generated in ${distDir}`);

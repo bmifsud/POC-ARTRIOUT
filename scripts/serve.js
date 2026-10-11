@@ -4,20 +4,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-const ROOT_DIR = path.resolve('.');
 const PUBLIC_DIR = path.resolve('public');
-const DIST_DIR = path.resolve('dist');
 
 const MIME_TYPES = {
   '.html': 'text/html',
   '.js': 'text/javascript',
-  '.ts': 'text/javascript',
   '.css': 'text/css',
   '.json': 'application/json',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
-  '.wasm': 'application/wasm',
-  '.glb': 'model/gltf-binary'
+  '.wasm': 'application/wasm'
 };
 
 const server = http.createServer((req, res) => {
@@ -25,14 +21,7 @@ const server = http.createServer((req, res) => {
   if (reqPath === '/') reqPath = '/index.html';
 
   const safePath = path.normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
-
-  let filePath = path.join(PUBLIC_DIR, safePath);
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(DIST_DIR, safePath);
-  }
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(ROOT_DIR, safePath);
-  }
+  const filePath = path.join(PUBLIC_DIR, safePath);
 
   fs.readFile(filePath, (err, data) => {
     if (err) {

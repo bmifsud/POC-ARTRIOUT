@@ -1,42 +1,9 @@
 import { defineConfig } from 'vite';
-import path from 'node:path';
 
 export default defineConfig({
   root: 'public',
-  publicDir: path.resolve(__dirname, 'public'),
-  resolve: {
-    alias: {
-      '@ar-trion/compliance': path.resolve(__dirname, 'packages/compliance/src/index.ts'),
-      '@ar-trion/perception': path.resolve(__dirname, 'packages/perception/src/index.ts'),
-      '@ar-trion/rendering': path.resolve(__dirname, 'packages/rendering/src/index.ts'),
-      '@ar-trion/storefront-widget': path.resolve(__dirname, 'apps/storefront-widget/src/index.ts')
-    }
-  },
-  assetsInclude: ['**/*.wasm', '**/*.glb', '**/*.gltf'],
   build: {
-    outDir: path.resolve(__dirname, 'dist'),
+    outDir: '../dist',
     emptyOutDir: true,
-    target: 'es2022',
-    minify: 'esbuild',
-    assetsInlineLimit: 0, // Ensure WASM and GLB binaries are emitted as distinct static files for edge CDN caching
-    rollupOptions: {
-      output: {
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith('.wasm')) {
-            return 'wasm/[name][extname]';
-          }
-          if (assetInfo.name && (assetInfo.name.endsWith('.glb') || assetInfo.name.endsWith('.gltf'))) {
-            return 'models/[name][extname]';
-          }
-          return 'assets/[name]-[hash][extname]';
-        }
-      }
-    }
   },
-  server: {
-    headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp'
-    }
-  }
 });

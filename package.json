@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "tsc -b && vite build",
     "lint": "tsc --noEmit",
     "test:unit": "playwright test tests/unit",
     "test:audit": "playwright test tests/network-audits/zero-egress.spec.ts",
