@@ -1,8 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { multiply, transformMatrix, validateData } from '../../src/matrix';
 
-test.describe('Matrix Transformations and Data Validation', () => {
-  test('should correctly transform a basic matrix', () => {
+describe('Matrix Transformations and Data Validation', () => {
+  it('should correctly transform a basic matrix', () => {
     const input = [
       [1, 2],
       [3, 4]
@@ -12,10 +13,10 @@ test.describe('Matrix Transformations and Data Validation', () => {
       [1, 3],
       [2, 4]
     ];
-    expect(transformMatrix(input)).toEqual(expected);
+    assert.deepStrictEqual(transformMatrix(input), expected);
   });
 
-  test('should perform in-place matrix multiplication correctly', () => {
+  it('should perform in-place matrix multiplication correctly', () => {
     const out = new Float32Array(16);
     const a = new Float32Array([
       1, 0, 0, 0,
@@ -32,16 +33,16 @@ test.describe('Matrix Transformations and Data Validation', () => {
 
     multiply(out, a, b);
 
-    expect(out[0]).toBe(2);
-    expect(out[5]).toBe(2);
-    expect(out[10]).toBe(2);
-    expect(out[12]).toBe(2);
-    expect(out[13]).toBe(3);
-    expect(out[14]).toBe(4);
-    expect(out[15]).toBe(1);
+    assert.strictEqual(out[0], 2);
+    assert.strictEqual(out[5], 2);
+    assert.strictEqual(out[10], 2);
+    assert.strictEqual(out[12], 2);
+    assert.strictEqual(out[13], 3);
+    assert.strictEqual(out[14], 4);
+    assert.strictEqual(out[15], 1);
   });
 
-  test('should validate zero additional heap allocations during 10,000 matrix multiplications', () => {
+  it('should validate zero additional heap allocations during 10,000 matrix multiplications', () => {
     const out = new Float32Array(16);
     const a = new Float32Array(16).fill(1.5);
     const b = new Float32Array(16).fill(2.5);
@@ -64,16 +65,16 @@ test.describe('Matrix Transformations and Data Validation', () => {
     const memDelta = memEnd - memStart;
 
     // Verify in-place zero-allocation arithmetic
-    expect(memDelta).toBeLessThanOrEqual(512 * 1024);
+    assert.ok(memDelta <= 512 * 1024);
   });
 
-  test('should validate valid biometric payload mock data', () => {
+  it('should validate valid biometric payload mock data', () => {
     const validData = { id: '123', frames: [], type: 'biometric' };
-    expect(validateData(validData)).toBe(true);
+    assert.strictEqual(validateData(validData), true);
   });
 
-  test('should reject invalid data', () => {
+  it('should reject invalid data', () => {
     const invalidData = { id: '123' }; // missing required fields
-    expect(validateData(invalidData)).toBe(false);
+    assert.strictEqual(validateData(invalidData), false);
   });
 });
