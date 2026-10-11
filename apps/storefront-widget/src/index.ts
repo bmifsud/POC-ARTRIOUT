@@ -114,7 +114,7 @@ export class StorefrontWidget {
       // Initialize local edge ML perception & WebGPU rendering pipeline
       this.handTracker = new HandTracker();
       this.nailExtractor = new NailExtractor();
-      await this.handTracker.initialize();
+      await this.handTracker.initialize({ wasmPath: "/wasm", modelAssetPath: "/models/hand_landmarker.task" });
 
       this.renderer = new WebGPURenderer(this.overlay.getCanvas());
       await this.renderer.initialize();
