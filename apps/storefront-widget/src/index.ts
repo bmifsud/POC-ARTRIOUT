@@ -8,6 +8,7 @@ import {
   EphemeralFrameData
 } from '@ar-trion/compliance';
 import { HandTracker, NailExtractor, Point3D } from '@ar-trion/perception';
+import { WebGPURenderer, NailMaterialCatalog, RenderTransform } from '@ar-trion/rendering';
 import { CameraOverlay } from './CameraOverlay';
 
 export class MemoryConsentStore implements ConsentStore {
@@ -31,6 +32,7 @@ export class StorefrontWidget {
   private videoElement: HTMLVideoElement | null = null;
   private handTracker: HandTracker | null = null;
   private nailExtractor: NailExtractor | null = null;
+  private renderer: WebGPURenderer | null = null;
 
   private currentSessionId: number = 0;
   private isStopped: boolean = true;
@@ -109,10 +111,13 @@ export class StorefrontWidget {
       this.overlay = new CameraOverlay({ container: this.container });
       this.overlay.drawGuideUI();
 
-      // Initialize local edge ML perception pipeline
+      // Initialize local edge ML perception & WebGPU rendering pipeline
       this.handTracker = new HandTracker();
       this.nailExtractor = new NailExtractor();
       await this.handTracker.initialize();
+
+      this.renderer = new WebGPURenderer(this.overlay.getCanvas());
+      await this.renderer.initialize();
 
       // Add camera stop/revoke button on active UI
       this.addStopButton();
@@ -143,7 +148,32 @@ export class StorefrontWidget {
           landmarks: rawLandmarks.map(p => new Float32Array([p.x, p.y, p.z]))
         };
 
-        // Redraw overlay guide with active nail beds
+        if (this.renderer && nailTransforms.length > 0) {
+          const activeMaterial = NailMaterialCatalog.highGlossCrimson;
+          const identity4x4 = new Float32Array([
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+          ]);
+
+          const renderTransforms: RenderTransform[] = nailTransforms.map(nail => ({
+            modelMatrix: new Float32Array([
+              nail.scale.x, 0, 0, 0,
+              0, nail.scale.y, 0, 0,
+              0, 0, nail.scale.z, 0,
+              nail.center.x, nail.center.y, nail.center.z, 1
+            ]),
+            viewProjectionMatrix: identity4x4,
+            normalMatrix: identity4x4,
+            lightDirection: [0.0, 1.0, 1.0, 1.0],
+            material: activeMaterial
+          }));
+
+          this.renderer.render(renderTransforms);
+        }
+
+        // Redraw overlay guide
         if (this.overlay) {
           this.overlay.clearFrame();
           this.overlay.drawGuideUI();
@@ -223,6 +253,7 @@ export class StorefrontWidget {
       this.handTracker = null;
     }
     this.nailExtractor = null;
+    this.renderer = null;
 
     (this.consent as any).consentGiven = false;
     MemorySanitizer.terminateSession();

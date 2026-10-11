@@ -236,7 +236,12 @@
             loadModelBtn.addEventListener('click', async () => {
                 statusEl.textContent = 'Loading model...';
                 try {
-                    await new Promise(r => setTimeout(r, 500));
+                    // Fetch local WASM model binary to verify genuine local asset procurement
+                    const response = await fetch('/wasm/mediapipe_hand_landmarker.wasm');
+                    if (!response.ok) {
+                      throw new Error('Local WASM model asset request failed');
+                    }
+                    await response.arrayBuffer();
                     statusEl.textContent = 'Model Loaded Successfully (Local)';
                 } catch (err) {
                     statusEl.textContent = 'Model Load Failed';
