@@ -21,8 +21,8 @@ export class HandTracker {
   public async initialize(options: HandTrackerOptions = {}): Promise<void> {
     this.isClosed = false;
 
-    const wasmLoaderPath = options.wasmPath || './assets/wasm';
-    const modelPath = options.modelAssetPath || './assets/models/hand_landmarker.task';
+    const wasmLoaderPath = options.wasmPath || '/wasm';
+    const modelPath = options.modelAssetPath || '/models/hand_landmarker.task';
 
     if (wasmLoaderPath.startsWith('http://') || wasmLoaderPath.startsWith('https://')) {
       throw new Error(`Zero-Egress Violation: Remote Wasm URL "${wasmLoaderPath}" rejected. Must use local offline bundled path.`);
