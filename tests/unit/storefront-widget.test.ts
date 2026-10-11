@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { generateSalonRecipeMarkdown, generateStyleDefinitionJson } from '../../apps/storefront-widget/src/utils/recipeGenerator';
+import { extractPaletteFromImage } from '../../apps/storefront-widget/src/utils/paletteExtractor';
 
-test.describe('Storefront Widget Recipe Generator Tests', () => {
+test.describe('Storefront Widget Recipe Generator Unit Tests', () => {
   const sampleConfig = {
     designName: 'Velvet Crimson Chrome',
     shape: 'Stiletto' as const,
@@ -35,5 +36,29 @@ test.describe('Storefront Widget Recipe Generator Tests', () => {
     expect(parsed.palette).toEqual(['#C8102E', '#1A1A1A', '#E5C158']);
     expect(parsed.artistHandle).toBe('ElenaNails');
     expect(parsed.exportedAt).toBeDefined();
+  });
+
+  test('should handle missing artist handle gracefully in recipe markdown and JSON', () => {
+    const configNoHandle = {
+      ...sampleConfig,
+      artistHandle: undefined
+    };
+
+    const md = generateSalonRecipeMarkdown(configNoHandle);
+    expect(md).toContain('**Artist / Co-Designer:** @NailLabArtist');
+
+    const json = JSON.parse(generateStyleDefinitionJson(configNoHandle));
+    expect(json.artistHandle).toBe('NailLabArtist');
+  });
+});
+
+test.describe('Storefront Widget Palette Extractor Unit Tests', () => {
+  test('should reject mood board files exceeding max permitted size (40 MB)', async () => {
+    const oversizeFile = new File(['a'.repeat(1024 * 1024)], 'giant-moodboard.png', { type: 'image/png' });
+    Object.defineProperty(oversizeFile, 'size', { value: 45 * 1024 * 1024 });
+
+    await expect(extractPaletteFromImage(oversizeFile, 40)).rejects.toThrow(
+      'File size exceeds maximum permitted limit of 40 MB'
+    );
   });
 });
