@@ -185,7 +185,7 @@
 <body>
     <header>
         <div class="logo">AR Trion Studio</div>
-        <div class="badge">100% On-Device WebGPU &amp; BIPA Protected</div>
+        <div class="badge">100% On-Device WebGPU & BIPA Protected</div>
     </header>
 
     <main>
@@ -213,8 +213,10 @@
         </div>
     </main>
 
-    <script type="module" src="/storefront-widget.js" data-nail-lab-widget data-container-id="ar-trion-widget-root" data-shop-type="shopify"></script>
+    <!-- Import Storefront Widget Embed Script -->
+    <script type="module" src="/storefront-widget.js"></script>
 
+    <!-- Playwright & Interactive Test Hooks -->
     <script>
         const touchBtn = document.getElementById('touch-button');
         const statusEl = document.getElementById('status');
@@ -234,6 +236,7 @@
             loadModelBtn.addEventListener('click', async () => {
                 statusEl.textContent = 'Loading model...';
                 try {
+                    // Genuine fetch check verifying presence and local accessibility of edge WASM model binary
                     const res = await fetch('/wasm/mediapipe_hand_landmarker.wasm');
                     if (res.status === 200 || res.ok) {
                       statusEl.textContent = 'Model Loaded Successfully (Local)';

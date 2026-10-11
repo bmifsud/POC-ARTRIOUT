@@ -1,52 +1,53 @@
-import { defineConfig } from 'vite';
-import path from 'node:path';
+import { defineConfig } from "vite";
+import path from "node:path";
 
 export default defineConfig({
-  root: 'public',
-  publicDir: path.resolve(__dirname, 'public'),
+  root: "public",
+  publicDir: path.resolve(__dirname, "public"),
   resolve: {
     alias: {
-      '@ar-trion/compliance': path.resolve(__dirname, 'packages/compliance/src/index.ts'),
-      '@ar-trion/perception': path.resolve(__dirname, 'packages/perception/src/index.ts'),
-      '@ar-trion/rendering': path.resolve(__dirname, 'packages/rendering/src/index.ts'),
-      '@ar-trion/storefront-widget': path.resolve(__dirname, 'apps/storefront-widget/src/index.ts')
+      "@ar-trion/compliance": path.resolve(__dirname, "packages/compliance/src/index.ts"),
+      "@ar-trion/perception": path.resolve(__dirname, "packages/perception/src/index.ts"),
+      "@ar-trion/rendering": path.resolve(__dirname, "packages/rendering/src/index.ts"),
+      "@ar-trion/storefront-widget": path.resolve(__dirname, "apps/storefront-widget/src/index.ts")
     }
   },
-  assetsInclude: ['**/*.wasm', '**/*.glb', '**/*.gltf'],
+  assetsInclude: ["**/*.wasm", "**/*.glb", "**/*.gltf"],
   build: {
-    outDir: path.resolve(__dirname, 'dist'),
+    outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
-    target: 'es2022',
-    minify: 'esbuild',
+    target: "es2022",
+    minify: "esbuild",
     assetsInlineLimit: 0,
     rollupOptions: {
+      external: ["/storefront-widget.js"],
       input: {
-        main: path.resolve(__dirname, 'public/index.html'),
-        'storefront-widget': path.resolve(__dirname, 'apps/storefront-widget/src/index.ts')
+        main: path.resolve(__dirname, "public/index.html"),
+        "storefront-widget": path.resolve(__dirname, "apps/storefront-widget/src/index.ts")
       },
       output: {
         entryFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'storefront-widget') {
-            return 'storefront-widget.js';
+          if (chunkInfo.name === "storefront-widget") {
+            return "storefront-widget.js";
           }
-          return 'assets/[name]-[hash].js';
+          return "assets/[name]-[hash].js";
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith('.wasm')) {
-            return 'wasm/[name][extname]';
+          if (assetInfo.name && assetInfo.name.endsWith(".wasm")) {
+            return "wasm/[name][extname]";
           }
-          if (assetInfo.name && (assetInfo.name.endsWith('.glb') || assetInfo.name.endsWith('.gltf'))) {
-            return 'models/[name][extname]';
+          if (assetInfo.name && (assetInfo.name.endsWith(".glb") || assetInfo.name.endsWith(".gltf"))) {
+            return "models/[name][extname]";
           }
-          return 'assets/[name]-[hash][extname]';
+          return "assets/[name]-[hash][extname]";
         }
       }
     }
   },
   server: {
     headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp'
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp"
     }
   }
 });

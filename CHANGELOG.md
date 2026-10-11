@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.2.1...v1.3.0) (2026-10-11)
+
+
+### Features
+
+* **hosting:** generate universal static landing page and edge build ([27e4aba](https://github.com/bmifsud/POC-ARTRIOUT/commit/27e4aba778aa28114227ae4f71db33baff7157f7))
+* **hosting:** generate universal static landing page and edge build ([87325d2](https://github.com/bmifsud/POC-ARTRIOUT/commit/87325d248cd582b7486bd5ddf0e45255e2a8da5e))
+* **hosting:** generate universal static landing page and edge build ([8ff5004](https://github.com/bmifsud/POC-ARTRIOUT/commit/8ff50040c5b86e92a4724bfa722e6ddc6eedcb06))
+* **hosting:** generate universal static landing page and edge build ([44907e2](https://github.com/bmifsud/POC-ARTRIOUT/commit/44907e2793a0fcc230623652c3f61624e152a778))
+* **hosting:** generate universal static landing page and edge build ([c137b4a](https://github.com/bmifsud/POC-ARTRIOUT/commit/c137b4a616f244617658dab394e1ad761fb133d7))
+* **hosting:** generate universal static landing page and edge build ([dd9eca7](https://github.com/bmifsud/POC-ARTRIOUT/commit/dd9eca7ca347736ced6353fd93bbda316d77a4a7))
+* **hosting:** generate universal static landing page and edge build ([7fdab40](https://github.com/bmifsud/POC-ARTRIOUT/commit/7fdab402815776822573efcad22cd1f95729bcc4))
+* **hosting:** generate universal static landing page and edge build ([f660675](https://github.com/bmifsud/POC-ARTRIOUT/commit/f660675799a8cb90b907a985773c7fd395193ab1))
+* **storefront-widget:** add Nail Lab AR Proof of Concept frontend widget ([fe47dd5](https://github.com/bmifsud/POC-ARTRIOUT/commit/fe47dd56d140203ef7ef08b980be68b86ed0e492))
+
+
+### Bug Fixes
+
+* **static-landing:** serve bundled widget entry in static path ([5f74ebb](https://github.com/bmifsud/POC-ARTRIOUT/commit/5f74ebb19cfabe18c383cbda09ca957664b903ef))
+* **static-landing:** serve bundled widget entry in static path ([3da7c5f](https://github.com/bmifsud/POC-ARTRIOUT/commit/3da7c5fff8f7f1823911f61afa1e32e0b6dd9266))
+* **static-landing:** serve bundled widget entry in static path ([cd9e0fe](https://github.com/bmifsud/POC-ARTRIOUT/commit/cd9e0fe779833515ba027d3dc7df0ad73c8e9418))
+* **static-landing:** serve bundled widget entry in static path ([ca95106](https://github.com/bmifsud/POC-ARTRIOUT/commit/ca95106e39dc750c755c5d87e4a8de85c1a9560f))
+
 ## [1.2.1](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.2.0...v1.2.1) (2026-10-09)
 
 
