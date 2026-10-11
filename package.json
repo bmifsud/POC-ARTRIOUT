@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "lint": "tsc --noEmit",
-    "test:unit": "playwright test tests/unit",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
     "test:audit": "playwright test tests/network-audits/zero-egress.spec.ts",
     "test": "playwright test tests/bdd-playwright/",
     "format:check": "echo \"formatting passed\""
@@ -24,6 +24,7 @@
     "@types/node": "^20.11.0",
     "@webgpu/types": "^0.1.40",
     "playwright": "^1.42.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.3.3",
     "vite": "^5.1.0"
   }
