@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nail Lab AR Proof of Concept - Storefront Embed</title>
+</head>
+<body style="margin: 0; background-color: #030712;">
+  <div id="nail-lab-ar-widget"></div>
+  <script type="module" src="/src/index.ts"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.NailLabWidget) {
+        window.NailLabWidget.init({ containerId: 'nail-lab-ar-widget', shopType: 'shopify' });
+      }
+    });
+  </script>
+</body>
+</html>
