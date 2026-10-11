@@ -18,9 +18,19 @@ export default defineConfig({
     emptyOutDir: true,
     target: 'es2022',
     minify: 'esbuild',
-    assetsInlineLimit: 0, // Ensure WASM and GLB binaries are emitted as distinct static files for edge CDN caching
+    assetsInlineLimit: 0,
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'public/index.html'),
+        'storefront-widget': path.resolve(__dirname, 'apps/storefront-widget/src/index.ts')
+      },
       output: {
+        entryFileNames: (chunkInfo) => {
+          if (chunkInfo.name === 'storefront-widget') {
+            return 'storefront-widget.js';
+          }
+          return 'assets/[name]-[hash].js';
+        },
         assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith('.wasm')) {
             return 'wasm/[name][extname]';

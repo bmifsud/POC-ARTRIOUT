@@ -40,7 +40,7 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: 'node scripts/serve.js',
+    command: 'npm run build && node scripts/serve.js',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },

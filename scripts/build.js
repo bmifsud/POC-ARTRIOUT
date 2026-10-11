@@ -8,14 +8,10 @@ const publicDir = path.resolve('public');
 
 console.log('Building AR Trion production artifacts...');
 
-// 1. Ensure public assets exist
 execSync('node scripts/init-assets.js', { stdio: 'inherit' });
-
-// 2. Execute Vite build for edge-optimized bundling (fail hard if build errors occur)
 console.log('Executing Vite build...');
 execSync('npx vite build', { stdio: 'inherit' });
 
-// 3. Ensure wasm and models directories are mapped to final distribution folder
 const distWasm = path.join(distDir, 'wasm');
 const distModels = path.join(distDir, 'models');
 const publicWasm = path.join(publicDir, 'wasm');
@@ -28,7 +24,6 @@ if (!fs.existsSync(distModels) && fs.existsSync(publicModels)) {
   fs.cpSync(publicModels, distModels, { recursive: true });
 }
 
-// 4. Create build metadata
 const buildMetadata = {
   name: 'ar-trion',
   version: '1.2.1',

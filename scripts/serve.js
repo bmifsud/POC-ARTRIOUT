@@ -26,9 +26,9 @@ const server = http.createServer((req, res) => {
 
   const safePath = path.normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
 
-  let filePath = path.join(PUBLIC_DIR, safePath);
+  let filePath = path.join(DIST_DIR, safePath);
   if (!fs.existsSync(filePath)) {
-    filePath = path.join(DIST_DIR, safePath);
+    filePath = path.join(PUBLIC_DIR, safePath);
   }
   if (!fs.existsSync(filePath)) {
     filePath = path.join(ROOT_DIR, safePath);
