@@ -53,11 +53,13 @@ if (hasEmcc) {
     } else {
       console.log('emcc not found, but prebuilt artifact exists. Proceeding with production build.');
     }
-  } else if (process.env.CI === 'true') {
+  } else if (process.env.CI === 'true' || process.env.MOCK_WASM_FOR_TESTS === 'true') {
     console.log('emcc not found in path (CI mode). Simulating compilation and generating mock artifact.');
     const minimalWasmBinary = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
-    fs.writeFileSync(targetPath, minimalWasmBinary);
-    fs.writeFileSync(targetPath.replace('.wasm', '.js'), 'export function createARRendererModule() { return {}; }');
+    const wasmTarget = targetPath.endsWith('.wasm') ? targetPath : targetPath.replace(/\.js$/, '.wasm');
+    const jsTarget = targetPath.endsWith('.wasm') ? targetPath.replace(/\.wasm$/, '.js') : targetPath;
+    fs.writeFileSync(wasmTarget, minimalWasmBinary);
+    fs.writeFileSync(jsTarget, 'export default function createARRendererModule() { return {}; }');
   } else {
     console.error('emcc not found in path. A valid emcc installation is required outside of CI/production environments.');
     process.exit(1);
