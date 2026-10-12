@@ -7,7 +7,7 @@ import {
   MemorySanitizer,
   EphemeralFrameData
 } from '@ar-trion/compliance';
-import { HandTracker, NailExtractor, Point3D } from '@ar-trion/perception';
+import { HandTracker, NailExtractor, Point3D, NailTransform } from '@ar-trion/perception';
 import { WebGPURenderer, NailMaterialCatalog, NailMaterial, RenderTransform } from '@ar-trion/rendering';
 import { CameraOverlay } from './CameraOverlay';
 import { generateSalonRecipeMarkdown, generateStyleDefinitionJson, SalonRecipeConfig } from './utils/recipeGenerator';
@@ -709,6 +709,58 @@ export class StorefrontWidget {
     }
   }
 
+  private processTracking(now: number): { rawLandmarks: Point3D[]; nailTransforms: NailTransform[]; frameData: EphemeralFrameData } | null {
+    if (!this.videoElement || !this.handTracker || !this.nailExtractor) {
+      return null;
+    }
+
+    const result = this.handTracker.detectForVideo(this.videoElement, now);
+    if (!result || !result.landmarks || result.landmarks.length === 0) {
+      return null;
+    }
+
+    const rawLandmarks = result.landmarks[0] as Point3D[];
+    const nailTransforms = this.nailExtractor.extractNails(rawLandmarks);
+    const frameData: EphemeralFrameData = {
+      source: 'camera',
+      landmarks: rawLandmarks.map(p => new Float32Array([p.x, p.y, p.z]))
+    };
+
+    return { rawLandmarks, nailTransforms, frameData };
+  }
+
+  private renderFrame(nailTransforms: NailTransform[]): void {
+    if (this.renderer && nailTransforms.length > 0) {
+      const activeMaterial = this.selectedMaterial;
+      const identity4x4 = new Float32Array([
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      ]);
+
+      const renderTransforms: RenderTransform[] = nailTransforms.map(nail => ({
+        modelMatrix: new Float32Array([
+          nail.scale.x, 0, 0, 0,
+          0, nail.scale.y, 0, 0,
+          0, 0, nail.scale.z, 0,
+          nail.center.x, nail.center.y, nail.center.z, 1
+        ]),
+        viewProjectionMatrix: identity4x4,
+        normalMatrix: identity4x4,
+        lightDirection: [0.0, 1.0, 1.0, 1.0],
+        material: activeMaterial
+      }));
+
+      this.renderer.render(renderTransforms);
+    }
+
+    if (this.overlay) {
+      this.overlay.clearFrame();
+      this.overlay.drawGuideUI();
+    }
+  }
+
   private loop = (sessionId: number): void => {
     if (this.isStopped || sessionId !== this.currentSessionId || !this.videoElement || !this.handTracker || !this.nailExtractor) {
       return;
@@ -718,45 +770,10 @@ export class StorefrontWidget {
     const now = performance.now();
 
     try {
-      const result = this.handTracker.detectForVideo(this.videoElement, now);
-      if (result && result.landmarks && result.landmarks.length > 0) {
-        const rawLandmarks = result.landmarks[0] as Point3D[];
-        const nailTransforms = this.nailExtractor.extractNails(rawLandmarks);
-
-        frameData = {
-          source: 'camera',
-          landmarks: rawLandmarks.map(p => new Float32Array([p.x, p.y, p.z]))
-        };
-
-        if (this.renderer && nailTransforms.length > 0) {
-          const activeMaterial = this.selectedMaterial;
-          const identity4x4 = new Float32Array([
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-          ]);
-
-          const renderTransforms: RenderTransform[] = nailTransforms.map(nail => ({
-            modelMatrix: new Float32Array([
-              nail.scale.x, 0, 0, 0,
-              0, nail.scale.y, 0, 0,
-              0, 0, nail.scale.z, 0,
-              nail.center.x, nail.center.y, nail.center.z, 1
-            ]),
-            viewProjectionMatrix: identity4x4,
-            normalMatrix: identity4x4,
-            lightDirection: [0.0, 1.0, 1.0, 1.0],
-            material: activeMaterial
-          }));
-
-          this.renderer.render(renderTransforms);
-        }
-
-        if (this.overlay) {
-          this.overlay.clearFrame();
-          this.overlay.drawGuideUI();
-        }
+      const trackingResult = this.processTracking(now);
+      if (trackingResult) {
+        frameData = trackingResult.frameData;
+        this.renderFrame(trackingResult.nailTransforms);
       }
     } catch (err) {
       console.error('Error in widget animation frame loop:', err);
