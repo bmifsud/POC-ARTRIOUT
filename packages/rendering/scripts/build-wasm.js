@@ -65,11 +65,17 @@ if (hasEmcc) {
 =======
   const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
   if (process.env.NODE_ENV === 'production') {
-    if (!fs.existsSync(targetPath)) {
-      console.error('emcc not found in path and no prebuilt artifact exists. A valid artifact is required for production builds.');
+    const wasmPath = targetPath.endsWith('.wasm') ? targetPath : targetPath.replace(/\.js$/, '.wasm');
+    const jsPath = targetPath.endsWith('.wasm') ? targetPath.replace(/\.wasm$/, '.js') : targetPath;
+
+    if (!fs.existsSync(jsPath) || !fs.existsSync(wasmPath)) {
+      console.error('emcc not found in path and no prebuilt artifact exists. Both JS and WASM artifacts are required for production builds.');
+      process.exit(1);
+    } else if (fs.statSync(wasmPath).size <= 8) {
+      console.error('emcc not found in path and prebuilt wasm artifact is too small (CI placeholder). A valid artifact is required for production builds.');
       process.exit(1);
     } else {
-      console.log('emcc not found, but prebuilt artifact exists. Proceeding with production build.');
+      console.log('emcc not found, but valid prebuilt artifacts exist. Proceeding with production build.');
     }
   } else if (process.env.CI === 'true' || process.env.MOCK_WASM_FOR_TESTS === 'true') {
     console.log('emcc not found in path (CI mode). Simulating compilation and generating mock artifact.');
