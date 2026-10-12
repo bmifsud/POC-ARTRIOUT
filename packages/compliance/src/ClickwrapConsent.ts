@@ -40,6 +40,21 @@ export class ClickwrapConsent {
     return this.consentGiven;
   }
 
+  public grantConsent(): void {
+    this.consentGiven = true;
+  }
+
+  public revokeConsent(): void {
+    this.consentGiven = false;
+  }
+
+  public async syncWithStore(): Promise<boolean> {
+    if (!this.store) return this.consentGiven;
+    const record = await this.store.get();
+    this.consentGiven = record?.action === 'grant' && record.policyVersion === POLICY_VERSION;
+    return this.consentGiven;
+  }
+
   public async renderModal(
     container: HTMLElement,
     onConsentGranted: () => void | Promise<void>
@@ -117,17 +132,10 @@ export class ClickwrapConsent {
     return new Promise<void>((resolve) => {
       submitBtn.addEventListener('click', async () => {
         if (!checkbox.checked) return;
-        this.consentGiven = true;
+        this.grantConsent();
 
         if (this.store) {
-          const record: ConsentRecord = {
-            id: generateSecureId(),
-            actor: 'client-user',
-            action: 'grant',
-            policyVersion: POLICY_VERSION,
-            grantedAt: new Date().toISOString()
-          };
-          await this.store.save(record);
+          await grantClickwrapConsent(this.store, 'client-user');
         }
 
         const modal = container.querySelector('#bipa-consent-modal');
@@ -140,6 +148,7 @@ export class ClickwrapConsent {
   }
 
   public async requestCameraStream(): Promise<MediaStream> {
+    await this.syncWithStore();
     if (!this.consentGiven) {
       throw new Error('BIPA Consent Violation: Camera acquisition blocked prior to explicit user consent.');
     }
@@ -173,13 +182,29 @@ export async function grantClickwrapConsent(
   return record;
 }
 
+export async function revokeClickwrapConsent(
+  store: ConsentStore,
+  actor: string,
+  now = (): string => new Date().toISOString()
+): Promise<ConsentRecord> {
+  const record: ConsentRecord = {
+    id: generateSecureId(),
+    actor,
+    action: 'revoke',
+    policyVersion: POLICY_VERSION,
+    grantedAt: now()
+  };
+  await store.save(record);
+  return record;
+}
+
 export function cameraConsentActive(record: ConsentRecord | null): boolean {
   return record?.action === 'grant' && record.policyVersion === POLICY_VERSION;
 }
 
 export async function createProtectedCameraStream(consentInstance?: ClickwrapConsent): Promise<MediaStream> {
-  if (consentInstance) {
-    return consentInstance.requestCameraStream();
+  if (!consentInstance) {
+    throw new Error('BIPA Consent Violation: Camera acquisition blocked. A valid ClickwrapConsent instance must be provided.');
   }
-  return new MediaStream();
+  return consentInstance.requestCameraStream();
 }

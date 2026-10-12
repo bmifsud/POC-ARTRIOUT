@@ -65,6 +65,16 @@ export class WebGPURenderer {
     return true;
   }
 
+  public captureSnapshot(type: string = 'image/png'): string | null {
+    if (!this.canvas) return null;
+    try {
+      return this.canvas.toDataURL(type);
+    } catch (e) {
+      console.error('Failed to capture WebGPU canvas snapshot:', e);
+      return null;
+    }
+  }
+
   private createGeometryAndBuffers(canvasFormat: GPUTextureFormat): void {
     if (!this.device) return;
 

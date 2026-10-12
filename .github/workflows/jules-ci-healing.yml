@@ -2,7 +2,7 @@ name: Jules CI Self-Healing Agent
 
 on:
   workflow_run:
-    workflows: ["Continuous Integration", "Continuous Integration and Delivery"]
+    workflows: ["Continuous Integration"]
     types: [completed]
 
 permissions:
