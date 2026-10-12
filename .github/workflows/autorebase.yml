@@ -57,8 +57,8 @@ jobs:
                 continue
               fi
 
-              if [ "$branch" = "main" ] || [[ "$branch" =~ ^release ]] || [[ "$branch" =~ ^releases/ ]]; then
-                echo "Skipping main/release branch: $branch"
+              if [ "$branch" = "main" ]; then
+                echo "Skipping main branch."
                 continue
               fi
 

@@ -1,0 +1,5 @@
+The reviewer stated:
+"The user wants to update the AI agent's prompt in the PR automation workflow to enforce a new default review behavior: post a single aggregated comment on the pull request, link newly created GitHub Issues for medium/low severity findings within that comment, and address high/critical violations directly within the comment (with code fixes or detailed commentary).
+The patch completely fails to address the user's request. It modifies the prompt directives in \`.github/workflows/pr-automation.yml\`, but instead of adding the requested instructions about formatting the PR comment and linking issues, it replaces the text with unrelated instructions.
+The patch introduces multiple regressions by seemingly reverting recent fixes... It removes the release branch exclusion from \`.github/workflows/autorebase.yml\`... and duplicates the \`ref:\` and \`repository:\` keys in the checkout step of \`.github/workflows/pr-automation.yml\`...
+The requested changes to the AI prompt are entirely missing."

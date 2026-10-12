@@ -44,14 +44,14 @@ jobs:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
-            Automatically scan, review, and resolve all open project issues across the repository during the automated nightly workflow run.
+            Automatically scan, review, and resolve all open project issues across the repository.
 
             Tasks:
-            1. Query all open issues in the repository, with special attention to all logged medium and low severity issues (e.g. issues labeled `severity: medium`, `severity: low`, `bug`).
-            2. Thoroughly review each issue's contents, requirements, diagnostic context, and current repository codebase status.
-            3. Ensure the system addresses any identified security concerns and implements recommended code changes:
-               a. Verify whether the issue is already addressed, obsolete, or redundant.
-               b. If code remediation or security fixes are required, implement the recommended code changes in compliance with AR trion baselines (BIPA clickwrap consent, zero-retention memory sanitization, zero-egress network policies, sub-16 ms WebGPU rendering frame budget).
+            1. Query all open issues in the repository regardless of priority or labels.
+            2. Review each issue's contents, requirements, diagnostic context, and current repository codebase status.
+            3. For each open issue:
+               a. Verify whether the problem is already addressed, obsolete, or redundant.
+               b. If code remediation is required, implement the necessary changes, features, or fixes in compliance with AR trion baselines (BIPA clickwrap consent, zero-retention memory sanitization, zero-egress network policies, sub-16 ms WebGPU rendering frame budget).
                c. Verify locally in the cloud VM that all unit tests, linters, and audit suites pass cleanly.
                d. Post a detailed summary review comment on the issue explaining the findings or resolution status.
                e. Submit a pull request referencing the open issue, or automatically close off resolved, obsolete, or completed issues.
