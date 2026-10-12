@@ -5,6 +5,7 @@ build/
 playwright-report/
 test-results/
 work/models/
+public/wasm/ar_renderer.js
 packages/**/*.js
 packages/**/*.js.map
 !packages/rendering/scripts/build-wasm.js
