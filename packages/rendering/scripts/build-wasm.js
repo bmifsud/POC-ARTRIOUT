@@ -1,4 +1,3 @@
-#!/usr/bin/env -S npx tsx
 /**
  * Emscripten compilation runner for AR Trion WebGPU & WASM pipeline.
  * Ensures compilation flags enforce multi-threaded WebGPU and explicitly forbid WebGL.
