@@ -63,6 +63,11 @@ export class HandTracker {
     if (this.isClosed || !this.isInitialized || !this.handLandmarker) {
       return null;
     }
+    if (typeof HTMLVideoElement !== 'undefined' && videoFrame instanceof HTMLVideoElement) {
+      if (videoFrame.readyState < 2 || videoFrame.videoWidth === 0 || videoFrame.videoHeight === 0) {
+        return null;
+      }
+    }
     return this.handLandmarker.detectForVideo(videoFrame, timestampMs);
   }
 

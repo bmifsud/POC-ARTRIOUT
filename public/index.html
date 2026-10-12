@@ -158,6 +158,23 @@
             background-color: #dc2626;
         }
 
+        .customization-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background-color: #0f172a;
+            color: var(--text-main);
+            border: 1px solid #334155;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
         .status-box {
             background-color: #0f172a;
             padding: 12px 16px;
@@ -200,6 +217,17 @@
                 Touch Me
             </div>
 
+            <div class="customization-section">
+                <label for="material-select" style="font-size: 0.9rem; font-weight: 600;">Nail Finish Material:</label>
+                <select id="material-select" class="select-input">
+                    <option value="highGlossCrimson">High Gloss Crimson</option>
+                    <option value="matteBlack">Matte Black</option>
+                    <option value="roseGoldChrome">Rose Gold Chrome</option>
+                    <option value="pearlGlitter">Pearl Glitter</option>
+                </select>
+            </div>
+
+            <button id="export-snapshot" class="btn btn-secondary">Capture AR Snapshot</button>
             <button id="load-model" class="btn btn-secondary">Load Edge ML Model</button>
             <button id="send-data" class="btn btn-danger">Send Biometric Data (Test Block)</button>
 
@@ -231,12 +259,38 @@
             });
         }
 
+        const materialSelect = document.getElementById('material-select');
+        if (materialSelect) {
+            materialSelect.addEventListener('change', (e) => {
+                if (window.ARTrionWidgetInstance) {
+                    window.ARTrionWidgetInstance.setMaterial(e.target.value);
+                }
+            });
+        }
+
+        const exportBtn = document.getElementById('export-snapshot');
+        if (exportBtn && statusEl) {
+            exportBtn.addEventListener('click', () => {
+                if (window.ARTrionWidgetInstance) {
+                    const dataUrl = window.ARTrionWidgetInstance.exportSnapshot();
+                    if (dataUrl) {
+                        const a = document.createElement('a');
+                        a.href = dataUrl;
+                        a.download = `ar-nail-tryon-${Date.now()}.png`;
+                        a.click();
+                        statusEl.textContent = 'Snapshot Exported!';
+                    } else {
+                        statusEl.textContent = 'Snapshot Failed (No Active Canvas)';
+                    }
+                }
+            });
+        }
+
         const loadModelBtn = document.getElementById('load-model');
         if (loadModelBtn && statusEl) {
             loadModelBtn.addEventListener('click', async () => {
                 statusEl.textContent = 'Loading model...';
                 try {
-                    // Genuine fetch check verifying presence and local accessibility of edge WASM model binary
                     const res = await fetch('/wasm/mediapipe_hand_landmarker.wasm');
                     if (res.status === 200 || res.ok) {
                       statusEl.textContent = 'Model Loaded Successfully (Local)';
