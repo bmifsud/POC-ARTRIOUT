@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality-assurance:
-    name: Validate BIPA Compliance & Performance
+    name: Validate BIPA Compliance & Automated QA Gate
     runs-on: ubuntu-latest
 
     steps:
@@ -44,11 +44,8 @@ jobs:
       - name: Execute TypeScript Type Check & Lint
         run: npm run lint
 
-      - name: Execute Unit Tests
-        run: npm run test:unit
-
-      - name: Run Automated Zero-Egress Network Audit
-        run: npm run test:audit
+      - name: Execute Automated QA Gate (Minimum 80% Coverage & Zero-Egress Network Audit)
+        run: npm run test:gate
         env:
           CI: true
 
