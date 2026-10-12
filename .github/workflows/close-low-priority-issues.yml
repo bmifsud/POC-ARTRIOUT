@@ -4,14 +4,12 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
-  issues:
-    types: [opened, labeled, reopened]
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.issue.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
