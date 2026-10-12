@@ -1,20 +1,22 @@
-name: Jules Auto-Close Low/Medium Priority Issues
+name: Jules Scan, Review & Resolve All Open Issues
 
 on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+  issues:
+    types: [opened, labeled, reopened]
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.issue.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  review-and-close-issues:
-    name: Scan & Resolve Low and Medium Priority Issues
+  scan-and-resolve-issues:
+    name: Scan, Review & Resolve All Open Project Issues
     if: >
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
@@ -37,16 +39,19 @@ jobs:
           persist-credentials: false
 
       - name: Invoke Jules Issue Resolver
-        uses: google-labs-code/jules-action@v1.0.0
+        uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
-            Scan the repository for open medium and low priority issues.
+            Automatically scan, review, and resolve all open project issues across the repository.
 
             Tasks:
-            1. Query all open issues labeled with medium or low priority (e.g. `priority: medium`, `priority: low`, `medium`, `low`, `priority-medium`, `priority-low`).
-            2. Review each issue's contents, requirements, and current repository status.
-            3. For each issue, verify whether the problem is addressed, obsolete, or can be safely resolved.
-            4. Post a detailed summary comment on the issue explaining the review finding.
-            5. Automatically close off resolved, redundant, or completed low/medium priority issues.
+            1. Query all open issues in the repository regardless of priority or labels.
+            2. Review each issue's contents, requirements, diagnostic context, and current repository codebase status.
+            3. For each open issue:
+               a. Verify whether the problem is already addressed, obsolete, or redundant.
+               b. If code remediation is required, implement the necessary changes, features, or fixes in compliance with AR trion baselines (BIPA clickwrap consent, zero-retention memory sanitization, zero-egress network policies, sub-16 ms WebGPU rendering frame budget).
+               c. Verify locally in the cloud VM that all unit tests, linters, and audit suites pass cleanly.
+               d. Post a detailed summary review comment on the issue explaining the findings or resolution status.
+               e. Submit a pull request referencing the open issue, or automatically close off resolved, obsolete, or completed issues.
