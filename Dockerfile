@@ -1,7 +1,8 @@
 FROM emscripten/emsdk:latest AS builder
 WORKDIR /app
-COPY . .
+COPY package*.json ./
 RUN npm ci
+COPY . .
 RUN npm run build:wasm
 
 FROM node:24-alpine
