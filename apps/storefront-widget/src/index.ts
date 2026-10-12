@@ -12,7 +12,7 @@ import { WebGPURenderer, NailMaterialCatalog, NailMaterial, RenderTransform } fr
 import { CameraOverlay } from './CameraOverlay';
 import { generateSalonRecipeMarkdown, generateStyleDefinitionJson, SalonRecipeConfig } from './utils/recipeGenerator';
 
-export class MemoryConsentStore implements ConsentStore {
+class MemoryConsentStore implements ConsentStore {
   private record: ConsentRecord | null = null;
   async get(): Promise<ConsentRecord | null> { return this.record; }
   async save(record: ConsentRecord): Promise<void> { this.record = record; }
