@@ -24,13 +24,16 @@ export async function extractPaletteFromImage(
       throw new Error(`File size exceeds maximum permitted limit of ${maxSizeMB} MB`);
     }
     const url = URL.createObjectURL(imageSource);
-    img = new Image();
-    img.src = url;
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = reject;
-    });
-    URL.revokeObjectURL(url);
+    try {
+      img = new Image();
+      img.src = url;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+    } finally {
+      URL.revokeObjectURL(url);
+    }
   } else {
     img = imageSource;
   }
