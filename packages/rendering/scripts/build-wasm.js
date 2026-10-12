@@ -46,9 +46,16 @@ if (hasEmcc) {
      process.exit(1);
   }
 } else {
-  console.log('emcc not found in path. Simulating compilation and generating mock artifact.');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'dummy wasm content');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.wasm', '.js')), 'export function createARRendererModule() { return {}; }');
+  if (process.env.CI === 'true') {
+    console.log('emcc not found in path. Simulating compilation and generating mock artifact for CI.');
+    // Generate valid empty WebAssembly module
+    const wasmMagicHeader = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
+    fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), wasmMagicHeader);
+    fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.wasm', '.js')), 'export function createARRendererModule() { return {}; }');
+  } else {
+    console.error('emcc not found in path. Failing build to ensure valid artifact is generated.');
+    process.exit(1);
+  }
 }
 
 console.log('Compiler ready for native Emscripten execution.');
