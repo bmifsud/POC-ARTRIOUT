@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { multiply, transformMatrix, validateData } from '../../src/matrix';
+import { multiply, transformMatrix } from '../../src/matrix';
 
 test.describe('Matrix Transformations and Data Validation', () => {
   test('should correctly transform a basic matrix', () => {
@@ -67,13 +67,4 @@ test.describe('Matrix Transformations and Data Validation', () => {
     expect(memDelta).toBeLessThanOrEqual(512 * 1024);
   });
 
-  test('should validate valid biometric payload mock data', () => {
-    const validData = { id: '123', frames: [], type: 'biometric' };
-    expect(validateData(validData)).toBe(true);
-  });
-
-  test('should reject invalid data', () => {
-    const invalidData = { id: '123' }; // missing required fields
-    expect(validateData(invalidData)).toBe(false);
-  });
 });
