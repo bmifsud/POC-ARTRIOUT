@@ -4,11 +4,14 @@ import type {
 } from "./ClickwrapConsent";
 import {
   POLICY_VERSION,
-  grantClickwrapConsent
+  grantClickwrapConsent,
+  revokeClickwrapConsent,
+  ClickwrapConsent
 } from "./ClickwrapConsent";
 
 export interface ClickwrapModalOptions {
   store: ConsentStore;
+  consentInstance?: ClickwrapConsent;
   actor?: string;
   onConsentGranted?: (record: ConsentRecord) => void;
   onConsentDeclined?: () => void;
@@ -127,11 +130,19 @@ export class ClickwrapConsentModal {
     acceptBtn.addEventListener("click", async () => {
       const actor = this.options.actor || "anonymous-browser-user";
       const record = await grantClickwrapConsent(this.options.store, actor);
+      if (this.options.consentInstance) {
+        this.options.consentInstance.grantConsent();
+      }
       overlay.remove();
       this.options.onConsentGranted?.(record);
     });
 
-    declineBtn.addEventListener("click", () => {
+    declineBtn.addEventListener("click", async () => {
+      const actor = this.options.actor || "anonymous-browser-user";
+      if (this.options.consentInstance) {
+        this.options.consentInstance.revokeConsent();
+      }
+      await revokeClickwrapConsent(this.options.store, actor);
       overlay.remove();
       this.options.onConsentDeclined?.();
     });

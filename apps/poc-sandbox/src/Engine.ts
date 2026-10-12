@@ -33,22 +33,34 @@ export class Engine {
   }
 
   public async start(): Promise<void> {
-    // 1. Enforce Clickwrap Consent Gating before camera initialization
-    // Affirmative consent callback immediately initializes protected camera stream and animation loop
     await this.consent.renderModal(this.config.modalContainer, async () => {
       await this.initEnginePipeline();
     });
   }
 
   private async initEnginePipeline(): Promise<void> {
-    // Acquire protected camera stream only after affirmative user consent
     this.mediaStream = await this.consent.requestCameraStream();
 
     this.videoElement = document.createElement('video');
     this.videoElement.srcObject = this.mediaStream;
     this.videoElement.autoplay = true;
     this.videoElement.playsInline = true;
-    await this.videoElement.play();
+
+    await new Promise<void>((resolve) => {
+      if (!this.videoElement) return resolve();
+      if (this.videoElement.readyState >= 2 && this.videoElement.videoWidth > 0) {
+        resolve();
+      } else {
+        const onLoaded = () => {
+          this.videoElement?.removeEventListener('loadeddata', onLoaded);
+          resolve();
+        };
+        this.videoElement.addEventListener('loadeddata', onLoaded);
+        setTimeout(resolve, 2000);
+      }
+    });
+
+    await this.videoElement.play().catch(() => {});
 
     // Initialize perception & rendering components
     await this.handTracker.initialize();
@@ -57,6 +69,20 @@ export class Engine {
 
     this.isRunning = true;
     this.loop();
+  }
+
+  public setMaterial(materialKey: string): void {
+    if (NailMaterialCatalog[materialKey]) {
+      this.config.selectedMaterialKey = materialKey;
+    }
+  }
+
+  public getAvailableMaterials(): string[] {
+    return Object.keys(NailMaterialCatalog);
+  }
+
+  public exportSnapshot(): string | null {
+    return this.renderer.captureSnapshot();
   }
 
   private loop = async (): Promise<void> => {

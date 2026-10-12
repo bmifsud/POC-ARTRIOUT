@@ -2,9 +2,10 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -42,7 +43,10 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Execute TypeScript Type Check & Lint
-        run: npm run lint
+        run: npm run lint --if-present
+
+      - name: Build Application
+        run: npm run build --if-present
 
       - name: Execute Unit Tests
         run: npm run test:unit
