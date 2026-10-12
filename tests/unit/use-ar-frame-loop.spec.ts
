@@ -1,0 +1,32 @@
+import { test, expect } from '@playwright/test';
+import { HandTracker } from '../../packages/perception/src/mediapipe/HandTracker';
+import { useARFrameLoop } from '../../apps/storefront-widget/src/hooks/useARFrameLoop';
+
+test.describe('useARFrameLoop asset initialization', () => {
+  test('passes explicit wasm and task asset paths to HandTracker', async () => {
+    const videoElement = document.createElement('video');
+    const canvasElement = document.createElement('canvas');
+    let capturedOptions: any = null;
+
+    const originalInitialize = HandTracker.prototype.initialize;
+    HandTracker.prototype.initialize = async function (options: any) {
+      capturedOptions = options;
+      return Promise.resolve();
+    };
+
+    try {
+      useARFrameLoop({
+        videoElement,
+        canvasElement,
+        isConsentGranted: true
+      });
+
+      expect(capturedOptions).toEqual({
+        wasmPath: '/wasm',
+        modelAssetPath: '/models/hand_landmarker.task'
+      });
+    } finally {
+      HandTracker.prototype.initialize = originalInitialize;
+    }
+  });
+});

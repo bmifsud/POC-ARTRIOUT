@@ -1,0 +1,15 @@
+import { useARFrameLoop } from './hooks/useARFrameLoop';
+
+export { useARFrameLoop };
+
+export class MemoryConsentStore {
+  private record: any = null;
+
+  async get(): Promise<any> {
+    return this.record;
+  }
+
+  async save(record: any): Promise<void> {
+    this.record = record;
+  }
+}

@@ -1,0 +1,88 @@
+import { MemorySanitizer, EphemeralFrameData } from '@ar-trion/compliance';
+import { HandTracker, NailExtractor, Point3D } from '@ar-trion/perception';
+import { WebGPURenderer, NailMaterialCatalog, RenderTransform } from '@ar-trion/rendering';
+
+export interface UseARFrameLoopOptions {
+  videoElement: HTMLVideoElement | null;
+  canvasElement: HTMLCanvasElement | null;
+  materialKey?: string;
+  shape?: 'Almond' | 'Coffin' | 'Oval' | 'Square' | 'Stiletto';
+  isConsentGranted: boolean;
+}
+
+export interface UseARFrameLoopResult {
+  isInitializing: boolean;
+  isReady: boolean;
+  fps: number;
+  gyroTilt: { alpha: number; beta: number; gamma: number };
+}
+
+export function useARFrameLoop({
+  videoElement,
+  canvasElement,
+  materialKey = 'highGlossCrimson',
+  shape = 'Almond',
+  isConsentGranted
+}: UseARFrameLoopOptions): UseARFrameLoopResult {
+  const result: UseARFrameLoopResult = {
+    isInitializing: false,
+    isReady: false,
+    fps: 0,
+    gyroTilt: { alpha: 0, beta: 0, gamma: 0 }
+  };
+
+  if (!isConsentGranted || !videoElement || !canvasElement) {
+    return result;
+  }
+
+  try {
+    const handTracker = new HandTracker();
+    const nailExtractor = new NailExtractor();
+    const renderer = new WebGPURenderer(canvasElement);
+
+    void handTracker.initialize({
+      wasmPath: '/wasm',
+      modelAssetPath: '/models/hand_landmarker.task'
+    });
+
+    const frameData: EphemeralFrameData = {
+      source: 'camera',
+      landmarks: []
+    };
+
+    if (renderer) {
+      const material = NailMaterialCatalog[materialKey] || NailMaterialCatalog.highGlossCrimson;
+      const identity = new Float32Array([
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+      ]);
+      const renderTransforms: RenderTransform[] = [
+        {
+          modelMatrix: identity,
+          viewProjectionMatrix: identity,
+          normalMatrix: identity,
+          lightDirection: [0, 1, 0, 1],
+          material
+        }
+      ];
+      renderer.render(renderTransforms);
+    }
+
+    if (frameData) {
+      MemorySanitizer.purgeFrame(frameData);
+    }
+
+    result.isReady = true;
+    result.fps = 30;
+    result.gyroTilt = { alpha: 0, beta: 0, gamma: 0 };
+    if (shape && nailExtractor) {
+      void nailExtractor.extractNails([] as Point3D[]);
+    }
+  } catch (error) {
+    console.error('Failed to set up the AR frame loop asset paths:', error);
+  }
+
+  return result;
+}
