@@ -52,7 +52,7 @@ jobs:
       - name: Invoke Jules Conflict Resolver
         uses: google-labs-code/jules-action@v1.0.0
         with:
-          api_key: ${{ secrets.JULES_API_KEY }}
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             Pull Request #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}" has merge conflicts with base branch '${{ github.event.pull_request.base.ref }}'.
