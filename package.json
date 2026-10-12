@@ -13,7 +13,8 @@
     "test:unit": "playwright test tests/unit",
     "test:audit": "playwright test tests/network-audits/zero-egress.spec.ts",
     "test": "playwright test tests/bdd-playwright/",
-    "format:check": "echo \"formatting passed\""
+    "format:check": "echo \"formatting passed\"",
+    "start": "node scripts/serve.js"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.14",
