@@ -8,12 +8,14 @@ const publicDir = path.resolve('public');
 
 console.log('Building AR Trion production artifacts...');
 
+// 1. Ensure public assets exist
 execSync('node scripts/init-assets.js', { stdio: 'inherit' });
 
 // 2. Execute Vite build for edge-optimized bundling
 console.log('Executing Vite build...');
 execSync('npx vite build', { stdio: 'inherit' });
 
+// 3. Ensure wasm and models directories are mapped to final distribution folder
 const distWasm = path.join(distDir, 'wasm');
 const distModels = path.join(distDir, 'models');
 const publicWasm = path.join(publicDir, 'wasm');
