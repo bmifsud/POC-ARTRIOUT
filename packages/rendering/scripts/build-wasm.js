@@ -39,16 +39,24 @@ if (hasEmcc) {
   console.log('Running real emcc compilation...');
   const cppFile = path.resolve(__dirname, '../src/cpp/ar_renderer.cpp');
   if (fs.existsSync(cppFile)) {
-     const command = `emcc ${cppFile} -o ${EMSCRIPTEN_WEBGPU_CONFIG.target} ${EMSCRIPTEN_WEBGPU_CONFIG.flags.join(' ')}`;
+     const command = `emcc ${cppFile} -o ${path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target)} ${EMSCRIPTEN_WEBGPU_CONFIG.flags.join(' ')}`;
      execSync(command, { stdio: 'inherit' });
   } else {
      console.error('Source file not found!');
      process.exit(1);
   }
 } else {
-  console.log('emcc not found in path. Simulating compilation and generating mock artifact.');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'dummy wasm content');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.wasm', '.js')), 'export function createARRendererModule() { return {}; }');
+  if (process.env.MOCK_WASM_FOR_TESTS === 'true') {
+    console.log('emcc not found in path. Simulating compilation and generating mock artifact in test environment.');
+    const testMockWasm = path.resolve(rootDir, 'test-results/mock.wasm');
+    const testMockJs = path.resolve(rootDir, 'test-results/mock.js');
+    fs.mkdirSync(path.dirname(testMockWasm), { recursive: true });
+    fs.writeFileSync(testMockWasm, Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    fs.writeFileSync(testMockJs, `export function ${EMSCRIPTEN_WEBGPU_CONFIG.exportName}() { return {}; }`);
+  } else {
+    console.error('emcc compiler not found. Real compilation is required.');
+    process.exit(1);
+  }
 }
 
 console.log('Compiler ready for native Emscripten execution.');
