@@ -3,6 +3,8 @@ name: Jules Auto Conflict Resolver
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main, master]
 
 permissions:
   contents: read
@@ -17,7 +19,20 @@ jobs:
     if: >
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
-      (contains(github.event.pull_request.labels.*.name, 'has conflicts') || github.event.label.name == 'has conflicts' || github.event.label.name == 'resolve-conflicts')
+      (
+        contains(github.event.pull_request.labels.*.name, 'has conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'has-conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'conflict') ||
+        contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'has_conflicts') ||
+        github.event.label.name == 'has conflicts' ||
+        github.event.label.name == 'has-conflicts' ||
+        github.event.label.name == 'conflicts' ||
+        github.event.label.name == 'conflict' ||
+        github.event.label.name == 'resolve-conflicts' ||
+        github.event.label.name == 'has_conflicts'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -39,6 +39,7 @@ jobs:
         with:
           dirtyLabel: "has conflicts"
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          continueOnMissingPermissions: true
 
   auto-label:
     name: Auto Label PR
