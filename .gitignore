@@ -5,6 +5,8 @@ build/
 playwright-report/
 test-results/
 work/models/
+coverage/
+.nyc_output/
 packages/**/*.js
 packages/**/*.js.map
 !packages/rendering/scripts/build-wasm.js

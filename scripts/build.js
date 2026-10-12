@@ -38,7 +38,7 @@ import '../scripts/serve.js';
 `;
 fs.writeFileSync(path.join(distDir, 'index.js'), indexJsContent);
 
-// 4. Create build  
+// 5. Create build metadata
 const buildMetadata = {
   name: 'ar-trion',
   version: '1.4.0',
