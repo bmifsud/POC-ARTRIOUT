@@ -51,6 +51,13 @@ if (hasEmcc) {
     fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'export function createARRendererModule() { return {}; }');
     const wasmMagicHeader = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
     fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm')), wasmMagicHeader);
+  } else if (process.env.NODE_ENV === 'production') {
+    if (fs.existsSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target))) {
+      console.log('emcc not found in path. NODE_ENV=production detected. Prebuilt artifact exists, allowing build to proceed.');
+    } else {
+      console.error('emcc not found in path and prebuilt artifact missing. Failing build.');
+      process.exit(1);
+    }
   } else {
     console.error('emcc not found in path. Emscripten is required for local/production builds. Failing build.');
     process.exit(1);
