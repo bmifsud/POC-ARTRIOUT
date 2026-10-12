@@ -39,16 +39,20 @@ if (hasEmcc) {
   console.log('Running real emcc compilation...');
   const cppFile = path.resolve(__dirname, '../src/cpp/ar_renderer.cpp');
   if (fs.existsSync(cppFile)) {
-     const command = `emcc ${cppFile} -o ${EMSCRIPTEN_WEBGPU_CONFIG.target} ${EMSCRIPTEN_WEBGPU_CONFIG.flags.join(' ')}`;
+     const absoluteTarget = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
+     const command = `emcc ${cppFile} -o ${absoluteTarget} ${EMSCRIPTEN_WEBGPU_CONFIG.flags.join(' ')}`;
      execSync(command, { stdio: 'inherit' });
   } else {
      console.error('Source file not found!');
      process.exit(1);
   }
+} else if (process.env.CI === 'true') {
+  console.log('emcc not found in path. CI environment detected. Simulating compilation and generating mock artifact.');
+  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm')), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'export default function createARRendererModule() { return Promise.resolve({}); }');
 } else {
-  console.log('emcc not found in path. Simulating compilation and generating mock artifact.');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'dummy wasm content');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.wasm', '.js')), 'export function createARRendererModule() { return {}; }');
+  console.error('emcc not found in path. Emscripten compilation is required for production builds.');
+  process.exit(1);
 }
 
 console.log('Compiler ready for native Emscripten execution.');
