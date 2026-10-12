@@ -1,4 +1,3 @@
-#!/usr/bin/env -S npx tsx
 /**
  * Emscripten compilation runner for AR Trion WebGPU & WASM pipeline.
  * Ensures compilation flags enforce multi-threaded WebGPU and explicitly forbid WebGL.
@@ -46,6 +45,7 @@ if (hasEmcc) {
      process.exit(1);
   }
 } else {
+<<<<<<< HEAD
   if (process.env.CI === 'true') {
     console.log('emcc not found in path. Simulating compilation and generating mock artifact for CI.');
     // Generate valid empty WebAssembly module
@@ -62,6 +62,25 @@ if (hasEmcc) {
     }
   } else {
     console.error('emcc not found in path. Failing build to ensure valid artifact is generated.');
+=======
+  const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
+  if (process.env.NODE_ENV === 'production') {
+    if (!fs.existsSync(targetPath)) {
+      console.error('emcc not found in path and no prebuilt artifact exists. A valid artifact is required for production builds.');
+      process.exit(1);
+    } else {
+      console.log('emcc not found, but prebuilt artifact exists. Proceeding with production build.');
+    }
+  } else if (process.env.CI === 'true' || process.env.MOCK_WASM_FOR_TESTS === 'true') {
+    console.log('emcc not found in path (CI mode). Simulating compilation and generating mock artifact.');
+    const minimalWasmBinary = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
+    const wasmTarget = targetPath.endsWith('.wasm') ? targetPath : targetPath.replace(/\.js$/, '.wasm');
+    const jsTarget = targetPath.endsWith('.wasm') ? targetPath.replace(/\.wasm$/, '.js') : targetPath;
+    fs.writeFileSync(wasmTarget, minimalWasmBinary);
+    fs.writeFileSync(jsTarget, 'export default function createARRendererModule() { return {}; }');
+  } else {
+    console.error('emcc not found in path. A valid emcc installation is required outside of CI/production environments.');
+>>>>>>> origin/main
     process.exit(1);
   }
 }
