@@ -50,6 +50,15 @@ if (hasEmcc) {
   // target is expected to be a .js file, so we generate the .wasm file by replacing the extension
   fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm')), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
   fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'export function createARRendererModule() { return {}; }');
+} else if (process.env.NODE_ENV === 'production') {
+  console.log('emcc not found in path (Production deployment). Verifying if prebuilt artifact exists...');
+  const wasmFile = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm'));
+  if (fs.existsSync(wasmFile)) {
+    console.log('Prebuilt artifact found. Skipping compilation.');
+  } else {
+    console.error('emcc not found and prebuilt artifact is missing. Emscripten compiler is required to build WASM artifacts.');
+    process.exit(1);
+  }
 } else {
   console.error('emcc not found in path. Emscripten compiler is required for local builds.');
   process.exit(1);
