@@ -11,7 +11,7 @@ console.log('Building AR Trion production artifacts...');
 // 1. Ensure public assets exist
 execSync('node scripts/init-assets.js', { stdio: 'inherit' });
 
-// 2. Execute Vite build for edge-optimized bundling (fail hard if build errors occur)
+// 2. Execute Vite build for edge-optimized bundling
 console.log('Executing Vite build...');
 execSync('npx vite build', { stdio: 'inherit' });
 
@@ -28,10 +28,16 @@ if (!fs.existsSync(distModels) && fs.existsSync(publicModels)) {
   fs.cpSync(publicModels, distModels, { recursive: true });
 }
 
-// 4. Create build metadata
+// 4. Create dist/index.js wrapper for legacy entry points
+const indexJsContent = `#!/usr/bin/env node
+import '../scripts/serve.js';
+`;
+fs.writeFileSync(path.join(distDir, 'index.js'), indexJsContent);
+
+// 5. Create build metadata
 const buildMetadata = {
   name: 'ar-trion',
-  version: '1.2.1',
+  version: '1.4.0',
   builtAt: new Date().toISOString(),
   environment: process.env.NODE_ENV || 'production',
   edgeOptimized: true,
