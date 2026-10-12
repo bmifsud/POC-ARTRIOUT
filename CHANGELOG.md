@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.4.2...v1.5.0) (2026-10-12)
+
+
+### Features
+
+* **ci:** add automated Qodo defect fixer workflow ([42ba7a6](https://github.com/bmifsud/POC-ARTRIOUT/commit/42ba7a6dcb64fa086537791197590e146c05609c))
+
+
+### Bug Fixes
+
+* **ci:** resolve Qodo Code Review issues in conflict workflows ([2ccbfac](https://github.com/bmifsud/POC-ARTRIOUT/commit/2ccbfacdc757c76eafc4c5a23bdd9940a054d873))
+
 ## [1.4.2](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.4.1...v1.4.2) (2026-10-12)
 
 
