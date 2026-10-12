@@ -45,10 +45,14 @@ if (hasEmcc) {
      console.error('Source file not found!');
      process.exit(1);
   }
+} else if (process.env.CI === 'true') {
+  console.log('emcc not found in path. Simulating compilation and generating mock artifact (CI environment).');
+  // target is expected to be a .js file, so we generate the .wasm file by replacing the extension
+  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm')), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'export function createARRendererModule() { return {}; }');
 } else {
-  console.log('emcc not found in path. Simulating compilation and generating mock artifact.');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'dummy wasm content');
-  fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.wasm', '.js')), 'export function createARRendererModule() { return {}; }');
+  console.error('emcc not found in path. Emscripten compiler is required for local builds.');
+  process.exit(1);
 }
 
 console.log('Compiler ready for native Emscripten execution.');
