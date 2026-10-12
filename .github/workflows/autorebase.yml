@@ -35,20 +35,27 @@ jobs:
           # Fetch all remote branches
           git fetch origin '+refs/heads/*:refs/remotes/origin/*'
 
-          # List remote branches excluding origin/HEAD
-          branches=$(git branch -r | grep -v 'origin/HEAD' | sed 's/^[ ]*origin\///')
+          # Enumerate all remote branch names reliably
+          branches=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin | sed 's/^origin\///' | grep -v -E '^(HEAD|origin)$')
 
           for branch in $branches; do
             # Skip main and release branches
-            if [ "$branch" = "main" ] || [[ "$branch" =~ ^release ]]; then
-              echo "Skipping branch: $branch"
+            if [ "$branch" = "main" ] || [[ "$branch" =~ ^release ]] || [[ "$branch" =~ ^releases/ ]]; then
+              echo "Skipping main/release branch: $branch"
               continue
             fi
 
-            echo "----------------------------------------------"
+            echo "=============================================="
             echo "Attempting rebase for branch: $branch"
 
-            git checkout -B "$branch" "origin/$branch"
+            # Clean workspace prior to branch checkout
+            git reset --hard
+            git clean -fd
+
+            if ! git checkout -B "$branch" "origin/$branch"; then
+              echo "::warning title=Checkout Failed::Failed to checkout branch $branch"
+              continue
+            fi
 
             if git rebase origin/main; then
               echo "Rebase succeeded for $branch. Pushing with force-with-lease..."
@@ -59,6 +66,8 @@ jobs:
               fi
             else
               echo "::warning title=Rebase Conflict::Merge conflicts encountered when rebasing $branch on origin/main. Aborting rebase."
-              git rebase --abort
+              git rebase --abort || true
+              git reset --hard
+              git clean -fd
             fi
           done
