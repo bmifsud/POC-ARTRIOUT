@@ -31,24 +31,6 @@ export function multiply(out: Float32Array, a: Float32Array, b: Float32Array): F
   return out;
 }
 
-export function transformMatrix(matrix: number[][]): number[][] {
-    if (matrix.length === 0) return [];
-
-    const rows = matrix.length;
-    const cols = matrix[0].length;
-    const transposed: number[][] = [];
-
-    for (let c = 0; c < cols; c++) {
-        const newRow: number[] = [];
-        for (let r = 0; r < rows; r++) {
-            newRow.push(matrix[r][c]);
-        }
-        transposed.push(newRow);
-    }
-
-    return transposed;
-}
-
 export function validateData(data: any): boolean {
     if (!data || typeof data !== 'object') return false;
 

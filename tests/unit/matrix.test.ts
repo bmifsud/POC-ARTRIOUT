@@ -1,20 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { multiply, transformMatrix, validateData } from '../../src/matrix';
+import { multiply, validateData } from '../../src/matrix';
 
 test.describe('Matrix Transformations and Data Validation', () => {
-  test('should correctly transform a basic matrix', () => {
-    const input = [
-      [1, 2],
-      [3, 4]
-    ];
-    // Example transformation: transpose the matrix
-    const expected = [
-      [1, 3],
-      [2, 4]
-    ];
-    expect(transformMatrix(input)).toEqual(expected);
-  });
-
   test('should perform in-place matrix multiplication correctly', () => {
     const out = new Float32Array(16);
     const a = new Float32Array([
