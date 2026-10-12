@@ -138,11 +138,21 @@ export class ClickwrapConsent {
           await grantClickwrapConsent(this.store, 'client-user');
         }
 
-        const modal = container.querySelector('#bipa-consent-modal');
-        if (modal) modal.remove();
+      return new Promise<void>((resolve) => {
+        submitBtn.addEventListener('click', async () => {
+          if (!checkbox.checked) return;
+          this.grantConsent();
 
-        await onConsentGranted();
-        resolve();
+          if (this.store) {
+            await grantClickwrapConsent(this.store, 'client-user');
+          }
+
+          const modal = container.querySelector('#bipa-consent-modal');
+          if (modal) modal.remove();
+
+          await onConsentGranted();
+          resolve();
+        });
       });
     });
   }
@@ -188,7 +198,7 @@ export async function revokeClickwrapConsent(
   now = (): string => new Date().toISOString()
 ): Promise<ConsentRecord> {
   const record: ConsentRecord = {
-    id: generateSecureId(),
+    id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
     actor,
     action: 'revoke',
     policyVersion: POLICY_VERSION,
