@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AR Trion - Universal Static AR Nail Try-On</title>
+    <title>Nail Lab AR • Virtual Nail Salon Studio & Try-On Lounge</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-color: #09090b;
+            --card-bg: #18181b;
+            --accent-pink: #ec4899;
+            --accent-rose: #f472b6;
+            --accent-gold: #e5c158;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
             --danger: #ef4444;
+            --border-color: rgba(244, 114, 182, 0.25);
         }
 
         * {
@@ -29,92 +31,107 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            background-image: radial-gradient(circle at 50% 0%, rgba(236, 72, 153, 0.12), transparent 50%);
         }
 
         header {
             width: 100%;
-            max-width: 1200px;
-            padding: 20px;
+            max-width: 1280px;
+            padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-rose));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #ffffff;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            background: linear-gradient(135deg, #ffffff, var(--accent-rose));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
         }
 
         .badge {
-            background-color: #065f46;
-            color: #34d399;
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--accent-rose);
             font-size: 0.8rem;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 6px 14px;
             border-radius: 9999px;
-            border: 1px solid #059669;
+            border: 1px solid var(--border-color);
         }
 
         main {
             width: 100%;
-            max-width: 1200px;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
-
-        @media (min-width: 900px) {
-            main {
-                grid-template-columns: 2fr 1fr;
-            }
-        }
-
-        .viewport-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 4 / 3;
-            background-color: #020617;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            border: 1px solid #334155;
+            max-width: 1280px;
+            padding: 24px;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            gap: 24px;
         }
 
         #ar-trion-widget-root {
             width: 100%;
-            height: 100%;
-            position: relative;
         }
 
-        .controls-panel {
+        .diagnostics-panel {
             background-color: var(--card-bg);
             border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #334155;
+            padding: 20px;
+            border: 1px solid #27272a;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
         .panel-title {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 8px;
+            color: var(--accent-rose);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diagnostics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
         }
 
         .touch-target {
             width: 100%;
-            height: 60px;
-            background: var(--primary);
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-pink), #db2777);
             color: white;
             display: flex;
             align-items: center;
@@ -122,12 +139,14 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.9rem;
             user-select: none;
-            transition: background 0.2s ease;
+            transition: opacity 0.2s ease;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
         }
 
         .touch-target:hover {
-            background: var(--primary-hover);
+            opacity: 0.9;
         }
 
         .btn {
@@ -136,85 +155,98 @@
             border: none;
             border-radius: 8px;
             font-weight: 600;
+            font-size: 0.88rem;
             cursor: pointer;
-            transition: background 0.2s ease, opacity 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-secondary {
-            background-color: #334155;
+            background-color: #27272a;
             color: var(--text-main);
+            border: 1px solid #3f3f46;
         }
 
         .btn-secondary:hover {
-            background-color: #475569;
+            background-color: #3f3f46;
         }
 
         .btn-danger {
-            background-color: var(--danger);
-            color: white;
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            background-color: #dc2626;
+            background-color: rgba(239, 68, 68, 0.25);
         }
 
         .status-box {
-            background-color: #0f172a;
+            background-color: #09090b;
             padding: 12px 16px;
             border-radius: 8px;
-            border: 1px solid #334155;
-            font-size: 0.9rem;
+            border: 1px solid #27272a;
+            font-size: 0.88rem;
             color: var(--text-muted);
         }
 
         #status {
             font-weight: 700;
-            color: #60a5fa;
+            color: var(--accent-rose);
         }
 
-        .info-card {
-            font-size: 0.85rem;
+        footer {
+            width: 100%;
+            max-width: 1280px;
+            padding: 20px 24px;
+            text-align: center;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            line-height: 1.5;
-            border-top: 1px solid #334155;
-            padding-top: 16px;
-            margin-top: 8px;
+            border-top: 1px solid #27272a;
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">AR Trion Studio</div>
+        <div class="logo-container">
+            <div class="logo-icon">💅</div>
+            <div>
+                <div class="logo">Nail Lab AR</div>
+                <div class="subtitle">Virtual Salon & Co-Designer Lounge</div>
+            </div>
+        </div>
         <div class="badge">100% On-Device WebGPU & BIPA Protected</div>
     </header>
 
     <main>
-        <div class="viewport-container">
-            <div id="ar-trion-widget-root"></div>
-        </div>
+        <!-- Storefront Widget Mount Root -->
+        <div id="ar-trion-widget-root"></div>
 
-        <div class="controls-panel">
-            <h2 class="panel-title">Interactive Controls</h2>
+        <!-- Studio Diagnostics & Automation Test Panel -->
+        <div class="diagnostics-panel">
+            <h2 class="panel-title">Studio Diagnostics & Automated Testing</h2>
 
-            <div id="touch-button" class="touch-target">
-                Touch Me
+            <div class="diagnostics-grid">
+                <div id="touch-button" class="touch-target">
+                    Touch Me
+                </div>
+
+                <button id="load-model" class="btn btn-secondary">Load Edge ML Model</button>
+                <button id="send-data" class="btn btn-danger">Send Biometric Data (Test Block)</button>
             </div>
-
-            <button id="load-model" class="btn btn-secondary">Load Edge ML Model</button>
-            <button id="send-data" class="btn btn-danger">Send Biometric Data (Test Block)</button>
 
             <div class="status-box">
                 Status: <span id="status">Waiting...</span>
             </div>
-
-            <div class="info-card">
-                <strong>Privacy Assurance:</strong> This universal static landing page executes 100% on-device WebGPU rendering and WebAssembly inference. Zero video frames or biometric landmark coordinates egress to external network sockets.
-            </div>
         </div>
     </main>
 
+    <footer>
+        <strong>Zero-Retention Privacy Assurance:</strong> Executes 100% on-device WebGPU rendering & WebAssembly ML perception. No camera frames or landmark coordinates egress to external servers.
+    </footer>
+
     <!-- Import Storefront Widget Embed Script -->
-    <script type="module" src="/storefront-widget.js"></script>
+    <script type="module" src="../apps/storefront-widget/src/index.ts"></script>
 
     <!-- Playwright & Interactive Test Hooks -->
     <script>
@@ -236,7 +268,6 @@
             loadModelBtn.addEventListener('click', async () => {
                 statusEl.textContent = 'Loading model...';
                 try {
-                    // Genuine fetch check verifying presence and local accessibility of edge WASM model binary
                     const res = await fetch('/wasm/mediapipe_hand_landmarker.wasm');
                     if (res.status === 200 || res.ok) {
                       statusEl.textContent = 'Model Loaded Successfully (Local)';
