@@ -20,6 +20,6 @@ export const EMSCRIPTEN_WEBGPU_CONFIG: EmscriptenBuildConfig = {
     "-s EXPORT_NAME='createARRendererModule'",
     "-s EXPORT_ES6=1"
   ],
-  target: "public/wasm/ar_renderer.js",
+  target: "packages/rendering/wasm/ar_renderer.wasm",
   exportName: "createARRendererModule"
 };
