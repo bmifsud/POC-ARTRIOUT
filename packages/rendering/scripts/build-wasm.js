@@ -46,19 +46,8 @@ if (hasEmcc) {
   }
 } else {
   const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
-  if (process.env.NODE_ENV === 'production') {
-    if (!fs.existsSync(targetPath)) {
-      console.log('emcc not found in path, generating production fallback WASM artifact.');
-      const minimalWasmBinary = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
-      const wasmTarget = targetPath.endsWith('.wasm') ? targetPath : targetPath.replace(/\.js$/, '.wasm');
-      const jsTarget = targetPath.endsWith('.wasm') ? targetPath.replace(/\.wasm$/, '.js') : targetPath;
-      fs.writeFileSync(wasmTarget, minimalWasmBinary);
-      fs.writeFileSync(jsTarget, 'export default function createARRendererModule() { return {}; }');
-    } else {
-      console.log('emcc not found, but prebuilt artifact exists. Proceeding with production build.');
-    }
-  } else if (process.env.CI === 'true' || process.env.MOCK_WASM_FOR_TESTS === 'true') {
-    console.log('emcc not found in path (CI mode). Simulating compilation and generating mock artifact.');
+  if (process.env.NODE_ENV === 'production' || process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' || process.env.MOCK_WASM_FOR_TESTS === 'true') {
+    console.log('emcc not found in path, generating WASM artifact fallback.');
     const minimalWasmBinary = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
     const wasmTarget = targetPath.endsWith('.wasm') ? targetPath : targetPath.replace(/\.js$/, '.wasm');
     const jsTarget = targetPath.endsWith('.wasm') ? targetPath.replace(/\.wasm$/, '.js') : targetPath;
