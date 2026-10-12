@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.4.1...v1.4.2) (2026-10-12)
+
+
+### Bug Fixes
+
+* **security:** remediate code scanning alerts and path traversal vulnerability ([f8bb10e](https://github.com/bmifsud/POC-ARTRIOUT/commit/f8bb10e7d7f73899a720678465431ccbe48dc9e8))
+
 ## [1.4.1](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.4.0...v1.4.1) (2026-10-12)
 
 
