@@ -28,10 +28,16 @@ if (!fs.existsSync(distModels) && fs.existsSync(publicModels)) {
   fs.cpSync(publicModels, distModels, { recursive: true });
 }
 
-// 4. Create build metadata
+// 4. Create dist/index.js wrapper for legacy entry points
+const indexJsContent = `#!/usr/bin/env node
+import '../scripts/serve.js';
+`;
+fs.writeFileSync(path.join(distDir, 'index.js'), indexJsContent);
+
+// 4. Create build  
 const buildMetadata = {
   name: 'ar-trion',
-  version: '1.2.1',
+  version: '1.4.0',
   builtAt: new Date().toISOString(),
   environment: process.env.NODE_ENV || 'production',
   edgeOptimized: true,

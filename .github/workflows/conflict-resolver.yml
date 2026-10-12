@@ -1,10 +1,8 @@
 name: Jules Auto Conflict Resolver
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, labeled]
-  push:
-    branches: [main, master]
 
 permissions:
   contents: read
@@ -21,17 +19,9 @@ jobs:
       github.actor != 'google-labs-jules' &&
       (
         contains(github.event.pull_request.labels.*.name, 'has conflicts') ||
-        contains(github.event.pull_request.labels.*.name, 'has-conflicts') ||
-        contains(github.event.pull_request.labels.*.name, 'conflicts') ||
-        contains(github.event.pull_request.labels.*.name, 'conflict') ||
         contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') ||
-        contains(github.event.pull_request.labels.*.name, 'has_conflicts') ||
         github.event.label.name == 'has conflicts' ||
-        github.event.label.name == 'has-conflicts' ||
-        github.event.label.name == 'conflicts' ||
-        github.event.label.name == 'conflict' ||
-        github.event.label.name == 'resolve-conflicts' ||
-        github.event.label.name == 'has_conflicts'
+        github.event.label.name == 'resolve-conflicts'
       )
     runs-on: ubuntu-latest
     permissions:
@@ -48,17 +38,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          persist-credentials: false
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          persist-credentials: false
 
       - name: Invoke Jules Conflict Resolver
-        uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
+        uses: google-labs-code/jules-action@v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
-            Pull Request #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}" has merge conflicts with base branch '${{ github.event.pull_request.base.ref }}'.
+            Pull Request #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}" (from repository '${{ github.event.pull_request.head.repo.full_name }}', branch '${{ github.event.pull_request.head.ref }}') has merge conflicts with base branch '${{ github.event.pull_request.base.ref }}'.
 
             Remediation Tasks:
             1. Fetch target branch '${{ github.event.pull_request.base.ref }}' and merge or rebase into branch '${{ github.event.pull_request.head.ref }}'.

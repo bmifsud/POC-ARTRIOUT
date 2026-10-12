@@ -2,7 +2,7 @@ name: PR Automation
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request_target:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
@@ -30,20 +30,16 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
       - name: Label Merge Conflicts
         uses: eps1lon/actions-label-merge-conflict@0273be72a0bbd58fcd71d0d6c02c209b50d1e5e1 # v3.1.0
         with:
           dirtyLabel: "has conflicts"
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          continueOnMissingPermissions: true
 
   auto-label:
     name: Auto Label PR
-    if: github.event.pull_request != null
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -70,7 +66,7 @@ jobs:
   review-pr:
     name: Jules Automated PR Review
     if: >
-      github.event.pull_request != null &&
+      github.event_name == 'pull_request_target' &&
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
       github.actor != 'github-actions[bot]'
@@ -88,6 +84,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}

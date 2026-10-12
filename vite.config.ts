@@ -20,7 +20,6 @@ export default defineConfig({
     minify: "esbuild",
     assetsInlineLimit: 0,
     rollupOptions: {
-      external: ["/storefront-widget.js"],
       input: {
         main: path.resolve(__dirname, "public/index.html"),
         "storefront-widget": path.resolve(__dirname, "apps/storefront-widget/src/index.ts")
