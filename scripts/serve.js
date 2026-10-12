@@ -20,36 +20,58 @@ const MIME_TYPES = {
   '.glb': 'model/gltf-binary'
 };
 
-const server = http.createServer((req, res) => {
-  let rawUrl = req.url?.split('?')[0] || '/';
-  if (rawUrl === '/') rawUrl = '/index.html';
-
-  let decodedPath;
+function sanitizeRelativePath(urlPath) {
+  if (!urlPath) return 'index.html';
+  let decoded = urlPath;
   try {
-    decodedPath = decodeURIComponent(rawUrl).replace(/\0/g, '');
+    decoded = decodeURIComponent(urlPath);
   } catch {
+    return null;
+  }
+  decoded = decoded.replace(/\0/g, '');
+  const normalized = path.normalize(decoded).replace(/^([./\\])+/, '');
+  if (normalized.includes('..')) {
+    return null;
+  }
+  return normalized || 'index.html';
+}
+
+function resolveSafeFile(baseDir, relPath) {
+  const targetPath = path.resolve(baseDir, relPath);
+  const rel = path.relative(baseDir, targetPath);
+  if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) {
+    if (fs.existsSync(targetPath)) {
+      try {
+        const stat = fs.statSync(targetPath);
+        if (stat.isFile()) {
+          return targetPath;
+        }
+      } catch {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+const server = http.createServer((req, res) => {
+  const rawUrl = req.url?.split('?')[0] || '/';
+  const cleanUrl = rawUrl === '/' ? '/index.html' : rawUrl;
+
+  const safeRelPath = sanitizeRelativePath(cleanUrl);
+  if (!safeRelPath) {
     res.writeHead(400, { 'Content-Type': 'text/plain' });
     res.end('400 Bad Request');
     return;
   }
 
-  const sanitizedRelPath = path.normalize(decodedPath).replace(/^[/\\]+/, '');
-
   const allowedDirs = [DIST_DIR, PUBLIC_DIR, ROOT_DIR];
   let resolvedFilePath = null;
 
   for (const baseDir of allowedDirs) {
-    const targetPath = path.resolve(baseDir, sanitizedRelPath);
-    if ((targetPath === baseDir || targetPath.startsWith(baseDir + path.sep)) && fs.existsSync(targetPath)) {
-      try {
-        const stat = fs.statSync(targetPath);
-        if (stat.isFile()) {
-          resolvedFilePath = targetPath;
-          break;
-        }
-      } catch {
-        // Skip on error
-      }
+    resolvedFilePath = resolveSafeFile(baseDir, safeRelPath);
+    if (resolvedFilePath) {
+      break;
     }
   }
 
