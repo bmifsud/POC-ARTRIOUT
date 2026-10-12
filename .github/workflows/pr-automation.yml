@@ -94,7 +94,7 @@ jobs:
       - name: Invoke Jules Automated PR Reviewer
         uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
         with:
-          api_key: ${{ secrets.JULES_API_KEY }}
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             You are acting as the automated code review agent for PR #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}".

@@ -41,7 +41,7 @@ jobs:
       - name: Invoke Jules Issue Resolver
         uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
         with:
-          api_key: ${{ secrets.JULES_API_KEY }}
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             Automatically scan, review, and resolve all open project issues across the repository.
