@@ -1,5 +1,5 @@
 import { ClickwrapConsent, MemorySanitizer, EphemeralFrameData } from '@ar-trion/compliance';
-import { HandTracker, NailExtractor, OcclusionMask, LightingEstimator, Point3D } from '@ar-trion/perception';
+import { HandTracker, NailExtractor, OcclusionMask, LightingEstimator, Point3D, LightingEstimate } from '@ar-trion/perception';
 import { WebGPURenderer, NailMaterialCatalog, RenderTransform } from '@ar-trion/rendering';
 
 export interface EngineConfig {
@@ -21,6 +21,14 @@ export class Engine {
   private mediaStream: MediaStream | null = null;
   private isRunning: boolean = false;
   private animationFrameId: number | null = null;
+
+  private cachedLighting: LightingEstimate = {
+    directionalLightVector: [0.577, 0.577, 0.577],
+    lightIntensity: 1.0,
+    environmentMapData: new Float32Array(64 * 64 * 3),
+    inferenceTimeMs: 0
+  };
+  private isEstimatingLighting: boolean = false;
 
   constructor(config: EngineConfig) {
     this.config = config;
@@ -85,7 +93,25 @@ export class Engine {
     return this.renderer.captureSnapshot();
   }
 
-  private loop = async (): Promise<void> => {
+  private triggerAsyncLightingUpdate(): void {
+    if (this.isEstimatingLighting || !this.videoElement || !this.isRunning) return;
+
+    this.isEstimatingLighting = true;
+    this.lightingEstimator.estimateLighting(this.videoElement)
+      .then((lighting) => {
+        if (this.isRunning) {
+          this.cachedLighting = lighting;
+        }
+      })
+      .catch((err) => {
+        console.warn('Asynchronous lighting estimation failed:', err);
+      })
+      .finally(() => {
+        this.isEstimatingLighting = false;
+      });
+  }
+
+  private loop = (): void => {
     if (!this.isRunning || !this.videoElement) return;
 
     const frameTimestamp = performance.now();
@@ -104,8 +130,9 @@ export class Engine {
         // 3. Evaluate occlusion on curled fingers
         const occlusionMap = this.occlusionMask.evaluateOcclusion(rawLandmarks, nailTransforms);
 
-        // 4. Estimate scene lighting via downsampled luminance distribution
-        const lighting = await this.lightingEstimator.estimateLighting(this.videoElement);
+        // 4. Estimate scene lighting asynchronously in background without blocking render loop
+        this.triggerAsyncLightingUpdate();
+        const lighting = this.cachedLighting;
 
         // 5. Build render transforms for unoccluded nails
         const activeMaterial = NailMaterialCatalog[this.config.selectedMaterialKey || 'highGlossCrimson'] || NailMaterialCatalog.highGlossCrimson;
@@ -168,6 +195,7 @@ export class Engine {
 
   public stop(): void {
     this.isRunning = false;
+    this.isEstimatingLighting = false;
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
