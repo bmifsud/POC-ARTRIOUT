@@ -63,9 +63,7 @@ export class ClickwrapConsent {
   ): Promise<void> {
     this.container = container;
 
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
+    container.replaceChildren();
 
     const modalOverlay = document.createElement('div');
     modalOverlay.id = 'bipa-consent-modal';
