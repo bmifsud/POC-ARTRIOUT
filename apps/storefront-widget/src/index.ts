@@ -634,37 +634,72 @@ export class StorefrontWidget {
     container.appendChild(actions);
   }
 
+  private isSessionStale(sessionId: number): boolean {
+    return this.isStopped || sessionId !== this.currentSessionId;
+  }
+
+  private async setupCameraStream(sessionId: number): Promise<MediaStream | null> {
+    const stream = await createProtectedCameraStream(this.consent);
+
+    if (this.isSessionStale(sessionId) || !this.viewportContainer) {
+      stream.getTracks().forEach(track => track.stop());
+      return null;
+    }
+
+    this.mediaStream = stream;
+    return stream;
+  }
+
+  private setupVideoElement(stream: MediaStream): HTMLVideoElement {
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.objectFit = 'cover';
+
+    if (this.viewportContainer) {
+      this.viewportContainer.appendChild(video);
+    }
+
+    this.videoElement = video;
+    return video;
+  }
+
+  private setupOverlay(): CameraOverlay | null {
+    if (!this.viewportContainer) return null;
+    const overlay = new CameraOverlay({ container: this.viewportContainer });
+    overlay.drawGuideUI();
+    this.overlay = overlay;
+    return overlay;
+  }
+
+  private async initializePerception(): Promise<void> {
+    this.handTracker = new HandTracker();
+    this.nailExtractor = new NailExtractor();
+    await this.handTracker.initialize({ wasmPath: "/wasm", modelAssetPath: "/models/hand_landmarker.task" });
+  }
+
+  private async initializeRenderer(): Promise<void> {
+    if (!this.overlay) return;
+    this.renderer = new WebGPURenderer(this.overlay.getCanvas());
+    await this.renderer.initialize();
+  }
+
   private async startARSession(sessionId: number): Promise<void> {
     try {
-      const stream = await createProtectedCameraStream(this.consent);
+      const stream = await this.setupCameraStream(sessionId);
+      if (!stream) return;
 
-      if (this.isStopped || sessionId !== this.currentSessionId || !this.viewportContainer) {
-        stream.getTracks().forEach(track => track.stop());
-        return;
-      }
+      this.setupVideoElement(stream);
+      this.setupOverlay();
 
-      this.mediaStream = stream;
+      await this.initializePerception();
+      if (this.isSessionStale(sessionId)) return;
 
-      this.videoElement = document.createElement('video');
-      this.videoElement.srcObject = this.mediaStream;
-      this.videoElement.autoplay = true;
-      this.videoElement.playsInline = true;
-      this.videoElement.style.width = '100%';
-      this.videoElement.style.height = '100%';
-      this.videoElement.style.objectFit = 'cover';
-      this.viewportContainer.appendChild(this.videoElement);
-
-      this.overlay = new CameraOverlay({ container: this.viewportContainer });
-      this.overlay.drawGuideUI();
-
-      this.handTracker = new HandTracker();
-      this.nailExtractor = new NailExtractor();
-      await this.handTracker.initialize({ wasmPath: "/wasm", modelAssetPath: "/models/hand_landmarker.task" });
-
-      if (this.isStopped || sessionId !== this.currentSessionId) return;
-
-      this.renderer = new WebGPURenderer(this.overlay.getCanvas());
-      await this.renderer.initialize();
+      await this.initializeRenderer();
+      if (this.isSessionStale(sessionId)) return;
 
       this.addStopButton();
 

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { generateSalonRecipeMarkdown, generateStyleDefinitionJson } from '../../apps/storefront-widget/src/utils/recipeGenerator';
 import { extractPaletteFromImage } from '../../apps/storefront-widget/src/utils/paletteExtractor';
+import { StorefrontWidget } from '../../apps/storefront-widget/src/index';
 
 test.describe('Storefront Widget Recipe Generator Unit Tests', () => {
   const sampleConfig = {
@@ -60,5 +61,28 @@ test.describe('Storefront Widget Palette Extractor Unit Tests', () => {
     await expect(extractPaletteFromImage(oversizeFile, 40)).rejects.toThrow(
       'File size exceeds maximum permitted limit of 40 MB'
     );
+  });
+});
+
+test.describe('Storefront Widget Lifecycle Unit Tests', () => {
+  test('should instantiate StorefrontWidget with default options and list available materials', () => {
+    const widget = new StorefrontWidget({ autoStart: false });
+    const materials = widget.getAvailableMaterials();
+
+    expect(materials).toContain('highGlossCrimson');
+    expect(materials).toContain('matteBlack');
+    expect(materials).toContain('roseGoldChrome');
+    expect(materials).toContain('pearlGlitter');
+  });
+
+  test('should set active material when valid key provided', () => {
+    const widget = new StorefrontWidget({ autoStart: false });
+    widget.setMaterial('roseGoldChrome');
+    expect(widget.getAvailableMaterials()).toContain('roseGoldChrome');
+  });
+
+  test('should stop session cleanly without throwing', () => {
+    const widget = new StorefrontWidget({ autoStart: false });
+    expect(() => widget.stop()).not.toThrow();
   });
 });
