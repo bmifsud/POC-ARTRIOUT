@@ -1,5 +1,6 @@
 # Stage 1: Build WASM artifacts using Emscripten
-FROM emscripten/emsdk:3.1.53 AS wasm-builder
+# Pin a more modern emsdk version that uses Node 18+ to satisfy esbuild/playwright engine constraints
+FROM emscripten/emsdk:3.1.61 AS wasm-builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
