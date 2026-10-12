@@ -1,1 +1,1 @@
-Qodo is busy working. No defects were provided.
+The Qodo code review output provided was 'Qodo is busy working' and contained no actionable defects.
