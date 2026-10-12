@@ -107,8 +107,9 @@ jobs:
             3. Evaluate BIPA Ephemeral Memory Sanitization & WebGPU Rendering:
                - Ensure `MemorySanitizer.ts` or `sanitizeFrame` is called to purge frame buffers and biometric arrays immediately after processing.
                - Enforce native WebGPU pipeline execution with a sub-16 ms (60 FPS) rendering frame budget; strictly reject WebGL fallback contexts.
-            4. If any automated QA gating condition, test coverage requirement (<80%), zero-egress policy, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
-            5. Automatically create GitHub project issues for all medium and low severity bugs identified during the code review process:
+            4. Verify multi-agent orchestrations and system models defined in AR trion.
+            5. If any automated QA gating condition, test coverage requirement (<80%), zero-egress policy, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
+            6. Automatically create GitHub project issues for all medium and low severity bugs identified during the code review process:
                - For each medium or low severity bug detected, use the GitHub API or CLI (`gh issue create`) to create a new issue.
                - Title format: "[<SeverityLevel>] Bug: <Brief Summary> (PR #${{ github.event.pull_request.number }})"
                - Body: Provide a clear description of the bug, location in code, impact, severity justification (Medium or Low), and steps/recommendations for remediation.
