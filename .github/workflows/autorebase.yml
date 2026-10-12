@@ -1,4 +1,4 @@
-name: Auto Rebase Open Pull Requests
+name: Auto Rebase Active Branches
 
 on:
   push:
@@ -7,11 +7,10 @@ on:
 
 permissions:
   contents: write
-  pull-requests: read
 
 jobs:
   autorebase:
-    name: Rebase Open Pull Requests
+    name: Rebase Active Feature Branches
     runs-on: ubuntu-latest
 
     steps:
@@ -31,74 +30,44 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Rebase Open PRs
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Rebase Active Branches
         run: |
           # Fetch all remote branches
           git fetch origin '+refs/heads/*:refs/remotes/origin/*'
 
-          # Get open pull requests targeting main
-          prs=$(gh api graphql --paginate --jq '.data.repository.pullRequests.nodes[]' -F owner='{owner}' -F name='{repo}' -f query='
-            query($name: String!, $owner: String!, $endCursor: String) {
-              repository(owner: $owner, name: $name) {
-                pullRequests(baseRefName: "main", states: OPEN, first: 100, after: $endCursor) {
-                  nodes {
-                    number
-                    headRefName
-                    isCrossRepository
-                  }
-                  pageInfo {
-                    hasNextPage
-                    endCursor
-                  }
-                }
-              }
-            }
-          ')
+          # Enumerate all remote branch names reliably
+          branches=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin | sed 's/^origin\///' | grep -v -E '^(HEAD|origin)$')
 
-          if [ -z "$prs" ]; then
-            echo "No open pull requests targeting main found."
-          else
-            echo "$prs" | jq -c '.' | while read -r pr; do
-              pr_number=$(echo "$pr" | jq -r '.number')
-              branch=$(echo "$pr" | jq -r '.headRefName')
-              is_fork=$(echo "$pr" | jq -r '.isCrossRepository')
+          for branch in $branches; do
+            # Skip main and release branches
+            if [ "$branch" = "main" ] || [[ "$branch" =~ ^release ]] || [[ "$branch" =~ ^releases/ ]]; then
+              echo "Skipping main/release branch: $branch"
+              continue
+            fi
 
-              echo "=============================================="
-              echo "Processing PR #${pr_number} (Branch: ${branch})"
+            echo "=============================================="
+            echo "Attempting rebase for branch: $branch"
 
-              if [ "$is_fork" = "true" ]; then
-                echo "Skipping PR #${pr_number} because it comes from a fork."
-                continue
+            # Clean workspace prior to branch checkout
+            git reset --hard
+            git clean -fd
+
+            if ! git checkout -B "$branch" "origin/$branch"; then
+              echo "::warning title=Checkout Failed::Failed to checkout branch $branch"
+              continue
+            fi
+
+            if git rebase origin/main; then
+              echo "Rebase succeeded for $branch. Pushing with force-with-lease..."
+              if git push --force-with-lease origin "$branch"; then
+                echo "Successfully pushed rebased branch $branch."
+              else
+                echo "::warning title=Push Failed::Failed to push $branch with force-with-lease."
               fi
-
-              if [ "$branch" = "main" ] || [[ "$branch" =~ ^release ]] || [[ "$branch" =~ ^releases/ ]]; then
-                echo "Skipping main/release branch: $branch"
-                continue
-              fi
-
-              # Clean workspace prior to branch checkout
+            else
+              echo "::warning title=Rebase Conflict::Merge conflicts encountered when rebasing $branch on origin/main. Aborting rebase."
+              git rebase --abort || true
               git reset --hard
               git clean -fd
-
-              if ! git checkout -B "$branch" "origin/$branch"; then
-                echo "::warning title=Checkout Failed::Failed to checkout branch $branch for PR #${pr_number}"
-                continue
-              fi
-
-              if git rebase origin/main; then
-                echo "Rebase succeeded for PR #${pr_number} (${branch}). Pushing with force-with-lease..."
-                if git push --force-with-lease origin "$branch"; then
-                  echo "Successfully pushed rebased branch $branch for PR #${pr_number}."
-                else
-                  echo "::warning title=Push Failed::Failed to push $branch with force-with-lease for PR #${pr_number}."
-                fi
-              else
-                echo "::warning title=Rebase Conflict::Merge conflicts encountered when rebasing PR #${pr_number} (${branch}) on origin/main. Aborting rebase."
-                git rebase --abort || true
-                git reset --hard
-                git clean -fd
-              fi
-            done
-          fi
+            fi
+          done

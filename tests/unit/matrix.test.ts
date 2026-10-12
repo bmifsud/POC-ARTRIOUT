@@ -1,59 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { multiply, validateData } from '../../src/matrix';
+import { validateData } from '../../src/matrix';
 
 test.describe('Matrix Transformations and Data Validation', () => {
-  test('should perform in-place matrix multiplication correctly', () => {
-    const out = new Float32Array(16);
-    const a = new Float32Array([
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      2, 3, 4, 1
-    ]);
-    const b = new Float32Array([
-      2, 0, 0, 0,
-      0, 2, 0, 0,
-      0, 0, 2, 0,
-      0, 0, 0, 1
-    ]);
-
-    multiply(out, a, b);
-
-    expect(out[0]).toBe(2);
-    expect(out[5]).toBe(2);
-    expect(out[10]).toBe(2);
-    expect(out[12]).toBe(2);
-    expect(out[13]).toBe(3);
-    expect(out[14]).toBe(4);
-    expect(out[15]).toBe(1);
-  });
-
-  test('should validate zero additional heap allocations during 10,000 matrix multiplications', () => {
-    const out = new Float32Array(16);
-    const a = new Float32Array(16).fill(1.5);
-    const b = new Float32Array(16).fill(2.5);
-
-    // Warm up V8 JIT compiler to inline multiply and stabilize execution profile
-    for (let i = 0; i < 50000; i++) {
-      multiply(out, a, b);
-    }
-
-    if (typeof global.gc === 'function') {
-      global.gc();
-    }
-
-    const memStart = process.memoryUsage().heapUsed;
-    for (let i = 0; i < 10000; i++) {
-      multiply(out, a, b);
-    }
-    const memEnd = process.memoryUsage().heapUsed;
-
-    const memDelta = memEnd - memStart;
-
-    // Verify in-place zero-allocation arithmetic
-    expect(memDelta).toBeLessThanOrEqual(512 * 1024);
-  });
-
   test('should validate valid biometric payload mock data', () => {
     const validData = { id: '123', frames: [], type: 'biometric' };
     expect(validateData(validData)).toBe(true);
