@@ -35,32 +35,27 @@ The following workflows are configured under `.github/workflows/`:
 
 ### 1. Bug Fixer (`.github/workflows/bug-fixer.yml`)
 * **Trigger**: `issues` (`opened`, `labeled` with `bug` or `jules:fix`).
-* **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Automatically analyzes reported bugs, reproduces issues in tests, applies minimal fixes, and submits a pull request.
 
 ### 2. CI Failure Remediation (`.github/workflows/ci-failure-fix.yml` & `.github/workflows/jules-ci-healing.yml`)
 * **Trigger**: `workflow_run` completion on failure of core Continuous Integration.
-* **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Analyzes failing build/test logs, reproduces failures, applies minimal remediation, and opens a fix pull request.
 
 ### 3. Performance Improver (`.github/workflows/performance-improver.yml`)
 * **Trigger**: `issues` or `pull_request` labeled with `performance` or `jules:opt`.
-* **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Identifies and optimizes performance bottlenecks in WebGPU rendering, memory allocation, or ML inference loops without compromising BIPA zero-retention compliance.
 
 ### 4. Unblocked Issues Resolver (`.github/workflows/unblocked-issues.yml`)
 * **Trigger**: `issues` (`unlabeled` when `blocked` label is removed).
-* **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Resumes work on unblocked tasks, implements required logic, and submits a pull request once tests pass.
 
-### 5. Open Issues Resolver (`.github/workflows/close-low-priority-issues.yml`)
-* **Trigger**: `schedule` (Daily at 02:00 UTC `0 2 * * *`), `workflow_dispatch`, or `issues` (`opened`, `labeled`, `reopened`).
-* **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
-* **Purpose**: Automatically scans, reviews, and resolves all open project issues across the repository, implementing fixes, posting review finding comments, and closing obsolete or completed issues.
-
-### 6. Weekly Codebase Cleanup (`.github/workflows/weekly-cleanup.yml`)
+### 5. Weekly Codebase Cleanup (`.github/workflows/weekly-cleanup.yml`)
 * **Trigger**: `schedule` (Weekly on Sunday at midnight `0 0 * * 0`) or `workflow_dispatch`.
-* **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
+* **Action**: `google-labs-code/jules-action@v1.0.0`
 * **Purpose**: Conducts routine dead code removal, lint/formatting cleanup, and dependency health checks.
 
 ---
