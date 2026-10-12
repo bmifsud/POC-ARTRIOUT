@@ -2,15 +2,15 @@ name: Jules Qodo Defect Fixer
 
 on:
   pull_request:
-    types: [opened, synchronize, labeled, edited]
+    types: [opened, synchronize, labeled]
   pull_request_review:
-    types: [submitted, edited]
+    types: [submitted]
   pull_request_review_comment:
-    types: [created, edited]
+    types: [created]
   issue_comment:
-    types: [created, edited]
+    types: [created]
   issues:
-    types: [opened, labeled, edited]
+    types: [opened, labeled]
 
 permissions:
   contents: read
@@ -26,10 +26,6 @@ jobs:
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
       github.actor != 'github-actions[bot]' &&
-      !contains(github.event.comment.body, 'Qodo is busy working') &&
-      !contains(github.event.review.body, 'Qodo is busy working') &&
-      !contains(github.event.pull_request.body, 'Qodo is busy working') &&
-      !contains(github.event.issue.body, 'Qodo is busy working') &&
       (
         (github.event_name == 'pull_request' && (contains(github.event.pull_request.labels.*.name, 'qodo-fix') || contains(github.event.pull_request.labels.*.name, 'qodo:fix') || contains(github.event.pull_request.labels.*.name, 'qodo-review') || github.event.label.name == 'qodo-fix' || github.event.label.name == 'qodo:fix' || github.event.label.name == 'qodo-review')) ||
         (github.event_name == 'pull_request_review' && (contains(github.event.review.body, 'Qodo') || contains(github.event.review.body, 'qodo'))) ||
@@ -57,7 +53,7 @@ jobs:
       - name: Invoke Jules Qodo Defect Fixer
         uses: google-labs-code/jules-action@v1.0.0
         with:
-          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
             A Qodo code review output has identified defects that require automated remediation.
