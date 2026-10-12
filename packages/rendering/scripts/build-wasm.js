@@ -47,18 +47,26 @@ if (hasEmcc) {
   }
 } else {
   const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
+  const wasmTarget = targetPath.replace('.js', '.wasm');
+  const jsTarget = targetPath;
+
   if (process.env.NODE_ENV === 'production') {
-    if (!fs.existsSync(targetPath)) {
+    if (!fs.existsSync(wasmTarget) || !fs.existsSync(jsTarget)) {
       console.error('emcc not found in path and no prebuilt artifact exists. A valid artifact is required for production builds.');
       process.exit(1);
     } else {
+      const wasmStats = fs.statSync(wasmTarget);
+      if (wasmStats.size <= 8) {
+        console.error('The existing prebuilt artifact is a mock placeholder. A genuine compiled artifact is required for production builds.');
+        process.exit(1);
+      }
       console.log('emcc not found, but prebuilt artifact exists. Proceeding with production build.');
     }
   } else if (process.env.CI === 'true') {
     console.log('emcc not found in path (CI mode). Simulating compilation and generating mock artifact.');
     const minimalWasmBinary = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
-    fs.writeFileSync(targetPath, minimalWasmBinary);
-    fs.writeFileSync(targetPath.replace('.wasm', '.js'), 'export function createARRendererModule() { return {}; }');
+    fs.writeFileSync(wasmTarget, minimalWasmBinary);
+    fs.writeFileSync(jsTarget, 'export default function createARRendererModule() { return {}; }');
   } else {
     console.error('emcc not found in path. A valid emcc installation is required outside of CI/production environments.');
     process.exit(1);
