@@ -1,7 +1,7 @@
 name: Jules Auto Conflict Resolver
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened, labeled]
 
 permissions:
@@ -17,7 +17,6 @@ jobs:
     if: >
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
-      github.actor != 'github-actions[bot]' &&
       (contains(github.event.pull_request.labels.*.name, 'has conflicts') || github.event.label.name == 'has conflicts' || github.event.label.name == 'resolve-conflicts')
     runs-on: ubuntu-latest
     permissions:
@@ -35,9 +34,11 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Invoke Jules Conflict Resolver
-        uses: google-labs-code/jules-action@v1.0.0
+        uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
