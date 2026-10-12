@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node scripts/serve.js",
     "build": "node scripts/build.js",
+    "build:wasm": "tsx packages/rendering/scripts/build-wasm.js",
     "lint": "tsc --noEmit",
     "test:unit": "playwright test tests/unit",
     "test:audit": "playwright test tests/network-audits/zero-egress.spec.ts",
