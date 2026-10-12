@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.5.0...v1.6.0) (2026-10-12)
+
+
+### Features
+
+* **ci:** configure workflow to scan and resolve all issues ([7144dc0](https://github.com/bmifsud/POC-ARTRIOUT/commit/7144dc02c82234054e136054137ef62849fb68ab))
+* **ci:** configure workflow to scan and resolve all issues ([f1eca2c](https://github.com/bmifsud/POC-ARTRIOUT/commit/f1eca2cbddceecb80978261168ef6249428db55e))
+
 ## [1.5.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.4.2...v1.5.0) (2026-10-12)
 
 
