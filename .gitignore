@@ -5,3 +5,10 @@ build/
 playwright-report/
 test-results/
 work/models/
+packages/**/*.js
+packages/**/*.js.map
+!packages/rendering/scripts/build-wasm.js
+apps/**/*.js
+apps/**/*.js.map
+src/**/*.js
+src/**/*.js.map
