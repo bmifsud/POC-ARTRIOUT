@@ -1,1 +1,1 @@
-export default function createARRendererModule() { return {}; }
+export function createARRendererModule() { return {}; }

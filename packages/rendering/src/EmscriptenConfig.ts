@@ -15,11 +15,8 @@ export const EMSCRIPTEN_WEBGPU_CONFIG: EmscriptenBuildConfig = {
     "-s MAXIMUM_MEMORY=2147483648",
     "-s NO_WEBGL=1",
     "-s DEPRECATE_WEBGL=1",
-    "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','WebGPU']",
-    "-s MODULARIZE=1",
-    "-s EXPORT_NAME='createARRendererModule'",
-    "-s EXPORT_ES6=1"
+    "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','WebGPU']"
   ],
-  target: "public/wasm/ar_renderer.js",
+  target: "public/wasm/ar_renderer.wasm",
   exportName: "createARRendererModule"
 };
