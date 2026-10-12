@@ -50,6 +50,16 @@ if (hasEmcc) {
     console.log('emcc not found in path. Simulating compilation and generating mock artifact.');
     fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm')), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
     fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'export function createARRendererModule() { return {}; }');
+  } else if (process.env.NODE_ENV === 'production') {
+    console.log('emcc not found in path in production environment. Verifying prebuilt artifacts exist...');
+    const wasmTarget = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm'));
+    const jsTarget = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
+    if (fs.existsSync(wasmTarget) && fs.existsSync(jsTarget)) {
+       console.log('Prebuilt artifacts found. Proceeding with build.');
+    } else {
+       console.error('Prebuilt artifacts not found in production environment! Run build locally to generate them before deployment.');
+       process.exit(1);
+    }
   } else {
     console.error('emcc not found in path and not in CI environment. Failing build.');
     process.exit(1);
