@@ -20,28 +20,75 @@ const MIME_TYPES = {
   '.glb': 'model/gltf-binary'
 };
 
+function sanitizeRelativePath(urlPath) {
+  if (!urlPath) return 'index.html';
+  let decoded = urlPath;
+  try {
+    decoded = decodeURIComponent(urlPath);
+  } catch {
+    return null;
+  }
+  decoded = decoded.replace(/\0/g, '');
+  const normalized = path.normalize(decoded).replace(/^([./\\])+/, '');
+  if (normalized.includes('..')) {
+    return null;
+  }
+  return normalized || 'index.html';
+}
+
+function resolveSafeFile(baseDir, relPath) {
+  const targetPath = path.resolve(baseDir, relPath);
+  const rel = path.relative(baseDir, targetPath);
+  if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) {
+    if (fs.existsSync(targetPath)) {
+      try {
+        const stat = fs.statSync(targetPath);
+        if (stat.isFile()) {
+          return targetPath;
+        }
+      } catch {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
 const server = http.createServer((req, res) => {
-  let reqPath = req.url?.split('?')[0] || '/';
-  if (reqPath === '/') reqPath = '/index.html';
+  const rawUrl = req.url?.split('?')[0] || '/';
+  const cleanUrl = rawUrl === '/' ? '/index.html' : rawUrl;
 
-  const safePath = path.normalize(reqPath).replace(/^(\.\.[/\\])+/, '');
-
-  let filePath = path.join(DIST_DIR, safePath);
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(PUBLIC_DIR, safePath);
-  }
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(ROOT_DIR, safePath);
+  const safeRelPath = sanitizeRelativePath(cleanUrl);
+  if (!safeRelPath) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' });
+    res.end('400 Bad Request');
+    return;
   }
 
-  fs.readFile(filePath, (err, data) => {
+  const allowedDirs = [DIST_DIR, PUBLIC_DIR, ROOT_DIR];
+  let resolvedFilePath = null;
+
+  for (const baseDir of allowedDirs) {
+    resolvedFilePath = resolveSafeFile(baseDir, safeRelPath);
+    if (resolvedFilePath) {
+      break;
+    }
+  }
+
+  if (!resolvedFilePath) {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('404 Not Found');
+    return;
+  }
+
+  fs.readFile(resolvedFilePath, (err, data) => {
     if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found');
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('500 Internal Server Error');
       return;
     }
 
-    const ext = path.extname(filePath);
+    const ext = path.extname(resolvedFilePath);
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
     res.writeHead(200, {

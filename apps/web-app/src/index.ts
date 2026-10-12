@@ -1,4 +1,4 @@
-import { ClickwrapConsentModal, createProtectedCameraStream, ConsentStore, ConsentRecord } from "@ar-trion/compliance";
+import { ClickwrapConsentModal, ClickwrapConsent, createProtectedCameraStream, ConsentStore, ConsentRecord } from "@ar-trion/compliance";
 import { LocalInferenceRuntime } from "@ar-trion/perception";
 import { WebGPUCapabilityDetector } from "@ar-trion/rendering";
 
@@ -18,11 +18,15 @@ export async function bootstrapApp(container: HTMLElement): Promise<void> {
     return;
   }
 
+  const consentStore = new MemoryConsentStore();
+  const consent = new ClickwrapConsent(consentStore);
+
   const modal = new ClickwrapConsentModal({
-    store: new MemoryConsentStore(),
+    store: consentStore,
+    consentInstance: consent,
     onConsentGranted: async (record) => {
       console.log("Consent granted:", record);
-      const stream = await createProtectedCameraStream();
+      const stream = await createProtectedCameraStream(consent);
       console.log("Protected camera stream initialized with zero-egress:", stream);
     },
     onConsentDeclined: () => {

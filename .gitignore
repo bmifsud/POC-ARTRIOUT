@@ -7,3 +7,10 @@ test-results/
 work/models/
 coverage/
 .nyc_output/
+packages/**/*.js
+packages/**/*.js.map
+!packages/rendering/scripts/build-wasm.js
+apps/**/*.js
+apps/**/*.js.map
+src/**/*.js
+src/**/*.js.map

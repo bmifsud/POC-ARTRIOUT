@@ -18,7 +18,20 @@ jobs:
       github.actor != 'google-labs-jules[bot]' &&
       github.actor != 'google-labs-jules' &&
       github.actor != 'github-actions[bot]' &&
-      (contains(github.event.pull_request.labels.*.name, 'has conflicts') || github.event.label.name == 'has conflicts' || github.event.label.name == 'resolve-conflicts')
+      (
+        contains(github.event.pull_request.labels.*.name, 'has conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'has-conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'conflict') ||
+        contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') ||
+        contains(github.event.pull_request.labels.*.name, 'has_conflicts') ||
+        github.event.label.name == 'has conflicts' ||
+        github.event.label.name == 'has-conflicts' ||
+        github.event.label.name == 'conflicts' ||
+        github.event.label.name == 'conflict' ||
+        github.event.label.name == 'resolve-conflicts' ||
+        github.event.label.name == 'has_conflicts'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -47,5 +60,5 @@ jobs:
             Remediation Tasks:
             1. Fetch target branch '${{ github.event.pull_request.base.ref }}' and merge or rebase into branch '${{ github.event.pull_request.head.ref }}'.
             2. Resolve all merge conflicts accurately.
-            3. Verify that all standard project checks (`npm run lint`, `npm run test:unit`, `npm run test:audit`) pass cleanly after resolving conflicts.
+            3. Verify that all standard project checks (`npm run lint`, `npm run test:gate`) pass cleanly after resolving conflicts.
             4. Push the conflict-resolved branch back to the pull request.

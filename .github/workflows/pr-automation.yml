@@ -1,7 +1,9 @@
 name: PR Automation
 
 on:
-  pull_request:
+  push:
+    branches: [main]
+  pull_request_target:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
@@ -30,13 +32,14 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Label Merge Conflicts
-        uses: eps1lon/actions-label-merge-conflict@v3
+        uses: eps1lon/actions-label-merge-conflict@0273be72a0bbd58fcd71d0d6c02c209b50d1e5e1 # v3.1.0
         with:
           dirtyLabel: "has conflicts"
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
 
   auto-label:
     name: Auto Label PR
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -52,6 +55,8 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Label based on files changed
         uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5.0.0
@@ -61,12 +66,15 @@ jobs:
   review-pr:
     name: Jules Automated PR Review
     if: >
+      github.event_name == 'pull_request_target' &&
       github.actor != 'google-labs-jules[bot]' &&
+      github.actor != 'google-labs-jules' &&
       github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
+      issues: write
 
     steps:
       - name: Harden Runner Environment
@@ -77,10 +85,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
           persist-credentials: false
 
       - name: Invoke Jules Automated PR Reviewer
-        uses: google-labs-code/jules-action@v1.0.0
+        uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
         with:
           api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -98,3 +108,8 @@ jobs:
                - Ensure `MemorySanitizer.ts` or `sanitizeFrame` is called to purge frame buffers and biometric arrays immediately after processing.
                - Enforce native WebGPU pipeline execution with a sub-16 ms (60 FPS) rendering frame budget; strictly reject WebGL fallback contexts.
             4. If any automated QA gating condition, test coverage requirement (<80%), zero-egress policy, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
+            5. Automatically create GitHub project issues for all medium and low severity bugs identified during the code review process:
+               - For each medium or low severity bug detected, use the GitHub API or CLI (`gh issue create`) to create a new issue.
+               - Title format: "[<SeverityLevel>] Bug: <Brief Summary> (PR #${{ github.event.pull_request.number }})"
+               - Body: Provide a clear description of the bug, location in code, impact, severity justification (Medium or Low), and steps/recommendations for remediation.
+               - Labels: Apply appropriate labels such as `bug` and severity labels (e.g. `severity: medium`, `severity: low`).
