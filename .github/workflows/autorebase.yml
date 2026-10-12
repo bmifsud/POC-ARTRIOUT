@@ -1,0 +1,64 @@
+name: Auto Rebase Active Branches
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  autorebase:
+    name: Rebase Active Feature Branches
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner Environment
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git Credentials
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Rebase Active Branches
+        run: |
+          # Fetch all remote branches
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+
+          # List remote branches excluding origin/HEAD
+          branches=$(git branch -r | grep -v 'origin/HEAD' | sed 's/^[ ]*origin\///')
+
+          for branch in $branches; do
+            # Skip main and release branches
+            if [ "$branch" = "main" ] || [[ "$branch" =~ ^release ]]; then
+              echo "Skipping branch: $branch"
+              continue
+            fi
+
+            echo "----------------------------------------------"
+            echo "Attempting rebase for branch: $branch"
+
+            git checkout -B "$branch" "origin/$branch"
+
+            if git rebase origin/main; then
+              echo "Rebase succeeded for $branch. Pushing with force-with-lease..."
+              if git push --force-with-lease origin "$branch"; then
+                echo "Successfully pushed rebased branch $branch."
+              else
+                echo "::warning title=Push Failed::Failed to push $branch with force-with-lease."
+              fi
+            else
+              echo "::warning title=Rebase Conflict::Merge conflicts encountered when rebasing $branch on origin/main. Aborting rebase."
+              git rebase --abort
+            fi
+          done
