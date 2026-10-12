@@ -50,6 +50,14 @@ if (hasEmcc) {
   console.log('emcc not found in path. CI environment detected. Simulating compilation and generating mock artifact.');
   fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.js', '.wasm')), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
   fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), 'export default function createARRendererModule() { return Promise.resolve({}); }');
+} else if (process.env.NODE_ENV === 'production') {
+  const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
+  if (fs.existsSync(targetPath)) {
+    console.log('emcc not found, but prebuilt artifact exists in production mode. Proceeding.');
+  } else {
+    console.error('emcc not found in path. Emscripten compilation is required for production builds.');
+    process.exit(1);
+  }
 } else {
   console.error('emcc not found in path. Emscripten compilation is required for production builds.');
   process.exit(1);
