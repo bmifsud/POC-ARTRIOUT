@@ -12,3 +12,4 @@ apps/**/*.js
 apps/**/*.js.map
 src/**/*.js
 src/**/*.js.map
+public/wasm/ar_renderer.js
