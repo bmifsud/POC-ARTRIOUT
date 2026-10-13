@@ -17,7 +17,8 @@ export const EMSCRIPTEN_WEBGPU_CONFIG: EmscriptenBuildConfig = {
     "-s DEPRECATE_WEBGL=1",
     "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','WebGPU']",
     "-s MODULARIZE=1",
-    "-s EXPORT_NAME='createARRendererModule'"
+    "-s EXPORT_NAME='createARRendererModule'",
+    "-s EXPORT_ES6=1"
   ],
   target: "public/wasm/ar_renderer.js",
   exportName: "createARRendererModule"

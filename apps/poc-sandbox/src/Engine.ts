@@ -6,6 +6,7 @@ export interface EngineConfig {
   canvasElement: HTMLCanvasElement;
   modalContainer: HTMLElement;
   selectedMaterialKey?: string;
+  onFrame?: (time: number) => void;
 }
 
 export class Engine {
@@ -30,6 +31,10 @@ export class Engine {
     this.occlusionMask = new OcclusionMask();
     this.lightingEstimator = new LightingEstimator();
     this.renderer = new WebGPURenderer(config.canvasElement);
+  }
+
+  public getIsRunning(): boolean {
+    return this.isRunning;
   }
 
   public async start(): Promise<void> {
@@ -92,6 +97,10 @@ export class Engine {
     let currentFrameData: EphemeralFrameData | null = null;
 
     try {
+      if (this.config.onFrame) {
+        this.config.onFrame(frameTimestamp);
+      }
+
       // 1. Track hand landmarks via MediaPipe Wasm GPU
       const result = this.handTracker.detectForVideo(this.videoElement, frameTimestamp);
 
@@ -152,7 +161,8 @@ export class Engine {
         };
       }
     } catch (err) {
-      console.error('Error in AR Engine animation tick:', err);
+      console.error("Frame execution error:", err);
+      this.stop();
     } finally {
       // 7. EPHEMERAL RAM MEMORY HYGIENE:
       if (currentFrameData) {
@@ -161,7 +171,9 @@ export class Engine {
       }
 
       if (this.isRunning) {
-        this.animationFrameId = requestAnimationFrame(this.loop);
+        if (typeof requestAnimationFrame !== 'undefined') {
+          this.animationFrameId = requestAnimationFrame(this.loop);
+        }
       }
     }
   };
@@ -169,7 +181,9 @@ export class Engine {
   public stop(): void {
     this.isRunning = false;
     if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
+      if (typeof cancelAnimationFrame !== 'undefined') {
+        cancelAnimationFrame(this.animationFrameId);
+      }
       this.animationFrameId = null;
     }
 
