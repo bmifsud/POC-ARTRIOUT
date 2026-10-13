@@ -54,7 +54,7 @@ The following workflows are configured under `.github/workflows/`:
 * **Purpose**: Resumes work on unblocked tasks, implements required logic, and submits a pull request once tests pass.
 
 ### 5. Open Issues Resolver (`.github/workflows/close-low-priority-issues.yml`)
-* **Trigger**: `schedule` (Daily at 02:00 UTC `0 2 * * *`), `workflow_dispatch`, or `issues` (`opened`, `labeled`, `reopened`).
+* **Trigger**: `schedule` (Daily at 02:00 UTC `0 2 * * *`), or `workflow_dispatch`.
 * **Action**: `google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0`
 * **Purpose**: Automatically scans, reviews, and resolves all open project issues across the repository, implementing fixes, posting review finding comments, and closing obsolete or completed issues.
 

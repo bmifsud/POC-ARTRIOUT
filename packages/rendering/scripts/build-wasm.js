@@ -1,4 +1,3 @@
-#!/usr/bin/env -S npx tsx
 /**
  * Emscripten compilation runner for AR Trion WebGPU & WASM pipeline.
  * Ensures compilation flags enforce multi-threaded WebGPU and explicitly forbid WebGL.
@@ -22,7 +21,6 @@ for (const flag of EMSCRIPTEN_WEBGPU_CONFIG.flags) {
 }
 console.log('WebGL Status: Explicitly deprecated and disabled.');
 
-// We mock emcc if it's not present because CI environments don't have emscripten installed in this project setup.
 const hasEmcc = (() => {
   try {
     execSync('which emcc', { stdio: 'ignore' });
@@ -51,13 +49,17 @@ if (hasEmcc) {
      process.exit(1);
   }
 } else {
-  if (process.env.CI === 'true') {
+  const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
+  const wasmTarget = targetPath.endsWith('.wasm') ? targetPath : targetPath.replace(/\.js$/, '.wasm');
+  const jsTarget = targetPath.endsWith('.wasm') ? targetPath.replace(/\.wasm$/, '.js') : targetPath;
+
+  if (process.env.CI === 'true' || process.env.MOCK_WASM_FOR_TESTS === 'true') {
     console.log('emcc not found in path. Simulating compilation and generating mock artifact.');
-    fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
-    fs.writeFileSync(path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target.replace('.wasm', '.js')), 'export function createARRendererModule() { return {}; }');
-  } else if (process.env.NODE_ENV === 'production') {
-    const targetPath = path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target);
-    if (fs.existsSync(targetPath)) {
+    const minimalWasmBinary = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
+    fs.writeFileSync(wasmTarget, minimalWasmBinary);
+    fs.writeFileSync(jsTarget, 'export function createARRendererModule() { return {}; }');
+  } else if (process.env.NODE_ENV === 'production' || process.env.RENDER === 'true') {
+    if (fs.existsSync(wasmTarget)) {
       console.log('emcc not found, but running in production mode. Utilizing existing prebuilt WASM artifact.');
     } else {
       console.error('emcc not found and no prebuilt artifact exists for production deployment. Compilation cannot proceed.');
