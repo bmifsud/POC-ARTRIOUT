@@ -13,18 +13,20 @@ export interface ConsentStore {
 
 export const POLICY_VERSION = '1.0.0';
 
-function generateSecureId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
+export function generateSecureId(): string {
+  const cryptoObj = typeof crypto !== 'undefined' ? crypto : (typeof globalThis !== 'undefined' ? globalThis.crypto : undefined);
+  if (cryptoObj && typeof cryptoObj.randomUUID === 'function') {
+    return cryptoObj.randomUUID();
   }
-  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+  if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
     const bytes = new Uint8Array(16);
-    crypto.getRandomValues(bytes);
+    cryptoObj.getRandomValues(bytes);
     bytes[6] = (bytes[6] & 0x0f) | 0x40;
     bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0'));
+    return `${hex.slice(0, 4).join("")}-${hex.slice(4, 6).join("")}-${hex.slice(6, 8).join("")}-${hex.slice(8, 10).join("")}-${hex.slice(10, 16).join("")}`;
   }
-  return 'consent-' + Date.now().toString(36);
+  throw new Error("Cryptographically secure random number generator is unavailable.");
 }
 
 export class ClickwrapConsent {
