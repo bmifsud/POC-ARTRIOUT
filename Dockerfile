@@ -2,7 +2,7 @@ FROM emscripten/emsdk:3.1.53 as wasm-builder
 WORKDIR /app
 COPY . .
 RUN npm ci
-RUN npx tsx packages/rendering/scripts/build-wasm.js
+RUN npx -y tsx packages/rendering/scripts/build-wasm.js
 
 FROM node:20-alpine
 WORKDIR /app
