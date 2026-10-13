@@ -37,7 +37,8 @@ if (hasEmcc) {
   console.log('Running real emcc compilation...');
   const cppFile = path.resolve(__dirname, '../src/cpp/ar_renderer.cpp');
   if (fs.existsSync(cppFile)) {
-     const command = `emcc ${cppFile} -o ${path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target)} ${EMSCRIPTEN_WEBGPU_CONFIG.flags.join(' ')}`;
+     // use em++ since there are standard library objects (std::cout) in the cpp file
+     const command = `em++ ${cppFile} -o ${path.resolve(rootDir, EMSCRIPTEN_WEBGPU_CONFIG.target)} ${EMSCRIPTEN_WEBGPU_CONFIG.flags.join(' ')}`;
      execSync(command, { stdio: 'inherit' });
   } else {
      console.error('Source file not found!');
