@@ -90,7 +90,7 @@ class TestCleanupPullRequests(unittest.TestCase):
         mock_repo.get_pulls.return_value = [mock_pr1, mock_pr2]
 
         mock_ref = MagicMock()
-        mock_repo.get_git_ref.return_value = mock_ref
+        mock_pr1.head.repo.get_git_ref.return_value = mock_ref
 
         processed = cleanup_pull_requests(
             github_token="fake_token",
@@ -103,7 +103,7 @@ class TestCleanupPullRequests(unittest.TestCase):
         mock_pr1.edit.assert_called_once_with(state="closed")
         mock_pr2.edit.assert_not_called()
 
-        mock_repo.get_git_ref.assert_called_once_with("heads/fix/task-123456")
+        mock_pr1.head.repo.get_git_ref.assert_called_once_with("heads/fix/task-123456")
         mock_ref.delete.assert_called_once()
 
         mock_delete_session.assert_called_once_with(
