@@ -136,9 +136,13 @@ def cleanup_pull_requests(
                 logger.info(f"[DRY-RUN] Would delete branch '{branch_name}'")
             else:
                 try:
-                    ref = repo.get_git_ref(f"heads/{branch_name}")
-                    ref.delete()
-                    logger.info(f"Deleted branch '{branch_name}'")
+                    head_repo = pr.head.repo
+                    if head_repo:
+                        ref = head_repo.get_git_ref(f"heads/{branch_name}")
+                        ref.delete()
+                        logger.info(f"Deleted branch '{branch_name}' from repository '{head_repo.full_name}'")
+                    else:
+                        logger.warning(f"Could not determine head repository to delete branch '{branch_name}'")
                 except GithubException as e:
                     logger.warning(f"Could not delete branch '{branch_name}': {e}")
 
