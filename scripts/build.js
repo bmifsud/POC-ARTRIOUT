@@ -11,6 +11,10 @@ console.log('Building AR Trion production artifacts...');
 // 1. Ensure public assets exist
 execSync('node scripts/init-assets.js', { stdio: 'inherit' });
 
+// 1.5. Compile Renderer WASM Artifacts
+console.log('Compiling WASM renderer...');
+execSync('npm run build:wasm', { stdio: 'inherit' });
+
 // 2. Execute Vite build for edge-optimized bundling (fail hard if build errors occur)
 console.log('Executing Vite build...');
 execSync('npx vite build', { stdio: 'inherit' });

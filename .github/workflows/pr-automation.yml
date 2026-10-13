@@ -97,6 +97,7 @@ jobs:
           prompt: |
             You are acting as the automated code review agent for PR #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}".
 
+<<<<<<< HEAD
             Review Directives & Automated QA Gate Constraints:
             1. Validate Test Coverage & QA Gating Results:
                - Inspect the latest test coverage results to verify minimum 80% coverage across lines, statements, and functions.
@@ -107,10 +108,21 @@ jobs:
             3. Evaluate BIPA Ephemeral Memory Sanitization & WebGPU Rendering:
                - Ensure `MemorySanitizer.ts` or `sanitizeFrame` is called to purge frame buffers and biometric arrays immediately after processing.
                - Enforce native WebGPU pipeline execution with a sub-16 ms (60 FPS) rendering frame budget; strictly reject WebGL fallback contexts.
-            4. Verify multi-agent orchestrations and system models defined in AR trion.
-            5. If any automated QA gating condition, test coverage requirement (<80%), zero-egress policy, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
-            6. Automatically create GitHub project issues for all medium and low severity bugs identified during the code review process:
+            4. If any automated QA gating condition, test coverage requirement (<80%), zero-egress policy, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
+            5. Automatically create GitHub project issues for all medium and low severity bugs identified during the code review process:
                - For each medium or low severity bug detected, use the GitHub API or CLI (`gh issue create`) to create a new issue.
+=======
+            Review Directives & Architectural Constraints:
+            1. Evaluate all changes against strict project baselines defined in AR trion:
+               - Zero-Egress Network Compliance: Ensure no camera frame data or biometric landmarks are transmitted off-device (`NetworkEgressGuard.ts`).
+               - BIPA Ephemeral Memory Sanitization: Ensure `MemorySanitizer.ts` or `sanitizeFrame` is called to purge frame buffers and biometric arrays immediately after processing.
+               - WebGPU Rendering Performance: Enforce native WebGPU pipeline execution with a sub-16 ms (60 FPS) rendering frame budget; strictly reject WebGL fallback contexts.
+               - Multi-Agent Orchestration & System Models: Verify orchestration endpoints, model configuration, persona configuration, and agent execution flow to ensure local-only model routing.
+            2. Limit Pull Request code review feedback and comments strictly to addressing CRITICAL and HIGH severity issues/findings.
+            3. If a critical or high severity architectural constraint, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
+            4. Do NOT block or comment on the PR for medium and low severity feedback. Instead, automatically log all medium and low severity feedback as GitHub project issues for later review:
+               - For each medium or low severity issue/bug detected, use the GitHub API or CLI (`gh issue create`) to create a new issue.
+>>>>>>> origin/main
                - Title format: "[<SeverityLevel>] Bug: <Brief Summary> (PR #${{ github.event.pull_request.number }})"
-               - Body: Provide a clear description of the bug, location in code, impact, severity justification (Medium or Low), and steps/recommendations for remediation.
+               - Body: Provide a clear description of the finding, location in code, impact, severity justification (Medium or Low), and steps/recommendations for remediation.
                - Labels: Apply appropriate labels such as `bug` and severity labels (e.g. `severity: medium`, `severity: low`).

@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node scripts/serve.js",
     "build": "node scripts/build.js",
+    "build:wasm": "tsx packages/rendering/scripts/build-wasm.js",
     "lint": "tsc --noEmit",
     "test:unit": "playwright test tests/unit",
     "test:audit": "playwright test tests/network-audits/zero-egress.spec.ts",
@@ -27,6 +28,10 @@
     "onnxruntime-web": "^1.18.0",
     "playwright": "^1.42.0",
     "typescript": "^5.3.3",
-    "vite": "^5.1.0"
+    "vite": "^5.1.0",
+    "tsx": "^4.19.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }
