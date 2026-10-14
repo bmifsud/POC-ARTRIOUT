@@ -1,0 +1,30 @@
+name: Jules Auto Resume
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  auto-resume:
+    name: Auto Resume Failed Session
+    if: ${{ github.event.workflow_run.conclusion == 'failure' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Execute Resume Session
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        run: npx tsx scripts/resume_session.ts
