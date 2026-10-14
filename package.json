@@ -34,5 +34,15 @@
   },
   "devDependencies": {
     "c8": "^10.1.3"
+  },
+  "c8": {
+    "include": [
+      "packages/compliance/src/MemorySanitizer.ts",
+      "packages/perception/src/mediapipe/NailExtractor.ts",
+      "packages/perception/src/occlusion/OcclusionMask.ts",
+      "apps/storefront-widget/src/utils/recipeGenerator.ts",
+      "src/matrix.ts",
+      "scripts/fetch_models.mjs"
+    ]
   }
 }

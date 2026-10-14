@@ -16,3 +16,4 @@ public/wasm/ar_renderer.js
 gh_2.47.0_linux_amd64*
 __pycache__/
 public/models/hand_landmarker.task
+coverage/
