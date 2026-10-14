@@ -97,6 +97,11 @@ jobs:
           prompt: |
             You are acting as the automated code review agent for PR #${{ github.event.pull_request.number }}: "${{ github.event.pull_request.title }}".
 
+            Automated QA Gating Constraints:
+            - You MUST explicitly verify >=80% code coverage (evaluated via `c8` output or similar mechanisms) before approving any Pull Request.
+            - You MUST explicitly verify zero-egress network audit compliance (evaluated via `npm run test:audit` / `NetworkEgressGuard`) before approving any Pull Request.
+            - If either of these QA gates fail, you MUST request changes and clearly document the failing metrics in your review.
+
             Review Directives & Architectural Constraints:
             1. Evaluate all changes against strict project baselines defined in AR trion:
                - Zero-Egress Network Compliance: Ensure no camera frame data or biometric landmarks are transmitted off-device (`NetworkEgressGuard.ts`).
