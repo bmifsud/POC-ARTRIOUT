@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["@webgpu/types", "node"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "@webgpu/types",
+      "node"
+    ],
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
     "strict": true,
@@ -13,18 +20,31 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@ar-trion/compliance/*": ["./packages/compliance/src/*"],
-      "@ar-trion/perception/*": ["./packages/perception/src/*"],
-      "@ar-trion/rendering/*": ["./packages/rendering/src/*"],
-      "@ar-trion/compliance": ["./packages/compliance/src/index.ts"],
-      "@ar-trion/perception": ["./packages/perception/src/index.ts"],
-      "@ar-trion/rendering": ["./packages/rendering/src/index.ts"]
+      "@ar-trion/compliance/*": [
+        "./packages/compliance/src/*"
+      ],
+      "@ar-trion/perception/*": [
+        "./packages/perception/src/*"
+      ],
+      "@ar-trion/rendering/*": [
+        "./packages/rendering/src/*"
+      ],
+      "@ar-trion/compliance": [
+        "./packages/compliance/src/index.ts"
+      ],
+      "@ar-trion/perception": [
+        "./packages/perception/src/index.ts"
+      ],
+      "@ar-trion/rendering": [
+        "./packages/rendering/src/index.ts"
+      ]
     }
   },
   "include": [
     "src/**/*",
     "apps/**/*",
     "packages/**/*",
-    "tests/**/*"
+    "tests/**/*",
+    "scripts/**/*"
   ]
 }
