@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.6.0...v1.7.0) (2026-10-14)
+
+
+### Features
+
+* **ci:** add Reviewdog static analysis and automated defect triage pipeline ([22b6c3d](https://github.com/bmifsud/POC-ARTRIOUT/commit/22b6c3d54053c3c50690a5e358417838e8c77a21))
+* **ci:** add reviewdog static analysis and automated defect triage workflow ([a34829b](https://github.com/bmifsud/POC-ARTRIOUT/commit/a34829b3a938056c0e0156a2fc5277bc8b7a9e92))
+
+
+### Bug Fixes
+
+* **build:** remediate Qodo review Emscripten generation findings ([a4d9d2b](https://github.com/bmifsud/POC-ARTRIOUT/commit/a4d9d2b9528b33234a6f7b91d74884b74fe3d3fd))
+* **build:** remediate Qodo review Emscripten generation findings ([24ce4b5](https://github.com/bmifsud/POC-ARTRIOUT/commit/24ce4b591399b69225341d54c0c95551f71a0d4e))
+* **build:** remove incompatible shebang and use local runner ([20e452e](https://github.com/bmifsud/POC-ARTRIOUT/commit/20e452e63f82ef668cfea9097e6185666d3097ab))
+* **build:** resolve docker and CI build failures from missing emcc ([1ce98cf](https://github.com/bmifsud/POC-ARTRIOUT/commit/1ce98cf4c8aaa01e9b9512aa763893ee2d7cbaae))
+* **build:** resolve WASM build script merge conflict for Render deployment ([1f5ff9d](https://github.com/bmifsud/POC-ARTRIOUT/commit/1f5ff9d3f896cbe7ae9873520b9e7b7ad388f362))
+* **ci:** remove vulnerable issues trigger from close-low-priority-issues workflow ([b76d84a](https://github.com/bmifsud/POC-ARTRIOUT/commit/b76d84ac2a9a6778b3fba6a944c2bc695a263dab))
+* **ci:** replace gh pr list with paginated graphql in autorebase ([74899fb](https://github.com/bmifsud/POC-ARTRIOUT/commit/74899fba6e1b8a2ee00f2cac030faa1fd137a94d))
+* **ci:** resolve Qodo review defects on WASM compilation script ([6a904ed](https://github.com/bmifsud/POC-ARTRIOUT/commit/6a904edfa0191ad41dbb56a5dd7b0a79f0ec2932))
+* **ci:** resolve Qodo review defects on WASM compilation script ([5f84f77](https://github.com/bmifsud/POC-ARTRIOUT/commit/5f84f77606364d23a19fe36bbf81995e69799166))
+* **ci:** resolve Qodo review defects on WASM compilation script ([04d6561](https://github.com/bmifsud/POC-ARTRIOUT/commit/04d65618115d8c9f2bfdbfb22124d8b066a79729))
+* **ci:** resolve wasm build script failure and missing emscripten artifact ([c2147b1](https://github.com/bmifsud/POC-ARTRIOUT/commit/c2147b1f77b1c7fae48681290ca035d47adb93b9))
+* **ci:** skip release branches in autorebase open pr loop ([5f40144](https://github.com/bmifsud/POC-ARTRIOUT/commit/5f40144ad0a074d70bf23dbdd4ffe3e5f0c036ef))
+* **ci:** strictly enforce Emscripten CI mock fallback and valid WASM generation ([148dba8](https://github.com/bmifsud/POC-ARTRIOUT/commit/148dba88265189fee6f6e5034d9b974d32d55629))
+* **ci:** update Qodo defect fixer to ignore placeholder comments and trigger on edits ([7a1dd24](https://github.com/bmifsud/POC-ARTRIOUT/commit/7a1dd2460dbc9b3b70cdbfa2334464e0f17a7c11))
+* **compliance:** replace insecure ID generation with CSPRNG for BIPA consent records ([4d9748a](https://github.com/bmifsud/POC-ARTRIOUT/commit/4d9748a5f2cd1b3b13aeac5049badf9184a39d36))
+* **deploy:** set NODE_ENV before building to enable production fallbacks ([b29d7ba](https://github.com/bmifsud/POC-ARTRIOUT/commit/b29d7ba12ef27b10fb3e7feae0605490bb45adb0))
+* **docker:** update entrypoint CMD to node scripts/serve.js ([3121ffd](https://github.com/bmifsud/POC-ARTRIOUT/commit/3121ffde62ff09e03a737af9b150f1d8dc3ac6cd))
+* resolve branch deletion failure for fork PRs in cleanup script ([6181755](https://github.com/bmifsud/POC-ARTRIOUT/commit/6181755b2bf94e87e28b4f312507c1cc4c462f8f))
+
 ## [1.6.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.5.0...v1.6.0) (2026-10-12)
 
 
