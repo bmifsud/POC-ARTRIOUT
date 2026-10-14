@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -33,14 +33,14 @@ jobs:
       - name: Set up Node.js Environment
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: '20'
+          node-version: '24.x'
           cache: 'npm'
 
       - name: Install Monorepo Dependencies
         run: npm ci
 
       - name: Install Playwright Browsers & System Dependencies
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       - name: Execute TypeScript Type Check & Lint
         run: npm run lint --if-present
@@ -48,11 +48,8 @@ jobs:
       - name: Build Application
         run: npm run build --if-present
 
-      - name: Execute Unit Tests
-        run: npm run test:unit
-
-      - name: Run Automated Zero-Egress Network Audit
-        run: npm run test:audit
+      - name: Execute Mandatory Automated QA Gate
+        run: npm run test:gate
         env:
           CI: true
 
