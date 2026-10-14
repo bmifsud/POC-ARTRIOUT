@@ -99,13 +99,17 @@ jobs:
 
             Review Directives & Architectural Constraints:
             1. Evaluate all changes against strict project baselines defined in AR trion:
-               - Zero-Egress Network Compliance: Ensure no camera frame data or biometric landmarks are transmitted off-device (`NetworkEgressGuard.ts`).
+               - Code Coverage Threshold: Verify latest `c8` code coverage results (`statements`, `lines`, and `functions`) are >= 80% before approving any Pull Request.
+               - Zero-Egress Network Compliance: Verify zero-egress network audit compliance (`npm run test:audit` / `NetworkEgressGuard`) passes with zero external network leaks, ensuring no camera frame data or biometric landmarks are transmitted off-device (`NetworkEgressGuard.ts`).
                - BIPA Ephemeral Memory Sanitization: Ensure `MemorySanitizer.ts` or `sanitizeFrame` is called to purge frame buffers and biometric arrays immediately after processing.
                - WebGPU Rendering Performance: Enforce native WebGPU pipeline execution with a sub-16 ms (60 FPS) rendering frame budget; strictly reject WebGL fallback contexts.
                - Multi-Agent Orchestration & System Models: Verify orchestration endpoints, model configuration, persona configuration, and agent execution flow to ensure local-only model routing.
-            2. Limit Pull Request code review feedback and comments strictly to addressing CRITICAL and HIGH severity issues/findings.
-            3. If a critical or high severity architectural constraint, privacy rule, or performance metric is violated, automatically request changes or reject the PR with explicit detailed rationale.
-            4. Do NOT block or comment on the PR for medium and low severity feedback. Instead, automatically log all medium and low severity feedback as GitHub project issues for later review:
+            2. Gating Checks Before PR Approval:
+               - Verify latest `c8` code coverage results (`statements`, `lines`, and `functions`) are >= 80%.
+               - Verify zero-egress network audit compliance (`npm run test:audit` / `NetworkEgressGuard`) passes with zero external network leaks.
+            3. Limit Pull Request code review feedback and comments strictly to addressing CRITICAL and HIGH severity issues/findings.
+            4. If a critical or high severity architectural constraint, privacy rule, performance metric, code coverage drop (< 80%), or zero-egress network audit failure is violated, automatically request changes or reject the PR with explicit detailed rationale.
+            5. Do NOT block or comment on the PR for medium and low severity feedback. Instead, automatically log all medium and low severity feedback as GitHub project issues for later review:
                - For each medium or low severity issue/bug detected, use the GitHub API or CLI (`gh issue create`) to create a new issue.
                - Title format: "[<SeverityLevel>] Bug: <Brief Summary> (PR #${{ github.event.pull_request.number }})"
                - Body: Provide a clear description of the finding, location in code, impact, severity justification (Medium or Low), and steps/recommendations for remediation.
