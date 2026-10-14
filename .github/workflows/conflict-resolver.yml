@@ -2,32 +2,30 @@ name: Jules Auto Conflict Resolver
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    types: [labeled]
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  issues: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: pr-agent-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   resolve-conflicts:
     name: Automatically Resolve Conflicts
     if: >
-      github.actor != 'google-labs-jules[bot]' &&
-      github.actor != 'google-labs-jules' &&
+      !endsWith(github.actor, '[bot]') &&
+      github.actor != 'github-actions[bot]' &&
       (
-        contains(github.event.pull_request.labels.*.name, 'has conflicts') ||
         contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') ||
-        github.event.label.name == 'has conflicts' ||
-        github.event.label.name == 'resolve-conflicts'
+        contains(github.event.pull_request.labels.*.name, 'ai-fix')
       )
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+    timeout-minutes: 15
 
     steps:
       - name: Harden Runner Environment
@@ -41,6 +39,12 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           persist-credentials: false
+
+      - name: Consume Label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit "${{ github.event.pull_request.number }}" --remove-label "resolve-conflicts" || true
 
       - name: Invoke Jules Conflict Resolver
         uses: google-labs-code/jules-action@v1.0.0

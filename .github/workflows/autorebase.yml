@@ -1,18 +1,30 @@
 name: Auto Rebase Open Pull Requests
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [labeled, synchronize, opened]
 
 permissions:
   contents: write
-  pull-requests: read
+  pull-requests: write
+
+concurrency:
+  group: pr-agent-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   autorebase:
     name: Rebase Open Pull Requests
+    if: >
+      !endsWith(github.actor, '[bot]') &&
+      github.actor != 'github-actions[bot]' &&
+      github.event.pull_request.draft == false &&
+      (
+        contains(github.event.pull_request.labels.*.name, 'autorebase') ||
+        contains(github.event.pull_request.labels.*.name, 'ai-fix')
+      )
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Harden Runner Environment
