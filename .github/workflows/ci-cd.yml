@@ -40,7 +40,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers & System Dependencies
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
 
       - name: Execute Mandatory Automated QA Gate
         run: npm run test:gate
