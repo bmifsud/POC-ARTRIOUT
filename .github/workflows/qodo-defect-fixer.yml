@@ -13,35 +13,30 @@ on:
     types: [opened, labeled, edited]
 
 permissions:
-  contents: read
+  contents: write
+  issues: write
+  pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
-  cancel-in-progress: true
+  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   fix-qodo-defects:
     name: Fix Qodo Code Review Defects
     if: >
-      github.actor != 'google-labs-jules[bot]' &&
-      github.actor != 'google-labs-jules' &&
+      !endsWith(github.actor, '[bot]') &&
       github.actor != 'github-actions[bot]' &&
       !contains(github.event.comment.body, 'Qodo is busy working') &&
       !contains(github.event.review.body, 'Qodo is busy working') &&
       !contains(github.event.pull_request.body, 'Qodo is busy working') &&
       !contains(github.event.issue.body, 'Qodo is busy working') &&
       (
-        (github.event_name == 'pull_request' && (contains(github.event.pull_request.labels.*.name, 'qodo-fix') || contains(github.event.pull_request.labels.*.name, 'qodo:fix') || contains(github.event.pull_request.labels.*.name, 'qodo-review') || github.event.label.name == 'qodo-fix' || github.event.label.name == 'qodo:fix' || github.event.label.name == 'qodo-review')) ||
-        (github.event_name == 'pull_request_review' && (contains(github.event.review.body, 'Qodo') || contains(github.event.review.body, 'qodo'))) ||
-        (github.event_name == 'pull_request_review_comment' && (contains(github.event.comment.body, 'Qodo') || contains(github.event.comment.body, 'qodo'))) ||
-        (github.event_name == 'issue_comment' && (contains(github.event.comment.body, 'Qodo') || contains(github.event.comment.body, 'qodo') || contains(github.event.comment.body, 'qodo:fix'))) ||
-        (github.event_name == 'issues' && (contains(github.event.issue.labels.*.name, 'qodo-fix') || contains(github.event.issue.labels.*.name, 'qodo:fix') || github.event.label.name == 'qodo-fix' || github.event.label.name == 'qodo:fix'))
+        contains(github.event.pull_request.labels.*.name, 'ai-fix') ||
+        contains(github.event.issue.labels.*.name, 'ai-fix')
       )
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+    timeout-minutes: 15
 
     steps:
       - name: Harden Runner Environment
@@ -53,6 +48,12 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+
+      - name: Consume Label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit --remove-label "ai-fix" || true
 
       - name: Invoke Jules Qodo Defect Fixer
         uses: google-labs-code/jules-action@v1.0.0

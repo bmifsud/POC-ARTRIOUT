@@ -6,25 +6,24 @@ on:
     types: [completed]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  actions: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.ref }}
-  cancel-in-progress: true
+  group: pr-agent-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   auto-remediate:
     name: Auto Remediate Build Failure
     if: >
       github.event.workflow_run.conclusion == 'failure' &&
-      github.event.workflow_run.actor.login != 'google-labs-jules[bot]' &&
-      github.event.workflow_run.actor.login != 'google-labs-jules' &&
-      github.event.workflow_run.actor.login != 'github-actions[bot]'
+      !endsWith(github.actor, '[bot]') &&
+      github.actor != 'github-actions[bot]' &&
+      contains(github.event.pull_request.labels.*.name, 'ai-fix')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: read
+    timeout-minutes: 15
 
     steps:
       - name: Harden Runner Environment
@@ -36,6 +35,12 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+
+      - name: Consume Label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit --remove-label "ai-fix" || true
 
       - name: Invoke Jules Auto-Remediation
         uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
