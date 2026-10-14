@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.7.0...v1.8.0) (2026-10-14)
+
+
+### Features
+
+* add pre-build script to download MediaPipe hand landmarker model ([5a808da](https://github.com/bmifsud/POC-ARTRIOUT/commit/5a808da5c58aa8b272e8dd123038636fb8877236))
+* add pre-build script to download MediaPipe hand landmarker task model ([4715bea](https://github.com/bmifsud/POC-ARTRIOUT/commit/4715beaaf9dc894a7d9fc8c358d2724a4ba6bfea))
+* **ci:** implement CI agent governance suite and concurrency locks ([eac3e0e](https://github.com/bmifsud/POC-ARTRIOUT/commit/eac3e0e9e766d79b9b36965351ff7f01ea16658e))
+* implement coverage verification script and npm gate scripts ([f2818a3](https://github.com/bmifsud/POC-ARTRIOUT/commit/f2818a30ed24aa8c047a7c44a7d11251f5e6611a))
+* initialize Jules API and GitHub Actions type definitions ([ecbd700](https://github.com/bmifsud/POC-ARTRIOUT/commit/ecbd70018b2a7b0b1ff4bf39f42aa45fa7a266a0))
+* **scripts:** add resume_session script and unit tests ([35a17a3](https://github.com/bmifsud/POC-ARTRIOUT/commit/35a17a3fac1a744a8a7f9b1a01a12ce822da597d))
+
+
+### Bug Fixes
+
+* **ci:** update reviewdog action reference and implement CI agent governance suite ([adb6e14](https://github.com/bmifsud/POC-ARTRIOUT/commit/adb6e142cf533f31dfdfa574c5314e91355128e6))
+
 ## [1.7.0](https://github.com/bmifsud/POC-ARTRIOUT/compare/v1.6.0...v1.7.0) (2026-10-14)
 
 
