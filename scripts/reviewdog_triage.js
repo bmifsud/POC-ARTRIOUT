@@ -2,15 +2,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 
 const PR_NUMBER = process.env.PR_NUMBER;
 const REPO = process.env.GITHUB_REPOSITORY;
 const COMMIT_SHA = process.env.COMMIT_SHA || process.env.GITHUB_SHA;
 const CONFLICT_RESOLVED = process.env.CONFLICT_RESOLVED === 'true';
 
-function runCmd(cmd) {
+function runCmd(cmd, args = []) {
   try {
+    if (args.length > 0) {
+      return execFileSync(cmd, args, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
+    }
     return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
   } catch (err) {
     return err.stdout ? err.stdout.trim() : '';
@@ -94,14 +97,14 @@ async function main() {
       // Continue
     }
 
-    const gitStatus = runCmd('git status --porcelain');
+    const gitStatus = runCmd('git', ['status', '--porcelain']);
     if (gitStatus) {
-      runCmd('git config user.name "github-actions[bot]"');
-      runCmd('git config user.email "github-actions[bot]@users.noreply.github.com"');
-      runCmd('git add .');
-      runCmd('git commit -m "fix(reviewdog): address critical/high static analysis defects"');
-      runCmd(`git push origin HEAD:${process.env.HEAD_REF || 'HEAD'}`);
-      autoFixedCommit = runCmd('git rev-parse --short HEAD');
+      runCmd('git', ['config', 'user.name', 'github-actions[bot]']);
+      runCmd('git', ['config', 'user.email', 'github-actions[bot]@users.noreply.github.com']);
+      runCmd('git', ['add', '.']);
+      runCmd('git', ['commit', '-m', 'fix(reviewdog): address critical/high static analysis defects']);
+      runCmd('git', ['push', 'origin', `HEAD:${process.env.HEAD_REF || 'HEAD'}`]);
+      autoFixedCommit = runCmd('git', ['rev-parse', '--short', 'HEAD']);
       criticalHighStatus = `Auto-Fixed in ${autoFixedCommit}`;
     } else {
       criticalHighStatus = 'Unresolved / Blocking';
@@ -112,7 +115,7 @@ async function main() {
   let existingIssues = [];
   if (REPO) {
     try {
-      const rawIssues = runCmd('gh issue list --state all --json number,title,body,labels --limit 500');
+      const rawIssues = runCmd('gh', ['issue', 'list', '--state', 'all', '--json', 'number,title,body,labels', '--limit', '500']);
       if (rawIssues) {
         existingIssues = JSON.parse(rawIssues);
       }
@@ -137,12 +140,12 @@ async function main() {
     }
 
     if (matchedIssue) {
-      const issueNum = matchedIssue.number;
+      const issueNum = String(matchedIssue.number);
       console.log(`Matching defect found in existing Issue #${issueNum}. Linking PR...`);
 
       if (PR_NUMBER && REPO && (!matchedIssue.body || !matchedIssue.body.includes(`#${PR_NUMBER}`))) {
         const commentBody = `Also detected in PR #${PR_NUMBER} at commit ${COMMIT_SHA} in \`${filePath}:${line}\` (\`${ruleId}\`).`;
-        runCmd(`gh issue comment ${issueNum} --body "${commentBody}"`);
+        runCmd('gh', ['issue', 'comment', issueNum, '--body', commentBody]);
       }
 
       processedResults.push({
@@ -174,7 +177,7 @@ ${rawLine}
       const priorityLabel = priority === 'Medium' ? 'priority: medium' : 'priority: low';
       let createdIssueNum = null;
       try {
-        const createOut = runCmd(`gh issue create --title "${issueTitle.replace(/"/g, '\\"')}" --body "${issueBody.replace(/"/g, '\\"')}" --label "defect,${priorityLabel},automated-triage"`);
+        const createOut = runCmd('gh', ['issue', 'create', '--title', issueTitle, '--body', issueBody, '--label', `defect,${priorityLabel},automated-triage`]);
         const match = createOut.match(/\/issues\/(\d+)/);
         if (match) createdIssueNum = match[1];
       } catch (err) {
@@ -204,8 +207,11 @@ ${rawLine}
     console.log(`Posting/updating consolidated PR summary comment for PR #${PR_NUMBER}...`);
     const conflictStatusStr = CONFLICT_RESOLVED ? 'Resolved in isolated commit' : 'Clean (No Conflicts)';
 
+    // Sanitize pipe characters in markdown table cells
+    const sanitizeMarkdownCell = (text) => text.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
+
     let breakdownRows = processedResults.map(r =>
-      `| ${r.priority} | \`${r.filePath}\` | ${r.line}:${r.col} | \`${r.ruleId}\`: ${r.message.replace(/\|/g, '\\|').slice(0, 80)} | ${r.action} |`
+      `| ${r.priority} | \`${r.filePath}\` | ${r.line}:${r.col} | \`${r.ruleId}\`: ${sanitizeMarkdownCell(r.message.slice(0, 80))} | ${r.action} |`
     ).join('\n');
 
     if (!breakdownRows) {
@@ -232,18 +238,18 @@ ${breakdownRows}
 `;
 
     try {
-      const commentsRaw = runCmd(`gh api repos/${REPO}/issues/${PR_NUMBER}/comments --jq '.[] | select(.body | contains("<!-- reviewdog-triage-summary -->")) | .id'`);
+      const commentsRaw = runCmd('gh', ['api', `repos/${REPO}/issues/${PR_NUMBER}/comments`, '--jq', '.[] | select(.body | contains("<!-- reviewdog-triage-summary -->")) | .id']);
       const existingCommentId = commentsRaw ? commentsRaw.split('\n')[0] : null;
 
       if (existingCommentId) {
         const tempFile = 'summary_comment.md';
         fs.writeFileSync(tempFile, summaryMarkdown);
-        runCmd(`gh api -X PATCH repos/${REPO}/issues/comments/${existingCommentId} -F body=@${tempFile}`);
+        runCmd('gh', ['api', '-X', 'PATCH', `repos/${REPO}/issues/comments/${existingCommentId}`, '-F', 'body=@summary_comment.md']);
         fs.unlinkSync(tempFile);
       } else {
         const tempFile = 'summary_comment.md';
         fs.writeFileSync(tempFile, summaryMarkdown);
-        runCmd(`gh pr comment ${PR_NUMBER} --body-file ${tempFile}`);
+        runCmd('gh', ['pr', 'comment', PR_NUMBER, '--body-file', 'summary_comment.md']);
         fs.unlinkSync(tempFile);
       }
     } catch (err) {

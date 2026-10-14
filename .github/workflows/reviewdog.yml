@@ -43,6 +43,11 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Install Reviewdog
+        uses: reviewdog/action-setup@3f40100712d78103c80cf5c49fa5ebf3fd32f3ea # v1.3.0
+        with:
+          reviewdog_version: "v0.20.3"
+
       - name: Install Monorepo Dependencies
         run: npm ci
 
@@ -84,20 +89,10 @@ jobs:
           fi
 
       - name: Execute TypeScript Analysis & Reviewdog
-        uses: reviewdog/action-tsc@v1
-        continue-on-error: true
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          filter_mode: added
-          fail_level: error
-          fail_on_error: true
-          tsc_flags: "--noEmit"
-
-      - name: Capture Raw TypeScript Diagnostic Output
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx tsc --noEmit > tsc_output.log 2>&1 || true
-          cat tsc_output.log
+          npx tsc --noEmit 2>&1 | tee tsc_output.log | reviewdog -f=tsc -reporter=github-pr-review -filter-mode=added -fail-level=error || true
 
       - name: Post-Review Inspection, Prioritization & Zero-Duplication Triage
         env:
