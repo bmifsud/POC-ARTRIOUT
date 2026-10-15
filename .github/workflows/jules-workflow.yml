@@ -7,9 +7,7 @@ on:
     types: [opened, synchronize, reopened, labeled, edited, unlabeled]
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: pr-agent-${{ github.event.issue.number || github.event.pull_request.number || github.ref }}
@@ -22,7 +20,12 @@ jobs:
       !endsWith(github.actor, '[bot]') &&
       github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Harden Runner Environment
@@ -62,7 +65,10 @@ jobs:
             Ensure that Issue #184 is labeled with 'Automation'.
 
             Implement the Workflow Consolidation & Governance Plan detailed in Issue #184:
-            1. Process issue or pull request event triggers through this single consolidated workflow pipeline.
-            2. Adhere strictly to AR trion baseline requirements: zero-egress network compliance (`NetworkEgressGuard.ts`), BIPA ephemeral memory sanitization (`MemorySanitizer.ts`), and sub-16 ms WebGPU rendering budgets.
-            3. Before submitting changes, execute local verification (`npm ci`, `npm run lint`, `npm run test:unit`, `npm run test:audit`).
-            4. Create or update targeted pull requests referencing Issue #184.
+            1. Establish core config and process issue or pull request event triggers through this single consolidated workflow pipeline.
+            2. Maintain workspace immutability using non-persistent credentials (`persist-credentials: false`) and SHA-pinned actions.
+            3. Enforce least-privilege token access by setting read-only workflow permissions and elevating permissions strictly at job level.
+            4. Enforce 15-minute alert grouping and execution windows (`timeout-minutes: 15`).
+            5. Adhere strictly to AR trion baseline requirements: zero-egress network compliance (`NetworkEgressGuard.ts`), BIPA ephemeral memory sanitization (`MemorySanitizer.ts`), and sub-16 ms WebGPU rendering budgets.
+            6. Before submitting changes, execute local verification (`npm ci`, `npm run lint`, `npm run test:unit`, `npm run test:audit`).
+            7. Create or update targeted pull requests referencing Issue #184.
