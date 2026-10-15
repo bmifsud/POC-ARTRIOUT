@@ -95,3 +95,26 @@ Establish the authoritative root AI policy (`AGENTS.md`), platform adapters (`.c
 3. **Phase State & Isolation**:
    - Initialized `PHASE_STATE.md` marking Phase 1 (`PHASE_1_AGENT_POLICY`) as `COMPLETED`.
    - Verified that no `.github/workflows/*.yml` files were created or modified during Phase 1.
+
+---
+
+## 2026-10-15T10:15:00Z - Issue #184 Phase 2: Core CI & Security Workflows Migration Implementation
+
+### Task Description
+Migrate core Continuous Integration, security audit, and Docker containerization workflows into isolated workflow definitions under `.github/workflows/` (`ci.yml`, `security-audit.yml`, `docker.yml`) adhering to least-privilege permissions, SHA pinning, and `pr-agent-*` concurrency locking.
+
+### Execution Summary
+1. **Core CI Workflow (`.github/workflows/ci.yml`)**:
+   - Implemented `.github/workflows/ci.yml` running linting (`npm run lint`), Playwright browser installation, QA gate (`npm run test:gate`), production build (`npm run build`), and artifact upload (`dist/`).
+   - Configured least-privilege `contents: read` default permissions, SHA-pinned third-party actions, bot actor rejection `if` condition, and 15-minute job timeout.
+
+2. **Security Audit Workflow (`.github/workflows/security-audit.yml`)**:
+   - Implemented `.github/workflows/security-audit.yml` consolidating CodeQL analysis, OSV-Scanner (`continue-on-error: true`), Dependency Review, TruffleHog OSS secret scanning, and OpenSSF Scorecard.
+   - Configured job-level elevated permissions (`security-events: write`, `id-token: write`, `pull-requests: read`).
+
+3. **Docker Build Workflow (`.github/workflows/docker.yml`)**:
+   - Implemented `.github/workflows/docker.yml` verifying production Docker image compilation via `docker/setup-buildx-action` and `docker/build-push-action`.
+
+4. **Verification & Phase State Update**:
+   - Verified local test suites and workflow syntax (`npm run lint`, `npm run test:unit`, `npm run test:audit`, Python test runner). All passed cleanly.
+   - Updated `PHASE_STATE.md` marking Phase 2 (`PHASE_2_WORKFLOW_MIGRATION_CORE`) as `COMPLETED`.
