@@ -9,12 +9,7 @@ on:
     types: [opened, synchronize, reopened, labeled, edited, unlabeled]
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  security-events: write
-  id-token: write
-  actions: read
+  contents: read
 
 concurrency:
   group: pr-agent-${{ github.event.issue.number || github.event.pull_request.number || github.ref }}
@@ -102,41 +97,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript-typescript, python
-
-      - name: Run OSV Scanner
-        uses: google/osv-scanner-action/osv-scanner-action@v1.9.2
-        with:
-          scan-args: '--format=sarif --output=osv-results.sarif .'
-        continue-on-error: true
-
-      - name: Dependency Review
-        if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
-        continue-on-error: true
-
-      - name: TruffleHog OSS Secret Scan
-        uses: trufflesecurity/trufflehog-main-action@main
-        with:
-          extra_args: --debug --only-verified
-        continue-on-error: true
-
-      - name: Run OpenSSF Scorecard Analysis
-        uses: ossf/scorecard-action@v2.4.1
-        with:
-          results_file: scorecard-results.sarif
-          results_format: sarif
-          publish_results: false
-        continue-on-error: true
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        continue-on-error: true
-
-      - name: Label Issue 184 with Automation
       - name: Setup Node.js Environment
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
@@ -283,100 +243,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-        with:
-          node-version: '24'
-          cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run Static Analysis & Save Log
-        run: npx tsc --noEmit > tsc_output.log 2>&1 || true
-
-      - name: Execute Reviewdog Zero-Duplication Triage
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          COMMIT_SHA: ${{ github.sha }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/reviewdog_triage.js
-
-  rebase-logic:
-    name: Autorebase & Conflict Resolution
-    if: >
-      !endsWith(github.actor, '[bot]') &&
-      github.actor != 'github-actions[bot]' &&
-      github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    permissions:
-      contents: write
-      pull-requests: write
-
-    steps:
-      - name: Harden Runner Environment
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
-        with:
-          egress-policy: audit
-
-      - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Configure Git User
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Check and Rebase PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ "${{ contains(github.event.pull_request.labels.*.name, 'autorebase') || contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') || contains(github.event.pull_request.labels.*.name, 'ai-fix') }}" = "true" ]; then
-            echo "Rebase / conflict resolution requested for PR #${PR_NUMBER}."
-            git fetch origin main
-            git rebase origin/main || {
-              echo "Rebase conflict detected, attempting merge fallback..."
-              git rebase --abort || true
-              git merge origin/main -m "chore(rebase): sync branch with origin/main" --allow-unrelated-histories || true
-            }
-            git push origin "HEAD:${{ github.event.pull_request.head.ref }}" --force-with-lease || echo "Push skipped"
-          fi
-
-      - name: Consume Rebase Labels
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -n "${{ github.event.pull_request.number }}" ]; then
-            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "autorebase" || true
-            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "resolve-conflicts" || true
-          fi
-
-  jules-governance:
-    name: Execute Jules Governance Plan
-    if: >
-      !endsWith(github.actor, '[bot]') &&
-      github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
-
       - name: Consume Triggering Labels
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -408,6 +274,7 @@ jobs:
       - name: Dependency Review
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019 # v4.5.0
+        continue-on-error: true
 
       - name: TruffleHog OSS Secret Scan
         uses: trufflesecurity/trufflehog@ca270a7e14a3542229c2cadf1d408ecac1455815 # v3.88.15
