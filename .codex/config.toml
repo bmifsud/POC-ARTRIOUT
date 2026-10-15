@@ -1,0 +1,18 @@
+# Codex Repository Policy Adapter
+# Enforces authoritative policies defined in AGENTS.md
+
+[repository]
+name = "POC-ARTRIOUT"
+policy_document = "AGENTS.md"
+
+[rules]
+bipa_compliance = true
+zero_network_egress = true
+ephemeral_memory_sanitization = true
+webgpu_only = true
+test_preservation = true
+
+[testing]
+unit_test_cmd = "npm run test:unit"
+audit_test_cmd = "npm run test:audit"
+coverage_gate_cmd = "npm run test:gate"
