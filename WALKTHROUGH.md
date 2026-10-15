@@ -142,3 +142,22 @@ Migrate autonomous agent routing, codebase hygiene, release packaging, and alert
 5. **Verification & Phase State Update**:
    - Verified local test suites and workflow syntax. All passed cleanly.
    - Updated `PHASE_STATE.md` marking Phase 3 (`PHASE_3_WORKFLOW_MIGRATION_AUX`) as `COMPLETED`.
+
+---
+
+## 2026-10-15T12:00:00Z - Issue #184 Phase 4: Workflow Cleanup & Governance Test Alignment Implementation
+
+### Task Description
+Remove legacy monolithic workflow `.github/workflows/jules-workflow.yml` and update workflow governance test harness `tests/ci/test_workflow_concurrency.py` to validate all 7 modular target workflows.
+
+### Execution Summary
+1. **Legacy Workflow Removal**:
+   - Removed `.github/workflows/jules-workflow.yml`.
+   - Confirmed `.github/workflows/` contains exactly the 7 target workflows: `ci.yml`, `security-audit.yml`, `docker.yml`, `ai-agent-router.yml`, `hygiene.yml`, `release.yml`, and `alert-digest.yml`.
+
+2. **Governance Test Alignment (`tests/ci/test_workflow_concurrency.py`)**:
+   - Updated `test_consolidated_workflow_governance()` to assert all 7 target workflows exist and pass `validate_concurrency()` (`pr-agent-*` group, `cancel-in-progress: false`) and `validate_bot_rejection()`.
+
+3. **Verification & Phase State Update**:
+   - Verified local test suites and workflow governance tests via `pytest tests/ci/test_workflow_concurrency.py`. All tests passed.
+   - Updated `PHASE_STATE.md` marking Phase 4 (`PHASE_4_GOVERNANCE_CLEANUP`) as `COMPLETED`.

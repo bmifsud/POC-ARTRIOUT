@@ -4,6 +4,16 @@ import yaml
 
 WORKFLOWS_DIR = Path(__file__).resolve().parents[2] / ".github" / "workflows"
 
+EXPECTED_WORKFLOW_FILES = {
+    "ci.yml",
+    "security-audit.yml",
+    "docker.yml",
+    "ai-agent-router.yml",
+    "hygiene.yml",
+    "release.yml",
+    "alert-digest.yml",
+}
+
 
 def parse_workflow(file_path: Path) -> dict:
     with open(file_path, "r", encoding="utf-8") as f:
@@ -106,9 +116,13 @@ def test_policy_harness():
 
 def test_consolidated_workflow_governance():
     workflow_files = list(WORKFLOWS_DIR.glob("*.yml")) + list(WORKFLOWS_DIR.glob("*.yaml"))
-    assert len(workflow_files) == 1, f"Expected exactly 1 consolidated workflow file, found {len(workflow_files)}"
+    file_names = {f.name for f in workflow_files}
+    assert file_names == EXPECTED_WORKFLOW_FILES, f"Expected workflow set {EXPECTED_WORKFLOW_FILES}, found {file_names}"
 
-    data = parse_workflow(workflow_files[0])
-    assert validate_concurrency(data) is True
-    assert validate_bot_rejection(data) is True
-    assert validate_label_consumption(data, "ai-fix") is True
+    for wf_file in workflow_files:
+        data = parse_workflow(wf_file)
+        assert validate_concurrency(data) is True, f"Concurrency validation failed for {wf_file.name}"
+        assert validate_bot_rejection(data) is True, f"Bot rejection validation failed for {wf_file.name}"
+
+        if wf_file.name == "ai-agent-router.yml":
+            assert validate_label_consumption(data, "ai-fix") is True, f"Label consumption validation failed for {wf_file.name}"

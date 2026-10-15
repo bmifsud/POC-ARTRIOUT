@@ -11,11 +11,11 @@
 | **PHASE_1_AGENT_POLICY** | Discovery, Migration Plan & Central Governance (`AGENTS.md` & Adapters) | COMPLETED |
 | **PHASE_2_WORKFLOW_MIGRATION_CORE** | Core CI & Security Workflows Migration | COMPLETED |
 | **PHASE_3_WORKFLOW_MIGRATION_AUX** | Router, Hygiene, Release & Alert Workflows Migration | COMPLETED |
-| **PHASE_4_GOVERNANCE_CLEANUP** | Workflow Cleanup & Test Alignment | PENDING |
+| **PHASE_4_GOVERNANCE_CLEANUP** | Workflow Cleanup & Test Alignment | COMPLETED |
 | **PHASE_5_FINAL_VALIDATION** | Final Integration Validation & PR Submission | PENDING |
 
 ## Current Phase Details
-- **Active Phase**: `PHASE_3_WORKFLOW_MIGRATION_AUX` (COMPLETED)
+- **Active Phase**: `PHASE_4_GOVERNANCE_CLEANUP` (COMPLETED)
 - **Completed**: 2026-10-15
-- **Previous Phase**: `PHASE_2_WORKFLOW_MIGRATION_CORE` (COMPLETED)
-- **Next Phase**: `PHASE_4_GOVERNANCE_CLEANUP`
+- **Previous Phase**: `PHASE_3_WORKFLOW_MIGRATION_AUX` (COMPLETED)
+- **Next Phase**: `PHASE_5_FINAL_VALIDATION`
