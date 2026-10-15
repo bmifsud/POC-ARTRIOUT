@@ -388,15 +388,15 @@ jobs:
           fi
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@f09c1c061042a2215462d733cb030a59966d5b0d # v3.28.10
+        uses: github/codeql-action/init@a65a038433a26f4363cf9f029e3b9ceac831ad5d # v3.28.10
         with:
           languages: javascript-typescript
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@f09c1c061042a2215462d733cb030a59966d5b0d # v3.28.10
+        uses: github/codeql-action/analyze@a65a038433a26f4363cf9f029e3b9ceac831ad5d # v3.28.10
 
       - name: Run OSV-Scanner
-        uses: google/osv-scanner-action/osv-scanner-action@52e259b10167c1e549eb403758b730f9a26be465 # v1.9.2
+        uses: google/osv-scanner-action/osv-scanner-action@764c91816374ff2d8fc2095dab36eecd42d61638 # v1.9.2
         with:
           scan-args: |-
             --recursive
@@ -407,12 +407,12 @@ jobs:
         uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019 # v4.5.0
 
       - name: TruffleHog OSS Secret Scan
-        uses: trufflesecurity/trufflehog@304856a908a8e10c73295b9ec8eb873f47e30ca0 # v3.88.15
+        uses: trufflesecurity/trufflehog@ca270a7e14a3542229c2cadf1d408ecac1455815 # v3.88.15
         with:
           extra_args: --debug --only-verified
 
       - name: Run OpenSSF Scorecard
-        uses: ossf/scorecard-action@f49aabe0b5af0936a09f2f27027d14c330f6575c # v2.4.1
+        uses: ossf/scorecard-action@ea651e62978af7915d09fe2e282747c798bf2dab # v2.4.1
         with:
           results_file: results.sarif
           results_format: sarif
