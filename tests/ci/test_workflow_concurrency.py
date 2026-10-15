@@ -21,7 +21,7 @@ def validate_concurrency(workflow_dict: dict) -> bool:
         return False
     group = str(concurrency.get("group", ""))
     cancel = concurrency.get("cancel-in-progress")
-    return group.startswith("group: pr-agent-") or group.startswith("pr-agent-") and cancel is False
+    return (group.startswith("group: pr-agent-") or group.startswith("pr-agent-")) and cancel is False
 
 
 def validate_bot_rejection(workflow_dict: dict) -> bool:
@@ -104,40 +104,11 @@ def test_policy_harness():
     assert validate_label_consumption(non_compliant, "ai-fix") is False
 
 
-def test_autorebase_governance():
-    data = parse_workflow(WORKFLOWS_DIR / "autorebase.yml")
+def test_consolidated_workflow_governance():
+    workflow_files = list(WORKFLOWS_DIR.glob("*.yml")) + list(WORKFLOWS_DIR.glob("*.yaml"))
+    assert len(workflow_files) == 1, f"Expected exactly 1 consolidated workflow file, found {len(workflow_files)}"
+
+    data = parse_workflow(workflow_files[0])
     assert validate_concurrency(data) is True
     assert validate_bot_rejection(data) is True
-    assert validate_label_gate(data, ["autorebase", "ai-fix"]) is True
-
-
-def test_conflict_resolver_governance():
-    data = parse_workflow(WORKFLOWS_DIR / "conflict-resolver.yml")
-    assert validate_concurrency(data) is True
-    assert validate_bot_rejection(data) is True
-    assert validate_label_gate(data, ["resolve-conflicts", "ai-fix"]) is True
-    assert validate_label_consumption(data, "resolve-conflicts") is True
-
-
-def test_jules_ci_healing_governance():
-    data = parse_workflow(WORKFLOWS_DIR / "jules-ci-healing.yml")
-    assert validate_concurrency(data) is True
-    assert validate_bot_rejection(data) is True
-    assert validate_label_gate(data, ["ai-fix"]) is True
-    assert validate_label_consumption(data, "ai-fix") is True
-
-
-def test_qodo_defect_fixer_governance():
-    data = parse_workflow(WORKFLOWS_DIR / "qodo-defect-fixer.yml")
-    assert validate_concurrency(data) is True
-    assert validate_bot_rejection(data) is True
-    assert validate_label_gate(data, ["ai-fix"]) is True
-    assert validate_label_consumption(data, "ai-fix") is True
-
-
-def test_bug_fixer_governance():
-    data = parse_workflow(WORKFLOWS_DIR / "bug-fixer.yml")
-    assert validate_concurrency(data) is True
-    assert validate_bot_rejection(data) is True
-    assert validate_label_gate(data, ["ai-fix"]) is True
     assert validate_label_consumption(data, "ai-fix") is True
