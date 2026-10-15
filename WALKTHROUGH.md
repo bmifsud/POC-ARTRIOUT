@@ -73,3 +73,15 @@ Audit all review comments on Pull Request #1 and ensure that every single review
   - [Issue #15](https://github.com/bmifsud/POC-ARTRIOUT/issues/15): Consent revocation UI and handler in `ClickwrapConsentModal` (Comment `4154868092`)
   - [Issue #16](https://github.com/bmifsud/POC-ARTRIOUT/issues/16): Sanitization of `container.innerHTML` against XSS (Comment `4154868119`)
 - 100% review comment coverage verified: all 12 review comments have corresponding GitHub issues.
+
+---
+
+## 2026-10-15T11:30:00+02:00 - Phase 2 Core CI & Security Workflows Migration & Governance
+
+### Task Description
+Execute Phase 2 of Issue #184 Workflow Consolidation & Governance Plan:
+1. Standardize and clean up `.github/workflows/jules-workflow.yml`.
+2. Remove dangling step definitions and duplicate job keys (`rebase-logic`, `jules-governance`).
+3. Enforce strict least-privilege permissions, shared `pr-agent-` concurrency locking, bot actor rejection filters, and 15-minute execution timeouts across all workflow jobs.
+4. Update `PHASE_STATE.md` to transition `PHASE_2_WORKFLOW_MIGRATION_CORE` to `COMPLETED`.
+5. Verify zero regressions via Python and Node.js testing suites.
