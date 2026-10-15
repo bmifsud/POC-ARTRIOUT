@@ -1,0 +1,17 @@
+---
+description: Repository Policy & AI Agent Directives for AR Trion Monorepo
+globs: **/*
+---
+
+# Repository Policy Adapter (Cursor)
+
+This repository enforces strict product invariants, compliance rules, and CI governance defined in the authoritative policy document:
+👉 **[AGENTS.md](../../AGENTS.md)**
+
+## Core Directives for Cursor AI
+
+1. **Authoritative Policy**: Always refer to `AGENTS.md` in the repository root for product invariants, privacy requirements, and coding guidelines.
+2. **BIPA Compliance**: Ensure clickwrap consent is checked before accessing camera streams (`ClickwrapConsent.ts`).
+3. **Zero Network Egress**: Keep all model inference local. Intercept outbound calls using `NetworkEgressGuard.ts`.
+4. **Memory Hygiene**: Call `MemorySanitizer.purgeFrame()` or use `createEphemeralFrameLoop()` to sanitize frame buffers and landmark arrays immediately.
+5. **WebGPU Rendering**: Target WebGPU only. Do not introduce WebGL fallbacks. Maintain sub-16 ms rendering budgets.

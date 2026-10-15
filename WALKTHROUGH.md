@@ -73,3 +73,25 @@ Audit all review comments on Pull Request #1 and ensure that every single review
   - [Issue #15](https://github.com/bmifsud/POC-ARTRIOUT/issues/15): Consent revocation UI and handler in `ClickwrapConsentModal` (Comment `4154868092`)
   - [Issue #16](https://github.com/bmifsud/POC-ARTRIOUT/issues/16): Sanitization of `container.innerHTML` against XSS (Comment `4154868119`)
 - 100% review comment coverage verified: all 12 review comments have corresponding GitHub issues.
+
+---
+
+## 2026-10-15T09:30:00Z - Issue #184 Phase 1: Central Governance & AI Agent Policies Implementation
+
+### Task Description
+Establish the authoritative root AI policy (`AGENTS.md`), platform adapters (`.cursor/rules/repository-policy.mdc`, `.codex/config.toml`), AI skill adapters (`.agents/skills/{plan,implement,verify,review}-change/SKILL.md`), and Phase tracking state (`PHASE_STATE.md`) under strict single-phase isolation.
+
+### Execution Summary
+1. **Authoritative AI Agent Policy (`AGENTS.md`)**:
+   - Defined product invariants: BIPA consent gate, edge-only local processing contract (`NetworkEgressGuard.ts`), ephemeral memory sanitization (`MemorySanitizer.ts`), native WebGPU sub-16 ms rendering, and test preservation.
+   - Defined CI/CD governance directives: least-privilege default permissions (`contents: read`), SHA-pinned actions, shared `pr-agent-*` concurrency mutex (`cancel-in-progress: false`), bot actor rejection conditions, and label consumption (`ai-fix`, `autorebase`, `resolve-conflicts`).
+   - Defined multi-agent persona roles: Planner, Coder, QA, and Reviewer.
+
+2. **Platform & Skill Adapters**:
+   - Created Cursor adapter `.cursor/rules/repository-policy.mdc` referencing `AGENTS.md`.
+   - Created Codex adapter `.codex/config.toml` referencing `AGENTS.md`.
+   - Created skill adapters under `.agents/skills/` for `plan-change`, `implement-change`, `verify-change`, and `review-change`.
+
+3. **Phase State & Isolation**:
+   - Initialized `PHASE_STATE.md` marking Phase 1 (`PHASE_1_AGENT_POLICY`) as `COMPLETED`.
+   - Verified that no `.github/workflows/*.yml` files were created or modified during Phase 1.
