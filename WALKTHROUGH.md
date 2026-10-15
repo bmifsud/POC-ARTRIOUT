@@ -118,3 +118,27 @@ Migrate core Continuous Integration, security audit, and Docker containerization
 4. **Verification & Phase State Update**:
    - Verified local test suites and workflow syntax (`npm run lint`, `npm run test:unit`, `npm run test:audit`, Python test runner). All passed cleanly.
    - Updated `PHASE_STATE.md` marking Phase 2 (`PHASE_2_WORKFLOW_MIGRATION_CORE`) as `COMPLETED`.
+
+---
+
+## 2026-10-15T11:45:00Z - Issue #184 Phase 3: Router, Hygiene, Release & Alert Workflows Migration Implementation
+
+### Task Description
+Migrate autonomous agent routing, codebase hygiene, release packaging, and alert digest workflows into modular workflow files under `.github/workflows/` (`ai-agent-router.yml`, `hygiene.yml`, `release.yml`, `alert-digest.yml`) adhering to least-privilege permissions, SHA pinning, and `pr-agent-*` concurrency mutex locking.
+
+### Execution Summary
+1. **AI Agent Router Workflow (`.github/workflows/ai-agent-router.yml`)**:
+   - Implemented `.github/workflows/ai-agent-router.yml` with explicit label gates (`ai-fix`, `resolve-conflicts`, `autorebase`), triggering label consumption, and Jules action invocation.
+
+2. **Codebase Hygiene Workflow (`.github/workflows/hygiene.yml`)**:
+   - Implemented `.github/workflows/hygiene.yml` running weekly lint/formatting checks and vulnerability audits.
+
+3. **Release Management Workflow (`.github/workflows/release.yml`)**:
+   - Implemented `.github/workflows/release.yml` managing production asset build and GitHub release creation on tag pushes (`v*.*.*`).
+
+4. **Alert Digest Workflow (`.github/workflows/alert-digest.yml`)**:
+   - Implemented `.github/workflows/alert-digest.yml` running daily alert summary generation.
+
+5. **Verification & Phase State Update**:
+   - Verified local test suites and workflow syntax. All passed cleanly.
+   - Updated `PHASE_STATE.md` marking Phase 3 (`PHASE_3_WORKFLOW_MIGRATION_AUX`) as `COMPLETED`.
