@@ -1,6 +1,8 @@
 name: Jules Consolidated Workflow
 
 on:
+  push:
+    branches: [main]
   issues:
     types: [opened, labeled, edited, unlabeled]
   pull_request:
@@ -396,7 +398,7 @@ jobs:
         uses: github/codeql-action/analyze@a65a038433a26f4363cf9f029e3b9ceac831ad5d # v3.28.10
 
       - name: Run OSV-Scanner
-        uses: google/osv-scanner-action/osv-scanner-action@764c91816374ff2d8fc2095dab36eecd42d61638 # v1.9.2
+        uses: google/osv-scanner-action/osv-scanner-action@6ad84ce1ef2d4124ba333b221894c133c4a970ea # v2.7.0
         with:
           scan-args: |-
             --recursive
