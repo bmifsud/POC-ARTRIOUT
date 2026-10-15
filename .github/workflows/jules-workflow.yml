@@ -45,13 +45,24 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Install Playwright Browsers & Dependencies
+        run: |
+          npx playwright install
+          npx playwright install-deps
+
       - name: Run Static Code Analysis & Lint
         run: npm run lint
 
       - name: Execute BIPA Compliance & Ephemeral Memory Gate
+        env:
+          MOCK_WASM_FOR_TESTS: 'true'
+          CI: 'true'
         run: npm run test:unit -- tests/unit/clickwrap-consent.spec.ts tests/unit/compliance.test.ts tests/unit/memory-sanitizer.spec.ts
 
       - name: Execute Zero-Egress Network Audit
+        env:
+          MOCK_WASM_FOR_TESTS: 'true'
+          CI: 'true'
         run: npm run test:audit
 
       - name: Build Production Assets
@@ -93,8 +104,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright Browsers & Dependencies
+        run: |
+          npx playwright install
+          npx playwright install-deps
 
       - name: Run Playwright Tests (${{ matrix.project }})
         env:
@@ -173,32 +186,32 @@ jobs:
 
       - name: Configure Git User
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Check and Rebase PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [ '${{ contains(github.event.pull_request.labels.*.name, 'autorebase') || contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') || contains(github.event.pull_request.labels.*.name, 'ai-fix') }}' = 'true' ]; then
-            echo 'Rebase / conflict resolution requested for PR #${PR_NUMBER}.'
+          if [ "${{ contains(github.event.pull_request.labels.*.name, 'autorebase') || contains(github.event.pull_request.labels.*.name, 'resolve-conflicts') || contains(github.event.pull_request.labels.*.name, 'ai-fix') }}" = "true" ]; then
+            echo "Rebase / conflict resolution requested for PR #${PR_NUMBER}."
             git fetch origin main
             git rebase origin/main || {
-              echo 'Rebase conflict detected, attempting merge fallback...'
+              echo "Rebase conflict detected, attempting merge fallback..."
               git rebase --abort || true
-              git merge origin/main -m 'chore(rebase): sync branch with origin/main' --allow-unrelated-histories || true
+              git merge origin/main -m "chore(rebase): sync branch with origin/main" --allow-unrelated-histories || true
             }
-            git push origin "HEAD:${{ github.event.pull_request.head.ref }}" --force-with-lease || echo 'Push skipped'
+            git push origin "HEAD:${{ github.event.pull_request.head.ref }}" --force-with-lease || echo "Push skipped"
           fi
 
       - name: Consume Rebase Labels
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -n '${{ github.event.pull_request.number }}' ]; then
-            gh pr edit '${{ github.event.pull_request.number }}' --remove-label 'autorebase' || true
-            gh pr edit '${{ github.event.pull_request.number }}' --remove-label 'resolve-conflicts' || true
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "autorebase" || true
+            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "resolve-conflicts" || true
           fi
 
   jules-governance:
@@ -229,18 +242,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue edit 184 --add-label 'Automation' || true
+          gh issue edit 184 --add-label "Automation" || true
 
       - name: Consume Triggering Labels
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ '${{ github.event_name }}' = 'issues' ]; then
-            gh issue edit '${{ github.event.issue.number }}' --remove-label 'ai-fix' || true
-          elif [ '${{ github.event_name }}' = 'pull_request' ]; then
-            gh pr edit '${{ github.event.pull_request.number }}' --remove-label 'ai-fix' || true
-            gh pr edit '${{ github.event.pull_request.number }}' --remove-label 'resolve-conflicts' || true
-            gh pr edit '${{ github.event.pull_request.number }}' --remove-label 'autorebase' || true
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            gh issue edit "${{ github.event.issue.number }}" --remove-label "ai-fix" || true
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "ai-fix" || true
+            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "resolve-conflicts" || true
+            gh pr edit "${{ github.event.pull_request.number }}" --remove-label "autorebase" || true
           fi
 
       - name: Invoke Google Jules Action
