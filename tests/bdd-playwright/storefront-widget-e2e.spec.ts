@@ -20,7 +20,7 @@ test.describe('Storefront Widget End-to-End User Experience', () => {
   });
 
   test('should allow nail shape and WebGPU material preset customization', async ({ page }) => {
-    const customizerTitle = page.locator('text=Lacquer Customizer');
+    const customizerTitle = page.getByRole('heading', { name: 'Lacquer Customizer' });
     if (await customizerTitle.isVisible()) {
       await expect(customizerTitle).toBeVisible();
 
@@ -44,7 +44,7 @@ test.describe('Storefront Widget End-to-End User Experience', () => {
       const chatInput = page.locator('input[placeholder*="Ask AI"]');
       if (await chatInput.isVisible()) {
         await chatInput.fill('Suggest a gold chrome set');
-        await page.locator('button', { hasText: 'Send' }).click();
+        await page.getByRole('button', { name: 'Send', exact: true }).click();
 
         await expect(page.locator('text=Opulent choices!')).toBeVisible({ timeout: 3000 });
       }
