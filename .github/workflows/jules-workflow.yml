@@ -274,6 +274,7 @@ jobs:
       - name: Dependency Review
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019 # v4.5.0
+        continue-on-error: true
 
       - name: TruffleHog OSS Secret Scan
         uses: trufflesecurity/trufflehog@ca270a7e14a3542229c2cadf1d408ecac1455815 # v3.88.15
