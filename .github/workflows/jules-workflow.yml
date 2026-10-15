@@ -1,6 +1,8 @@
 name: Jules Consolidated Workflow
 
 on:
+  push:
+    branches: [main]
   issues:
     types: [opened, labeled, edited, unlabeled]
   pull_request:
@@ -267,6 +269,8 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+      security-events: write
+      id-token: write
 
     steps:
       - name: Harden Runner Environment
@@ -385,6 +389,38 @@ jobs:
             gh pr edit "${{ github.event.pull_request.number }}" --remove-label "autorebase" || true
           fi
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@a65a038433a26f4363cf9f029e3b9ceac831ad5d # v3.28.10
+        with:
+          languages: javascript-typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@a65a038433a26f4363cf9f029e3b9ceac831ad5d # v3.28.10
+
+      - name: Run OSV-Scanner
+        uses: google/osv-scanner-action/osv-scanner-action@6ad84ce1ef2d4124ba333b221894c133c4a970ea # v2.7.0
+        continue-on-error: true
+        with:
+          scan-args: |-
+            --recursive
+            ./
+
+      - name: Dependency Review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c019 # v4.5.0
+
+      - name: TruffleHog OSS Secret Scan
+        uses: trufflesecurity/trufflehog@ca270a7e14a3542229c2cadf1d408ecac1455815 # v3.88.15
+        with:
+          extra_args: --debug --only-verified
+
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@ea651e62978af7915d09fe2e282747c798bf2dab # v2.4.1
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
       - name: Invoke Google Jules Action
         uses: google-labs-code/jules-action@bff7875eaa123cac6742b7cfc51005b95ba4d566 # v1.0.0
         with:
@@ -396,6 +432,7 @@ jobs:
             2. Maintain workspace immutability using non-persistent credentials (`persist-credentials: false`) and SHA-pinned actions.
             3. Enforce least-privilege token access by setting read-only workflow permissions and elevating permissions strictly at job level.
             4. Enforce 15-minute alert grouping and execution windows (`timeout-minutes: 15`).
-            5. Adhere strictly to AR trion baseline requirements: zero-egress network compliance (`NetworkEgressGuard.ts`), BIPA ephemeral memory sanitization (`MemorySanitizer.ts`), and sub-16 ms WebGPU rendering budgets.
-            6. Before submitting changes, execute local verification (`npm ci`, `npm run lint`, `npm run test:unit`, `npm run test:audit`).
-            7. Create or update targeted pull requests referencing Issue #184.
+            5. Integrate CodeQL, OSV Scanner, Dependency Review, TruffleHog OSS, and OpenSSF Scorecard into the consolidated workflow pipeline.
+            6. Adhere strictly to AR trion baseline requirements: zero-egress network compliance (`NetworkEgressGuard.ts`), BIPA ephemeral memory sanitization (`MemorySanitizer.ts`), and sub-16 ms WebGPU rendering budgets.
+            7. Before submitting changes, execute local verification (`npm ci`, `npm run lint`, `npm run test:unit`, `npm run test:audit`).
+            8. Create or update targeted pull requests referencing Issue #184.
